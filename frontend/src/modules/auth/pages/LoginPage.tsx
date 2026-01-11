@@ -1,8 +1,8 @@
-import { Alert, Box, Button, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, CircularProgress, Divider, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { login } from '../../../services/auth'
+import { getGoogleLoginUrl, login } from '../../../services/auth'
 import { useAppDispatch } from '../../../app/hooks'
 import { setTokens } from '../store/authSlice'
 
@@ -12,7 +12,7 @@ interface LoginFormValues {
 }
 
 export function LoginPage() {
-  const { register, handleSubmit } = useForm<LoginFormValues>()
+  const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginFormValues>()
   const [error, setError] = useState<string | null>(null)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -28,7 +28,12 @@ export function LoginPage() {
       }))
       navigate('/')
     } catch (err) {
-      setError('Login failed. Please check your credentials.')
+      const apiError = err as { response?: { data?: { code?: string; message?: string } } }
+      if (apiError.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
+        setError('Please verify your email before logging in.')
+      } else {
+        setError('Login failed. Please check your credentials.')
+      }
     }
   }
 
@@ -38,11 +43,18 @@ export function LoginPage() {
         <TextField label="Email" type="email" {...register('email')} required />
         <TextField label="Password" type="password" {...register('password')} required />
         {error && <Alert severity="error">{error}</Alert>}
-        <Button type="submit" variant="contained" size="large">
-          Sign in
+        <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
+          {isSubmitting ? <CircularProgress size={18} color="inherit" /> : 'Sign in'}
         </Button>
+        <Button variant="outlined" disabled={isSubmitting} onClick={() => window.location.assign(getGoogleLoginUrl())}>
+          Sign in with Google
+        </Button>
+        <Divider />
         <Typography variant="body2">
           New here? <Link to="/register">Create an account</Link>
+        </Typography>
+        <Typography variant="body2">
+          Forgot your password? <Link to="/forgot-password">Reset it</Link>
         </Typography>
       </Stack>
     </Box>
