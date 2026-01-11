@@ -5,7 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,6 +40,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConstraint(ConstraintViolationException ex,
                                                           HttpServletRequest request) {
         ErrorResponse body = new ErrorResponse("VALIDATION_ERROR", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+                                                                  HttpServletRequest request) {
+        ErrorResponse body = new ErrorResponse("METHOD_NOT_ALLOWED", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParam(MissingServletRequestParameterException ex,
+                                                            HttpServletRequest request) {
+        ErrorResponse body = new ErrorResponse("MISSING_PARAMETER", ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(HttpMessageNotReadableException ex,
+                                                          HttpServletRequest request) {
+        ErrorResponse body = new ErrorResponse("BAD_REQUEST", "Malformed request body", request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 

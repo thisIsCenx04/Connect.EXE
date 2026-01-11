@@ -10,6 +10,9 @@ interface AuthState {
     email: string
     fullName: string
     role: string
+    verifiedStatus: string
+    avatarUrl?: string | null
+    emailVerified: boolean
   } | null
 }
 
@@ -42,8 +45,11 @@ const authSlice = createSlice({
       state.user = null
       tokenStorage.clear()
     },
+    updateUser: (state, action: PayloadAction<AuthState['user']>) => {
+      state.user = action.payload
+    },
   },
 })
 
-export const { setTokens, logout } = authSlice.actions
+export const { setTokens, logout, updateUser } = authSlice.actions
 export const authReducer = authSlice.reducer

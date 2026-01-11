@@ -6,6 +6,13 @@ import { HomePage } from '../modules/home/HomePage'
 import { LoginPage } from '../modules/auth/pages/LoginPage'
 import { RegisterPage } from '../modules/auth/pages/RegisterPage'
 import { RequireAuth } from '../modules/auth/RequireAuth'
+import { ProfilePage } from '../modules/user/pages/ProfilePage'
+import { KycPage } from '../modules/user/pages/KycPage'
+import { ChangePasswordPage } from '../modules/user/pages/ChangePasswordPage'
+import { ForgotPasswordPage } from '../modules/auth/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '../modules/auth/pages/ResetPasswordPage'
+import { VerifyEmailPage } from '../modules/auth/pages/VerifyEmailPage'
+import { OAuthCallbackPage } from '../modules/auth/pages/OAuthCallbackPage'
 
 const theme = createTheme({
   palette: {
@@ -40,10 +47,38 @@ export function App() {
                 </RequireAuth>
               }
             />
+            <Route
+              path="/profile"
+              element={
+                <RequireAuth>
+                  <ProfilePage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/change-password"
+              element={
+                <RequireAuth>
+                  <ChangePasswordPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/kyc"
+              element={
+                <RequireAuth>
+                  <KycPage />
+                </RequireAuth>
+              }
+            />
           </Route>
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

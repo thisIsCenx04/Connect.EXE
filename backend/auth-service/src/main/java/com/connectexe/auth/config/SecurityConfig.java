@@ -1,6 +1,7 @@
 package com.connectexe.auth.config;
 
 import com.connectexe.auth.security.JwtAuthenticationFilter;
+import com.connectexe.auth.security.OAuth2LoginSuccessHandler;
 import com.connectexe.auth.security.RestAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,17 +28,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    JwtAuthenticationFilter jwtAuthenticationFilter,
-                                                   RestAuthenticationEntryPoint authenticationEntryPoint) throws Exception {
+                                                   RestAuthenticationEntryPoint authenticationEntryPoint,
+                                                   OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .anyRequest().authenticated()
             )
+            .oauth2Login(oauth -> oauth.successHandler(oAuth2LoginSuccessHandler))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
