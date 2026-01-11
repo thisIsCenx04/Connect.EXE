@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: Connect.EXE
+      POSTGRES_USER: connectexe
+      POSTGRES_PASSWORD: dtpo9094
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../ConnectEXEDB.txt:/docker-entrypoint-initdb.d/001_init.sql:ro
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  auth-service:
+    build:
+      context: ../../backend
+      dockerfile: auth-service/Dockerfile
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: Connect.EXE
+      DB_USER: connectexe
+      DB_PASS: dtpo9094
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: change-me-in-dev-change-me-in-dev
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
