@@ -63,6 +63,12 @@ public class User implements UserDetails {
     @Column(name = "verified_at")
     private OffsetDateTime verifiedAt;
 
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "email_verified_at")
+    private OffsetDateTime emailVerifiedAt;
+
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
@@ -206,6 +212,22 @@ public class User implements UserDetails {
 
     public void setVerifiedAt(OffsetDateTime verifiedAt) {
         this.verifiedAt = verifiedAt;
+    }
+
+    public boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+
+    public OffsetDateTime getEmailVerifiedAt() {
+        return emailVerifiedAt;
+    }
+
+    public void setEmailVerifiedAt(OffsetDateTime emailVerifiedAt) {
+        this.emailVerifiedAt = emailVerifiedAt;
     }
 
     public boolean isActive() {

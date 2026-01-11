@@ -89,3 +89,33 @@ DROP TRIGGER IF EXISTS trg_kyc_updated_at ON investor_kyc;
 CREATE TRIGGER trg_kyc_updated_at
 BEFORE UPDATE ON investor_kyc
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS email_verified boolean NOT NULL DEFAULT false;
+
+ALTER TABLE users
+  ADD COLUMN IF NOT EXISTS email_verified_at timestamptz;
+
+CREATE TABLE IF NOT EXISTS email_verification_tokens (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token       text NOT NULL UNIQUE,
+  expires_at  timestamptz NOT NULL,
+  used_at     timestamptz,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verification_user ON email_verification_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_email_verification_token ON email_verification_tokens(token);
+
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token       text NOT NULL UNIQUE,
+  expires_at  timestamptz NOT NULL,
+  used_at     timestamptz,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_password_reset_user ON password_reset_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_password_reset_token ON password_reset_tokens(token);
