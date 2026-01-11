@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:16
     environment:
-      POSTGRES_DB: Connect.EXE
-      POSTGRES_USER: connectexe
-      POSTGRES_PASSWORD: dtpo9094
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -21,15 +21,24 @@ services:
       context: ../../backend
       dockerfile: auth-service/Dockerfile
     environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: Connect.EXE
-      DB_USER: connectexe
-      DB_PASS: dtpo9094
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      JWT_SECRET: change-me-in-dev-change-me-in-dev
-      SERVER_PORT: 8081
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      JWT_SECRET: ${JWT_SECRET}
+      SERVER_PORT: ${SERVER_PORT}
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL}
+      MAIL_ENABLED: ${MAIL_ENABLED}
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+      MAIL_FROM: ${MAIL_FROM}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     ports:
       - "8081:8081"
     depends_on:
