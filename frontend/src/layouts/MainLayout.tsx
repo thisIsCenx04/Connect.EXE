@@ -26,6 +26,9 @@ export function MainLayout() {
           </Button>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             <Typography variant="body2">{user?.fullName ?? 'Guest'}</Typography>
+            <Button color="inherit" variant="outlined" onClick={() => navigate('/projects')}>
+              Projects
+            </Button>
             <Button color="inherit" variant="outlined" onClick={() => navigate('/profile')}>
               Profile
             </Button>
