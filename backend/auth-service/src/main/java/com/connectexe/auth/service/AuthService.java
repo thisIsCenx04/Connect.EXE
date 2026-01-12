@@ -94,12 +94,18 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid credentials"));
 
+        if (!user.isEmailVerified()) {
+            EmailVerificationToken token = createEmailVerificationToken(user.getId());
+            sendVerificationEmail(user.getEmail(), token.getToken());
+            throw new ApiException(
+                HttpStatus.FORBIDDEN,
+                "EMAIL_NOT_VERIFIED",
+                "Email not verified. We have resent the verification email. Please check and activate to log in."
+            );
+        }
+
         user.setLastLoginAt(OffsetDateTime.now());
         userRepository.save(user);
-
-        if (!user.isEmailVerified()) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "EMAIL_NOT_VERIFIED", "Please verify your email before logging in");
-        }
 
         return issueTokens(user);
     }

@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, Chip, Grid, Typography } from '@mui/material'
+import { Box, Button, Card, CardContent, Chip, Grid, Typography } from '@mui/material'
+import { Link } from 'react-router-dom'
 import { useAppSelector } from '../../app/hooks'
 
 export function HomePage() {
@@ -40,6 +41,11 @@ export function HomePage() {
                 Add modules for projects, forum, AI, and matching when you are ready.
               </Typography>
               <Chip label="API Ready" sx={{ mt: 2 }} color="primary" />
+              <Box sx={{ mt: 2 }}>
+                <Button component={Link} to="/projects" variant="contained" size="small">
+                  Explore projects
+                </Button>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
