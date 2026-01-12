@@ -1,6 +1,7 @@
 package com.connectexe.project.dto;
 
 import com.connectexe.project.domain.enums.DealType;
+import com.connectexe.project.domain.enums.ProjectMemberRole;
 import com.connectexe.project.domain.enums.ProjectStage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -36,6 +37,8 @@ public class ProjectCreateRequest {
     private String tractionSummary;
 
     private String pitchDeckUrl;
+
+    private ProjectMemberRole creatorRole;
 
     public String getTitle() {
         return title;
@@ -115,5 +118,13 @@ public class ProjectCreateRequest {
 
     public void setPitchDeckUrl(String pitchDeckUrl) {
         this.pitchDeckUrl = pitchDeckUrl;
+    }
+
+    public ProjectMemberRole getCreatorRole() {
+        return creatorRole;
+    }
+
+    public void setCreatorRole(ProjectMemberRole creatorRole) {
+        this.creatorRole = creatorRole;
     }
 }
