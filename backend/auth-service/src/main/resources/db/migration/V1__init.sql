@@ -216,6 +216,18 @@ CREATE INDEX IF NOT EXISTS idx_password_reset_token ON password_reset_tokens(tok
 -- 4) PROJECT MARKET (CORE)
 -- =========================================================
 
+DO $$ BEGIN
+  CREATE TYPE project_stage AS ENUM ('IDEA','MVP','REVENUE','EXIT_READY');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE deal_type AS ENUM ('COFOUNDER','FUNDING','SELL_PROJECT','HIRE_TEAM');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_status AS ENUM ('DRAFT','PUBLISHED','MATCHING','IN_DEAL','CLOSED','HIDDEN');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 CREATE TABLE IF NOT EXISTS projects (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id         uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -224,12 +236,12 @@ CREATE TABLE IF NOT EXISTS projects (
   slug             varchar(220) UNIQUE,
   description      text NOT NULL,
 
-  stage            VARCHAR(30) NOT NULL,
+  stage            project_stage NOT NULL,
   industry         varchar(120) NOT NULL,
   country          varchar(2),
 
-  status           VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
-  deal_type        VARCHAR(30) NOT NULL,
+  status           project_status NOT NULL DEFAULT 'DRAFT',
+  deal_type        deal_type NOT NULL,
 
   funding_need_usd numeric(14,2),
   equity_percent   numeric(5,2),
@@ -256,6 +268,22 @@ DROP TRIGGER IF EXISTS trg_projects_updated_at ON projects;
 CREATE TRIGGER trg_projects_updated_at
 BEFORE UPDATE ON projects
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+DO $$ BEGIN
+  CREATE TYPE project_member_role AS ENUM ('FOUNDER','CO_FOUNDER','MEMBER','ADVISOR','INVESTOR');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE TABLE IF NOT EXISTS project_members (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id  uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  user_id     uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role        project_member_role NOT NULL,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(project_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_members_project ON project_members(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_members_user ON project_members(user_id);
 
 
 CREATE TABLE IF NOT EXISTS project_tags (

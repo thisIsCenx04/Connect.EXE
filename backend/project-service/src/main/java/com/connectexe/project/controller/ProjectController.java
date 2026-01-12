@@ -5,6 +5,8 @@ import com.connectexe.project.domain.enums.DealType;
 import com.connectexe.project.domain.enums.ProjectStage;
 import com.connectexe.project.domain.enums.ProjectStatus;
 import com.connectexe.project.dto.ProjectCreateRequest;
+import com.connectexe.project.dto.ProjectMemberAddRequest;
+import com.connectexe.project.dto.ProjectMemberResponse;
 import com.connectexe.project.dto.ProjectResponse;
 import com.connectexe.project.dto.ProjectUpdateRequest;
 import com.connectexe.project.security.UserPrincipal;
@@ -40,6 +42,14 @@ public class ProjectController {
                                                                @AuthenticationPrincipal UserPrincipal principal) {
         ProjectResponse response = projectService.create(request, principal);
         return ResponseEntity.ok(ApiResponse.ok("Project created", response));
+    }
+
+    @PostMapping("/{id}/members")
+    public ResponseEntity<ApiResponse<ProjectMemberResponse>> addMember(@PathVariable("id") UUID id,
+                                                                        @Valid @RequestBody ProjectMemberAddRequest request,
+                                                                        @AuthenticationPrincipal UserPrincipal principal) {
+        ProjectMemberResponse response = projectService.addMember(id, request, principal);
+        return ResponseEntity.ok(ApiResponse.ok("Member added", response));
     }
 
     @PutMapping("/{id}")
