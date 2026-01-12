@@ -99,7 +99,13 @@ export function ProjectListPage() {
           </Button>
         </Stack>
 
-        <Stack spacing={2}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
+            gap: 2,
+          }}
+        >
           {projects.length === 0 && !loading && (
             <Typography color="text.secondary">No projects found.</Typography>
           )}
@@ -122,7 +128,7 @@ export function ProjectListPage() {
               </CardContent>
             </Card>
           ))}
-        </Stack>
+        </Box>
       </Stack>
     </Box>
   )

@@ -1,6 +1,6 @@
 import { Alert, Box, Button, CircularProgress, MenuItem, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
 import { createProject, getProject, updateProject } from '../../../services/project'
 
@@ -27,7 +27,8 @@ export function ProjectFormPage() {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { register, handleSubmit, reset } = useForm<ProjectFormValues>({
+  const labelProps = id ? { shrink: true } : undefined
+  const { control, register, handleSubmit, reset } = useForm<ProjectFormValues>({
     defaultValues: {
       title: '',
       description: '',
@@ -101,40 +102,81 @@ export function ProjectFormPage() {
         <Typography variant="h4">{id ? 'Edit project' : 'Create project'}</Typography>
         <Box component="form" onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
-            <TextField label="Title" {...register('title')} required />
-            <TextField label="Description" {...register('description')} multiline minRows={4} required />
+            <TextField label="Title" {...register('title')} required InputLabelProps={labelProps} />
+            <TextField
+              label="Description"
+              {...register('description')}
+              multiline
+              minRows={4}
+              required
+              InputLabelProps={labelProps}
+            />
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label="Stage" select {...register('stage')} required>
-                {stages.map((stage) => (
-                  <MenuItem key={stage} value={stage}>
-                    {stage}
-                  </MenuItem>
-                ))}
-              </TextField>
-              <TextField label="Deal type" select {...register('dealType')} required>
-                {dealTypes.map((deal) => (
-                  <MenuItem key={deal} value={deal}>
-                    {deal}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <Controller
+                name="stage"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Stage"
+                    select
+                    required
+                    InputLabelProps={labelProps}
+                    fullWidth
+                    sx={{ minWidth: 200 }}
+                  >
+                    {stages.map((stage) => (
+                      <MenuItem key={stage} value={stage}>
+                        {stage}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+              <Controller
+                name="dealType"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Deal type"
+                    select
+                    required
+                    InputLabelProps={labelProps}
+                    fullWidth
+                    sx={{ minWidth: 200 }}
+                  >
+                    {dealTypes.map((deal) => (
+                      <MenuItem key={deal} value={deal}>
+                        {deal}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
             </Stack>
-            <TextField label="Industry" {...register('industry')} required />
-            <TextField label="Country" {...register('country')} inputProps={{ maxLength: 2 }} />
+            <TextField label="Industry" {...register('industry')} required InputLabelProps={labelProps} />
+            <TextField label="Country" {...register('country')} inputProps={{ maxLength: 2 }} InputLabelProps={labelProps} />
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label="Funding need (USD)" {...register('fundingNeedUsd')} />
-              <TextField label="Equity percent" {...register('equityPercent')} />
+              <TextField label="Funding need (USD)" {...register('fundingNeedUsd')} InputLabelProps={labelProps} />
+              <TextField label="Equity percent" {...register('equityPercent')} InputLabelProps={labelProps} />
             </Stack>
-            <TextField label="Traction summary" {...register('tractionSummary')} />
-            <TextField label="Pitch deck URL" {...register('pitchDeckUrl')} />
+            <TextField label="Traction summary" {...register('tractionSummary')} InputLabelProps={labelProps} />
+            <TextField label="Pitch deck URL" {...register('pitchDeckUrl')} InputLabelProps={labelProps} />
             {id && (
-              <TextField label="Status" select {...register('status')}>
-                {statuses.map((status) => (
-                  <MenuItem key={status} value={status}>
-                    {status}
-                  </MenuItem>
-                ))}
-              </TextField>
+              <Controller
+                name="status"
+                control={control}
+                render={({ field }) => (
+                  <TextField {...field} label="Status" select InputLabelProps={labelProps}>
+                    {statuses.map((status) => (
+                      <MenuItem key={status} value={status}>
+                        {status}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
             )}
             {error && <Alert severity="error">{error}</Alert>}
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

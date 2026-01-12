@@ -2,7 +2,12 @@ package com.connectexe.project.service;
 
 import com.connectexe.common.exception.ApiException;
 import com.connectexe.project.domain.entity.Project;
+import com.connectexe.project.domain.entity.ProjectMember;
+import com.connectexe.project.domain.enums.ProjectMemberRole;
 import com.connectexe.project.domain.enums.ProjectStatus;
+import com.connectexe.project.dto.ProjectMemberAddRequest;
+import com.connectexe.project.dto.ProjectMemberResponse;
+import com.connectexe.project.repository.ProjectMemberRepository;
 import com.connectexe.project.dto.ProjectCreateRequest;
 import com.connectexe.project.dto.ProjectResponse;
 import com.connectexe.project.dto.ProjectUpdateRequest;
@@ -22,13 +27,16 @@ import java.util.UUID;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final ProjectMemberRepository projectMemberRepository;
 
-    public ProjectService(ProjectRepository projectRepository) {
+    public ProjectService(ProjectRepository projectRepository,
+                          ProjectMemberRepository projectMemberRepository) {
         this.projectRepository = projectRepository;
+        this.projectMemberRepository = projectMemberRepository;
     }
 
     public ProjectResponse create(ProjectCreateRequest request, UserPrincipal principal) {
-        requireFounder(principal);
+        requireAuthenticated(principal);
         Project project = new Project();
         project.setOwnerId(principal.getUserId());
         project.setTitle(request.getTitle());
@@ -45,6 +53,13 @@ public class ProjectService {
         project.setSlug(generateSlug(request.getTitle()));
 
         Project saved = projectRepository.save(project);
+        ProjectMember founder = new ProjectMember();
+        founder.setProjectId(saved.getId());
+        founder.setUserId(principal.getUserId());
+        ProjectMemberRole creatorRole =
+            request.getCreatorRole() == null ? ProjectMemberRole.FOUNDER : request.getCreatorRole();
+        founder.setRole(creatorRole);
+        projectMemberRepository.save(founder);
         return toResponse(saved);
     }
 
@@ -140,6 +155,26 @@ public class ProjectService {
             .toList();
     }
 
+    public ProjectMemberResponse addMember(UUID projectId,
+                                           ProjectMemberAddRequest request,
+                                           UserPrincipal principal) {
+        requireAuthenticated(principal);
+        Project project = projectRepository.findById(projectId)
+            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+        requireOwnerOrAdmin(project, principal);
+
+        if (projectMemberRepository.existsByProjectIdAndUserId(projectId, request.getUserId())) {
+            throw new ApiException(HttpStatus.CONFLICT, "MEMBER_EXISTS", "Member already added");
+        }
+
+        ProjectMember member = new ProjectMember();
+        member.setProjectId(projectId);
+        member.setUserId(request.getUserId());
+        member.setRole(request.getRole());
+        ProjectMember saved = projectMemberRepository.save(member);
+        return toMemberResponse(saved);
+    }
+
     private ProjectResponse toResponse(Project project) {
         return new ProjectResponse(
             project.getId(),
@@ -165,6 +200,16 @@ public class ProjectService {
         );
     }
 
+    private ProjectMemberResponse toMemberResponse(ProjectMember member) {
+        return new ProjectMemberResponse(
+            member.getId(),
+            member.getProjectId(),
+            member.getUserId(),
+            member.getRole(),
+            member.getCreatedAt()
+        );
+    }
+
     private String generateSlug(String title) {
         String base = title == null ? "" : title.toLowerCase(Locale.US)
             .replaceAll("[^a-z0-9]+", "-")
@@ -176,12 +221,9 @@ public class ProjectService {
         return slug + "-" + UUID.randomUUID().toString().substring(0, 8);
     }
 
-    private void requireFounder(UserPrincipal principal) {
+    private void requireAuthenticated(UserPrincipal principal) {
         if (principal == null) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Unauthorized");
-        }
-        if (!principal.getRoles().contains("ROLE_FOUNDER") && !principal.getRoles().contains("ROLE_ADMIN")) {
-            throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Only founders can manage projects");
         }
     }
 
