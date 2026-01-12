@@ -13,6 +13,10 @@ import { ForgotPasswordPage } from '../modules/auth/pages/ForgotPasswordPage'
 import { ResetPasswordPage } from '../modules/auth/pages/ResetPasswordPage'
 import { VerifyEmailPage } from '../modules/auth/pages/VerifyEmailPage'
 import { OAuthCallbackPage } from '../modules/auth/pages/OAuthCallbackPage'
+import { ProjectListPage } from '../modules/project/pages/ProjectListPage'
+import { ProjectDetailPage } from '../modules/project/pages/ProjectDetailPage'
+import { ProjectFormPage } from '../modules/project/pages/ProjectFormPage'
+import { MyProjectsPage } from '../modules/project/pages/MyProjectsPage'
 
 const theme = createTheme({
   palette: {
@@ -44,6 +48,32 @@ export function App() {
               element={
                 <RequireAuth>
                   <HomePage />
+                </RequireAuth>
+              }
+            />
+            <Route path="/projects" element={<ProjectListPage />} />
+            <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route
+              path="/projects/new"
+              element={
+                <RequireAuth>
+                  <ProjectFormPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/projects/:id/edit"
+              element={
+                <RequireAuth>
+                  <ProjectFormPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/projects/mine"
+              element={
+                <RequireAuth>
+                  <MyProjectsPage />
                 </RequireAuth>
               }
             />
