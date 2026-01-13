@@ -29,6 +29,9 @@ export function MainLayout() {
             <Button color="inherit" variant="outlined" onClick={() => navigate('/projects')}>
               Projects
             </Button>
+            <Button color="inherit" variant="outlined" onClick={() => navigate('/hall-of-fame')}>
+              Hall of Fame
+            </Button>
             <Button color="inherit" variant="outlined" onClick={() => navigate('/profile')}>
               Profile
             </Button>

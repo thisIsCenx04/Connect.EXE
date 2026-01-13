@@ -21,6 +21,7 @@
 		<module>common-lib</module>
 		<module>auth-service</module>
 		<module>project-service</module>
+		<module>halloffame-service</module>
 	</modules>
 
 	<properties>
