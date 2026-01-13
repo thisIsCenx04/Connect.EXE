@@ -6,8 +6,6 @@ import { createProject, getProject, updateProject } from '../../../services/proj
 
 const stages = ['IDEA', 'MVP', 'REVENUE', 'EXIT_READY']
 const dealTypes = ['COFOUNDER', 'FUNDING', 'SELL_PROJECT', 'HIRE_TEAM']
-const statuses = ['DRAFT', 'PUBLISHED', 'MATCHING', 'IN_DEAL', 'CLOSED', 'HIDDEN']
-
 interface ProjectFormValues {
   title: string
   description: string
@@ -19,7 +17,6 @@ interface ProjectFormValues {
   equityPercent: string
   tractionSummary: string
   pitchDeckUrl: string
-  status: string
 }
 
 export function ProjectFormPage() {
@@ -40,7 +37,6 @@ export function ProjectFormPage() {
       equityPercent: '',
       tractionSummary: '',
       pitchDeckUrl: '',
-      status: 'DRAFT',
     },
   })
 
@@ -60,7 +56,6 @@ export function ProjectFormPage() {
           equityPercent: project.equityPercent?.toString() ?? '',
           tractionSummary: project.tractionSummary ?? '',
           pitchDeckUrl: project.pitchDeckUrl ?? '',
-          status: project.status,
         })
       })
       .catch(() => setError('Unable to load project.'))
@@ -84,7 +79,7 @@ export function ProjectFormPage() {
     }
     try {
       if (id) {
-        await updateProject(id, { ...payload, status: values.status })
+        await updateProject(id, payload)
       } else {
         await createProject(payload)
       }
@@ -163,21 +158,6 @@ export function ProjectFormPage() {
             </Stack>
             <TextField label="Traction summary" {...register('tractionSummary')} InputLabelProps={labelProps} />
             <TextField label="Pitch deck URL" {...register('pitchDeckUrl')} InputLabelProps={labelProps} />
-            {id && (
-              <Controller
-                name="status"
-                control={control}
-                render={({ field }) => (
-                  <TextField {...field} label="Status" select InputLabelProps={labelProps}>
-                    {statuses.map((status) => (
-                      <MenuItem key={status} value={status}>
-                        {status}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                )}
-              />
-            )}
             {error && <Alert severity="error">{error}</Alert>}
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
               <Button type="submit" variant="contained" disabled={loading}>

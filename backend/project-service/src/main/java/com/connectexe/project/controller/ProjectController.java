@@ -80,11 +80,13 @@ public class ProjectController {
         @RequestParam(value = "industry", required = false) String industry,
         @RequestParam(value = "country", required = false) String country,
         @RequestParam(value = "dealType", required = false) DealType dealType,
-        @RequestParam(value = "status", required = false) ProjectStatus status
+        @RequestParam(value = "status", required = false) ProjectStatus status,
+        @AuthenticationPrincipal UserPrincipal principal
     ) {
         ProjectStatus effectiveStatus = status == null ? ProjectStatus.PUBLISHED : status;
         List<ProjectResponse> response = projectService.list(
-            new ProjectService.ProjectFilters(stage, industry, country, dealType, effectiveStatus)
+            new ProjectService.ProjectFilters(stage, industry, country, dealType, effectiveStatus),
+            principal
         );
         return ResponseEntity.ok(ApiResponse.ok("Projects loaded", response));
     }
