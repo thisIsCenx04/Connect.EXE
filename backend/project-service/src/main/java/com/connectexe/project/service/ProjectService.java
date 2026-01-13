@@ -106,6 +106,9 @@ public class ProjectService {
             project.setFeaturedRank(request.getFeaturedRank());
         }
         if (request.getStatus() != null) {
+            if (!isAdmin(principal)) {
+                throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Only admins can change status");
+            }
             project.setStatus(request.getStatus());
             if (request.getStatus() == ProjectStatus.PUBLISHED && project.getPublishedAt() == null) {
                 project.setPublishedAt(OffsetDateTime.now());
@@ -135,7 +138,10 @@ public class ProjectService {
         throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Not allowed");
     }
 
-    public List<ProjectResponse> list(ProjectFilters filters) {
+    public List<ProjectResponse> list(ProjectFilters filters, UserPrincipal principal) {
+        if (filters.status() != null && filters.status() != ProjectStatus.PUBLISHED && !isAdmin(principal)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "FORBIDDEN", "Only admins can view non-public projects");
+        }
         Specification<Project> spec = Specification.where(ProjectSpecifications.hasStage(filters.stage()))
             .and(ProjectSpecifications.hasIndustry(filters.industry()))
             .and(ProjectSpecifications.hasCountry(filters.country()))
@@ -241,6 +247,13 @@ public class ProjectService {
             return true;
         }
         return project.getOwnerId().equals(principal.getUserId());
+    }
+
+    private boolean isAdmin(UserPrincipal principal) {
+        if (principal == null) {
+            return false;
+        }
+        return principal.getRoles().contains("ROLE_ADMIN");
     }
 
     public record ProjectFilters(

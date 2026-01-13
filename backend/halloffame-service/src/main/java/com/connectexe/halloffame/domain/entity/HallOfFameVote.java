@@ -23,8 +23,8 @@ public class HallOfFameVote {
     @JoinColumn(name = "entry_id", nullable = false)
     private HallOfFameEntry entry;
 
-    @Column(nullable = false)
-    private int value;
+    @Column(nullable = false, columnDefinition = "smallint")
+    private short value;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp
@@ -46,11 +46,11 @@ public class HallOfFameVote {
         this.entry = entry;
     }
 
-    public int getValue() {
+    public short getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(short value) {
         this.value = value;
     }
 

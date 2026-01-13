@@ -105,7 +105,7 @@ public class HallOfFameService {
         HallOfFameVote vote = new HallOfFameVote();
         vote.setId(new HallOfFameVoteId(entryId, principal.getUserId()));
         vote.setEntry(entry);
-        vote.setValue(request.getValue());
+        vote.setValue(request.getValue().shortValue());
         voteRepository.save(vote);
 
         Double avg = voteRepository.averageForEntry(entryId);
