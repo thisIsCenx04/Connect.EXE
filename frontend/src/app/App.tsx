@@ -1,4 +1,5 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
+import { useEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MainLayout } from '../layouts/MainLayout'
 import { AuthLayout } from '../layouts/AuthLayout'
@@ -20,6 +21,10 @@ import { MyProjectsPage } from '../modules/project/pages/MyProjectsPage'
 import { HallOfFameListPage } from '../modules/hallOfFame/pages/HallOfFameListPage'
 import { HallOfFameDetailPage } from '../modules/hallOfFame/pages/HallOfFameDetailPage'
 import { HallOfFameApplyPage } from '../modules/hallOfFame/pages/HallOfFameApplyPage'
+import { getUserProfile } from '../services/user'
+import { tokenStorage } from '../services/tokenStorage'
+import { useAppDispatch, useAppSelector } from './hooks'
+import { updateUser } from '../modules/auth/store/authSlice'
 
 const theme = createTheme({
   palette: {
@@ -40,6 +45,34 @@ const theme = createTheme({
 })
 
 export function App() {
+  const dispatch = useAppDispatch()
+  const { accessToken, user } = useAppSelector((state) => state.auth)
+  const lastSyncedId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!accessToken) {
+      return
+    }
+    const userId = user?.id ?? tokenStorage.getTokenSubject(accessToken)
+    if (!userId || lastSyncedId.current === userId) {
+      return
+    }
+    lastSyncedId.current = userId
+    getUserProfile(userId)
+      .then((profile) => {
+        dispatch(updateUser({
+          id: profile.id,
+          email: profile.email,
+          fullName: profile.fullName,
+          role: profile.role,
+          verifiedStatus: profile.verifiedStatus,
+          avatarUrl: profile.avatarUrl ?? null,
+          emailVerified: profile.emailVerified,
+        }))
+      })
+      .catch(() => null)
+  }, [accessToken, dispatch, user?.id])
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

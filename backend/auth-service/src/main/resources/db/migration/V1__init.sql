@@ -228,6 +228,22 @@ DO $$ BEGIN
   CREATE TYPE project_status AS ENUM ('DRAFT','PUBLISHED','MATCHING','IN_DEAL','CLOSED','HIDDEN');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
+  CREATE TYPE project_moderation_status AS ENUM ('PENDING','APPROVED','REJECTED');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_visibility AS ENUM ('PUBLIC','PRIVATE','HIDDEN');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_link_type AS ENUM ('WEBSITE','PITCH_DECK','DEMO','REPO','SOCIAL','OTHER');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_media_role AS ENUM ('COVER','GALLERY','DOCUMENT');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 CREATE TABLE IF NOT EXISTS projects (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id         uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -269,6 +285,20 @@ CREATE TRIGGER trg_projects_updated_at
 BEFORE UPDATE ON projects
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+ALTER TABLE projects
+  ADD COLUMN IF NOT EXISTS summary text,
+  ADD COLUMN IF NOT EXISTS content text,
+  ADD COLUMN IF NOT EXISTS moderation_status project_moderation_status NOT NULL DEFAULT 'PENDING',
+  ADD COLUMN IF NOT EXISTS visibility project_visibility NOT NULL DEFAULT 'PRIVATE',
+  ADD COLUMN IF NOT EXISTS funding_target_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS funding_raised_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS valuation_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS funding_timeline text,
+  ADD COLUMN IF NOT EXISTS traction_metrics text,
+  ADD COLUMN IF NOT EXISTS submitted_at timestamptz,
+  ADD COLUMN IF NOT EXISTS reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS reviewed_at timestamptz;
+
 DO $$ BEGIN
   CREATE TYPE project_member_role AS ENUM ('FOUNDER','CO_FOUNDER','MEMBER','ADVISOR','INVESTOR');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -304,6 +334,23 @@ CREATE TABLE IF NOT EXISTS project_attachments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_attachments_project ON project_attachments(project_id);
+
+ALTER TABLE project_attachments
+  ADD COLUMN IF NOT EXISTS role project_media_role,
+  ADD COLUMN IF NOT EXISTS sort_order int,
+  ADD COLUMN IF NOT EXISTS caption text;
+
+CREATE TABLE IF NOT EXISTS project_links (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  type project_link_type NOT NULL,
+  label varchar(120),
+  url text NOT NULL,
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_links_project ON project_links(project_id);
 
 
 CREATE TABLE IF NOT EXISTS project_interests (
@@ -485,6 +532,71 @@ CREATE TABLE IF NOT EXISTS hall_of_fame_votes (
   created_at timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY (entry_id, user_id)
 );
+
+DO $$ BEGIN
+  CREATE TYPE hof_post_type AS ENUM ('STARTUP','PERSON','PROJECT_STORY');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_post_status AS ENUM ('DRAFT','PUBLISHED','ARCHIVED');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_link_type AS ENUM ('WEBSITE','PITCH_DECK','DEMO','REPO','SOCIAL','OTHER');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_media_role AS ENUM ('COVER','GALLERY');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_posts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type hof_post_type NOT NULL,
+  source_project_id uuid REFERENCES projects(id) ON DELETE SET NULL,
+  title varchar(200) NOT NULL,
+  summary text,
+  body text NOT NULL,
+  cover_url text,
+  status hof_post_status NOT NULL DEFAULT 'DRAFT',
+  created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  published_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS trg_hof_posts_updated_at ON hall_of_fame_posts;
+CREATE TRIGGER trg_hof_posts_updated_at
+BEFORE UPDATE ON hall_of_fame_posts
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_tags (
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  tag varchar(50) NOT NULL,
+  PRIMARY KEY (post_id, tag)
+);
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_links (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  type hof_link_type NOT NULL,
+  label varchar(120),
+  url text NOT NULL,
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hof_links_post ON hall_of_fame_post_links(post_id);
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_media (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  file_url text NOT NULL,
+  role hof_media_role NOT NULL DEFAULT 'GALLERY',
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hof_media_post ON hall_of_fame_post_media(post_id);
 
 
 -- =========================================================

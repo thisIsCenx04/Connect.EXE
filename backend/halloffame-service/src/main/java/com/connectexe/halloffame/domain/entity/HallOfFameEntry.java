@@ -1,4 +1,7 @@
 package com.connectexe.halloffame.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import com.connectexe.halloffame.domain.enums.HallOfFameStatus;
 import com.connectexe.halloffame.domain.enums.HallOfFameType;
@@ -21,6 +24,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "hall_of_fame_entries")
+@Getter
+@Setter
+@NoArgsConstructor
 public class HallOfFameEntry {
     @Id
     @GeneratedValue
@@ -60,71 +66,4 @@ public class HallOfFameEntry {
     @UpdateTimestamp
     private OffsetDateTime updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public HallOfFameType getType() {
-        return type;
-    }
-
-    public void setType(HallOfFameType type) {
-        this.type = type;
-    }
-
-    public UUID getReferenceId() {
-        return referenceId;
-    }
-
-    public void setReferenceId(UUID referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public BigDecimal getScore() {
-        return score;
-    }
-
-    public void setScore(BigDecimal score) {
-        this.score = score;
-    }
-
-    public HallOfFameStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(HallOfFameStatus status) {
-        this.status = status;
-    }
-
-    public UUID getAppliedBy() {
-        return appliedBy;
-    }
-
-    public void setAppliedBy(UUID appliedBy) {
-        this.appliedBy = appliedBy;
-    }
-
-    public UUID getReviewedBy() {
-        return reviewedBy;
-    }
-
-    public void setReviewedBy(UUID reviewedBy) {
-        this.reviewedBy = reviewedBy;
-    }
-
-    public OffsetDateTime getReviewedAt() {
-        return reviewedAt;
-    }
-
-    public void setReviewedAt(OffsetDateTime reviewedAt) {
-        this.reviewedAt = reviewedAt;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
 }

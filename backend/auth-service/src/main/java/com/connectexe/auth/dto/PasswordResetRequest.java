@@ -1,18 +1,19 @@
 package com.connectexe.auth.dto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PasswordResetRequest {
     @Email
     @NotBlank
     private String email;
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

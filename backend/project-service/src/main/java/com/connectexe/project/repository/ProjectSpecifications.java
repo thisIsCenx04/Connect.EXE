@@ -2,8 +2,10 @@ package com.connectexe.project.repository;
 
 import com.connectexe.project.domain.entity.Project;
 import com.connectexe.project.domain.enums.DealType;
+import com.connectexe.project.domain.enums.ProjectModerationStatus;
 import com.connectexe.project.domain.enums.ProjectStage;
 import com.connectexe.project.domain.enums.ProjectStatus;
+import com.connectexe.project.domain.enums.ProjectVisibility;
 import org.springframework.data.jpa.domain.Specification;
 
 public class ProjectSpecifications {
@@ -28,5 +30,13 @@ public class ProjectSpecifications {
 
     public static Specification<Project> hasStatus(ProjectStatus status) {
         return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
+    }
+
+    public static Specification<Project> hasModerationStatus(ProjectModerationStatus status) {
+        return (root, query, cb) -> status == null ? null : cb.equal(root.get("moderationStatus"), status);
+    }
+
+    public static Specification<Project> hasVisibility(ProjectVisibility visibility) {
+        return (root, query, cb) -> visibility == null ? null : cb.equal(root.get("visibility"), visibility);
     }
 }

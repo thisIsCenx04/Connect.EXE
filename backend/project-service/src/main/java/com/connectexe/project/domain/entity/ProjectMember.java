@@ -1,4 +1,7 @@
 package com.connectexe.project.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import com.connectexe.project.domain.enums.ProjectMemberRole;
 import jakarta.persistence.Column;
@@ -18,6 +21,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "project_members")
+@Getter
+@Setter
+@NoArgsConstructor
 public class ProjectMember {
     @Id
     @GeneratedValue
@@ -39,39 +45,4 @@ public class ProjectMember {
     @CreationTimestamp
     private OffsetDateTime createdAt;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public ProjectMemberRole getRole() {
-        return role;
-    }
-
-    public void setRole(ProjectMemberRole role) {
-        this.role = role;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

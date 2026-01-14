@@ -1,4 +1,7 @@
 package com.connectexe.auth.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,6 +16,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "email_verification_tokens")
+@Getter
+@Setter
+@NoArgsConstructor
 public class EmailVerificationToken {
     @Id
     @GeneratedValue
@@ -35,47 +41,4 @@ public class EmailVerificationToken {
     @CreationTimestamp
     private OffsetDateTime createdAt;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public OffsetDateTime getExpiresAt() {
-        return expiresAt;
-    }
-
-    public void setExpiresAt(OffsetDateTime expiresAt) {
-        this.expiresAt = expiresAt;
-    }
-
-    public OffsetDateTime getUsedAt() {
-        return usedAt;
-    }
-
-    public void setUsedAt(OffsetDateTime usedAt) {
-        this.usedAt = usedAt;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

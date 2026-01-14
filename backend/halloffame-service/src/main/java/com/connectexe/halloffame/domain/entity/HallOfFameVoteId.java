@@ -1,4 +1,7 @@
 package com.connectexe.halloffame.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -8,6 +11,9 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Embeddable
+@Getter
+@Setter
+@NoArgsConstructor
 public class HallOfFameVoteId implements Serializable {
     @Column(name = "entry_id", nullable = false)
     private UUID entryId;
@@ -15,20 +21,9 @@ public class HallOfFameVoteId implements Serializable {
     @Column(name = "user_id", nullable = false)
     private UUID userId;
 
-    public HallOfFameVoteId() {
-    }
-
     public HallOfFameVoteId(UUID entryId, UUID userId) {
         this.entryId = entryId;
         this.userId = userId;
-    }
-
-    public UUID getEntryId() {
-        return entryId;
-    }
-
-    public UUID getUserId() {
-        return userId;
     }
 
     @Override

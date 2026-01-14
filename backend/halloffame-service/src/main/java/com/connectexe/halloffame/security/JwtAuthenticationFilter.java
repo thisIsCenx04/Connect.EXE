@@ -30,15 +30,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = resolveToken(request);
-        if (StringUtils.hasText(token) && jwtService.isTokenValid(token)) {
-            Claims claims = jwtService.parseClaims(token);
-            UUID userId = UUID.fromString(claims.getSubject());
-            List<String> roles = claims.get("roles", List.class);
-            UserPrincipal principal = new UserPrincipal(userId, roles == null ? List.of() : roles);
-            UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (StringUtils.hasText(token)
+            && SecurityContextHolder.getContext().getAuthentication() == null
+            && jwtService.isTokenValid(token)) {
+            try {
+                Claims claims = jwtService.parseClaims(token);
+                UUID userId = UUID.fromString(claims.getSubject());
+                List<String> roles = extractRoles(claims.get("roles"));
+                UserPrincipal principal = new UserPrincipal(userId, roles);
+                UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(principal, null, principal.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } catch (IllegalArgumentException ex) {
+                SecurityContextHolder.clearContext();
+            }
         }
 
         filterChain.doFilter(request, response);
@@ -50,5 +56,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return header.substring(7);
         }
         return null;
+    }
+
+    private List<String> extractRoles(Object rolesClaim) {
+        if (rolesClaim == null) {
+            return List.of();
+        }
+        if (rolesClaim instanceof String rolesText) {
+            return List.of(rolesText.split("\\s*,\\s*"));
+        }
+        if (rolesClaim instanceof List<?> rawList) {
+            return rawList.stream()
+                .filter(item -> item != null)
+                .map(Object::toString)
+                .toList();
+        }
+        return List.of(rolesClaim.toString());
     }
 }

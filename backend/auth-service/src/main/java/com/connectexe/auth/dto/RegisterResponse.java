@@ -1,21 +1,17 @@
 package com.connectexe.auth.dto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterResponse {
     private UUID userId;
     private String email;
 
-    public RegisterResponse(UUID userId, String email) {
-        this.userId = userId;
-        this.email = email;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
 }

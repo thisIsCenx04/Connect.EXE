@@ -1,12 +1,20 @@
 package com.connectexe.common.dto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.time.Instant;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ApiResponse<T> {
-    private final boolean success;
-    private final String message;
-    private final T data;
-    private final Instant timestamp;
+    private boolean success;
+    private String message;
+    private T data;
+    private Instant timestamp;
 
     private ApiResponse(boolean success, String message, T data) {
         this.success = success;
@@ -27,19 +35,4 @@ public class ApiResponse<T> {
         return new ApiResponse<>(false, message, null);
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
 }

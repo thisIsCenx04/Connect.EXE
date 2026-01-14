@@ -2,8 +2,10 @@ package com.connectexe.project.controller;
 
 import com.connectexe.common.dto.ApiResponse;
 import com.connectexe.project.domain.enums.DealType;
+import com.connectexe.project.domain.enums.ProjectModerationStatus;
 import com.connectexe.project.domain.enums.ProjectStage;
 import com.connectexe.project.domain.enums.ProjectStatus;
+import com.connectexe.project.domain.enums.ProjectVisibility;
 import com.connectexe.project.dto.ProjectCreateRequest;
 import com.connectexe.project.dto.ProjectMemberAddRequest;
 import com.connectexe.project.dto.ProjectMemberResponse;
@@ -60,6 +62,34 @@ public class ProjectController {
         return ResponseEntity.ok(ApiResponse.ok("Project updated", response));
     }
 
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<ApiResponse<ProjectResponse>> submit(@PathVariable("id") UUID id,
+                                                               @AuthenticationPrincipal UserPrincipal principal) {
+        ProjectResponse response = projectService.submitForReview(id, principal);
+        return ResponseEntity.ok(ApiResponse.ok("Project submitted for review", response));
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<ApiResponse<ProjectResponse>> approve(@PathVariable("id") UUID id,
+                                                                @AuthenticationPrincipal UserPrincipal principal) {
+        ProjectResponse response = projectService.approve(id, principal);
+        return ResponseEntity.ok(ApiResponse.ok("Project approved", response));
+    }
+
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<ApiResponse<ProjectResponse>> reject(@PathVariable("id") UUID id,
+                                                               @AuthenticationPrincipal UserPrincipal principal) {
+        ProjectResponse response = projectService.reject(id, principal);
+        return ResponseEntity.ok(ApiResponse.ok("Project rejected", response));
+    }
+
+    @PutMapping("/{id}/hide")
+    public ResponseEntity<ApiResponse<ProjectResponse>> hide(@PathVariable("id") UUID id,
+                                                             @AuthenticationPrincipal UserPrincipal principal) {
+        ProjectResponse response = projectService.hide(id, principal);
+        return ResponseEntity.ok(ApiResponse.ok("Project hidden", response));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable("id") UUID id,
                                                     @AuthenticationPrincipal UserPrincipal principal) {
@@ -81,11 +111,25 @@ public class ProjectController {
         @RequestParam(value = "country", required = false) String country,
         @RequestParam(value = "dealType", required = false) DealType dealType,
         @RequestParam(value = "status", required = false) ProjectStatus status,
+        @RequestParam(value = "moderationStatus", required = false) ProjectModerationStatus moderationStatus,
+        @RequestParam(value = "visibility", required = false) ProjectVisibility visibility,
         @AuthenticationPrincipal UserPrincipal principal
     ) {
         ProjectStatus effectiveStatus = status == null ? ProjectStatus.PUBLISHED : status;
+        ProjectModerationStatus effectiveModeration =
+            moderationStatus == null ? ProjectModerationStatus.APPROVED : moderationStatus;
+        ProjectVisibility effectiveVisibility =
+            visibility == null ? ProjectVisibility.PUBLIC : visibility;
         List<ProjectResponse> response = projectService.list(
-            new ProjectService.ProjectFilters(stage, industry, country, dealType, effectiveStatus),
+            new ProjectService.ProjectFilters(
+                stage,
+                industry,
+                country,
+                dealType,
+                effectiveStatus,
+                effectiveModeration,
+                effectiveVisibility
+            ),
             principal
         );
         return ResponseEntity.ok(ApiResponse.ok("Projects loaded", response));

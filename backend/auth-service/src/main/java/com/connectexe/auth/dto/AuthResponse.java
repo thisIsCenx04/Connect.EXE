@@ -1,32 +1,22 @@
 package com.connectexe.auth.dto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import com.connectexe.auth.domain.enums.UserRole;
 import com.connectexe.auth.domain.enums.VerificationStatus;
 
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthResponse {
     private String accessToken;
     private String refreshToken;
     private UserSummary user;
-
-    public AuthResponse(String accessToken, String refreshToken, UserSummary user) {
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-        this.user = user;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public UserSummary getUser() {
-        return user;
-    }
 
     public static class UserSummary {
         private UUID id;

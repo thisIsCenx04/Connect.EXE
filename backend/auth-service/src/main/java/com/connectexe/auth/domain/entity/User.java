@@ -1,4 +1,7 @@
 package com.connectexe.auth.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import com.connectexe.auth.domain.enums.UserRole;
 import com.connectexe.auth.domain.enums.VerificationStatus;
@@ -23,6 +26,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
+@NoArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -87,7 +93,6 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
     @Override
     public String getPassword() {
         return passwordHash;
@@ -118,147 +123,4 @@ public class User implements UserDetails {
         return active;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
-
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public String getHeadline() {
-        return headline;
-    }
-
-    public void setHeadline(String headline) {
-        this.headline = headline;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public VerificationStatus getVerifiedStatus() {
-        return verifiedStatus;
-    }
-
-    public void setVerifiedStatus(VerificationStatus verifiedStatus) {
-        this.verifiedStatus = verifiedStatus;
-    }
-
-    public OffsetDateTime getVerifiedAt() {
-        return verifiedAt;
-    }
-
-    public void setVerifiedAt(OffsetDateTime verifiedAt) {
-        this.verifiedAt = verifiedAt;
-    }
-
-    public boolean isEmailVerified() {
-        return emailVerified;
-    }
-
-    public void setEmailVerified(boolean emailVerified) {
-        this.emailVerified = emailVerified;
-    }
-
-    public OffsetDateTime getEmailVerifiedAt() {
-        return emailVerifiedAt;
-    }
-
-    public void setEmailVerifiedAt(OffsetDateTime emailVerifiedAt) {
-        this.emailVerifiedAt = emailVerifiedAt;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public OffsetDateTime getLastLoginAt() {
-        return lastLoginAt;
-    }
-
-    public void setLastLoginAt(OffsetDateTime lastLoginAt) {
-        this.lastLoginAt = lastLoginAt;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

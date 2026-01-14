@@ -1,93 +1,107 @@
-import { Box, Button, Card, CardContent, MenuItem, Stack, TextField, Typography } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-import { useAppSelector } from '../../../app/hooks'
-import { getHallOfFameEntry, voteHallOfFame, type HallOfFameEntry } from '../../../services/hallOfFame'
-
-const ratingOptions = [1, 2, 3, 4, 5]
+﻿import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { getHallOfFamePost, type HallOfFamePost } from '../../../services/hallOfFame'
 
 export function HallOfFameDetailPage() {
   const { id } = useParams()
-  const user = useAppSelector((state) => state.auth.user)
-  const [entry, setEntry] = useState<HallOfFameEntry | null>(null)
-  const [rating, setRating] = useState(5)
-  const [loading, setLoading] = useState(false)
-
-  const loadEntry = async () => {
-    if (!id) {
-      return
-    }
-    setLoading(true)
-    try {
-      const data = await getHallOfFameEntry(id)
-      setEntry(data)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleVote = async () => {
-    if (!id) {
-      return
-    }
-    setLoading(true)
-    try {
-      const data = await voteHallOfFame(id, { value: rating })
-      setEntry(data)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const [entry, setEntry] = useState<HallOfFamePost | null>(null)
 
   useEffect(() => {
-    loadEntry()
+    if (!id) return
+    getHallOfFamePost(id).then(setEntry)
   }, [id])
 
   if (!entry) {
-    return <Typography color="text.secondary">{loading ? 'Loading...' : 'Entry not found.'}</Typography>
+    return <div className="text-sm text-white/70">Dang tai...</div>
   }
 
   return (
-    <Box>
-      <Stack spacing={3}>
-        <Typography variant="h4">Hall of Fame Detail</Typography>
-        <Card elevation={4}>
-          <CardContent>
-            <Stack spacing={1}>
-              <Typography variant="h6">{entry.type}</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Reference: {entry.referenceId}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Status: {entry.status}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Score: {entry.score?.toFixed?.(2) ?? entry.score} ({entry.ratingCount} votes)
-              </Typography>
-            </Stack>
-          </CardContent>
-        </Card>
+    <div className="space-y-8">
+      <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+        <div className="space-y-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Hall of Fame</p>
+          <h1 className="text-3xl font-semibold md:text-4xl">{entry.title}</h1>
+          <p className="text-sm text-white/70">{entry.summary ?? ''}</p>
+          <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
+            <span>{entry.type}</span>
+            <span>{entry.status}</span>
+          </div>
+        </div>
+      </section>
 
-        <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }} alignItems={{ sm: 'center' }}>
-          <TextField
-            label="Your rating"
-            select
-            value={rating}
-            onChange={(event) => setRating(Number(event.target.value))}
-            sx={{ width: 160 }}
-            disabled={!user}
+      <section className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+            <div className="aspect-[16/9] w-full bg-white/10">
+              {entry.coverUrl ? (
+                <img src={entry.coverUrl} alt={entry.title} className="h-full w-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.2em] text-white/40">
+                  Cover image
+                </div>
+              )}
+            </div>
+            <div className="space-y-4 p-6 text-sm text-white/70">
+              <p>{entry.body}</p>
+            </div>
+          </div>
+
+          {(entry.media ?? []).length > 0 && (
+            <div className="grid gap-4 md:grid-cols-3">
+              {entry.media?.map((item) => (
+                <div key={item.id ?? item.fileUrl} className="overflow-hidden rounded-2xl border border-white/10">
+                  <img src={item.fileUrl} alt="Gallery" className="h-40 w-full object-cover" />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <aside className="space-y-4">
+          {(entry.tags ?? []).length > 0 && (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Tags</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {entry.tags?.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(entry.links ?? []).length > 0 && (
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Lien ket</p>
+              <div className="mt-4 space-y-2 text-sm text-white/70">
+                {entry.links?.map((link) => (
+                  <a
+                    key={link.id ?? link.url}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-2 transition hover:border-white/30"
+                  >
+                    <span>{link.label ?? link.type}</span>
+                    <span className="text-xs text-white/50">Mo</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Link
+            to="/hall-of-fame"
+            className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
           >
-            {ratingOptions.map((value) => (
-              <MenuItem key={value} value={value}>
-                {value}
-              </MenuItem>
-            ))}
-          </TextField>
-          <Button variant="contained" onClick={handleVote} disabled={!user || loading}>
-            {user ? 'Submit vote' : 'Login to vote'}
-          </Button>
-        </Stack>
-      </Stack>
-    </Box>
+            Quay lai danh sach
+          </Link>
+        </aside>
+      </section>
+    </div>
   )
 }
