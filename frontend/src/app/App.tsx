@@ -17,6 +17,9 @@ import { ProjectListPage } from '../modules/project/pages/ProjectListPage'
 import { ProjectDetailPage } from '../modules/project/pages/ProjectDetailPage'
 import { ProjectFormPage } from '../modules/project/pages/ProjectFormPage'
 import { MyProjectsPage } from '../modules/project/pages/MyProjectsPage'
+import { HallOfFameListPage } from '../modules/hallOfFame/pages/HallOfFameListPage'
+import { HallOfFameDetailPage } from '../modules/hallOfFame/pages/HallOfFameDetailPage'
+import { HallOfFameApplyPage } from '../modules/hallOfFame/pages/HallOfFameApplyPage'
 
 const theme = createTheme({
   palette: {
@@ -53,6 +56,16 @@ export function App() {
             />
             <Route path="/projects" element={<ProjectListPage />} />
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
+            <Route path="/hall-of-fame" element={<HallOfFameListPage />} />
+            <Route path="/hall-of-fame/:id" element={<HallOfFameDetailPage />} />
+            <Route
+              path="/hall-of-fame/apply"
+              element={
+                <RequireAuth>
+                  <HallOfFameApplyPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/projects/new"
               element={
