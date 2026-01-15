@@ -100,5 +100,19 @@ services:
     mem_limit: 750m
     cpus: 1.0
 
+  chat-service:
+    env_file:
+      - ../../.env
+    build:
+      context: ../../backend
+      dockerfile: chat-service/Dockerfile
+    ports:
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 256m
+    cpus: 0.5
+
 volumes:
   postgres_data:

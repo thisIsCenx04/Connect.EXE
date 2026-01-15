@@ -21,6 +21,7 @@ import { MyProjectsPage } from '../modules/project/pages/MyProjectsPage'
 import { HallOfFameListPage } from '../modules/hallOfFame/pages/HallOfFameListPage'
 import { HallOfFameDetailPage } from '../modules/hallOfFame/pages/HallOfFameDetailPage'
 import { HallOfFameApplyPage } from '../modules/hallOfFame/pages/HallOfFameApplyPage'
+import { ChatPage } from '../modules/chat/pages/ChatPage'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
@@ -125,6 +126,14 @@ export function App() {
               element={
                 <RequireAuth>
                   <MyProjectsPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <RequireAuth>
+                  <ChatPage />
                 </RequireAuth>
               }
             />

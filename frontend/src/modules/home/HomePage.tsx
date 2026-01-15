@@ -29,8 +29,8 @@ export function HomePage() {
           title={`Welcome back${user?.fullName ? `, ${user.fullName}` : ''}`}
           subtitle="Track milestones, publish projects, and unlock mentoring or funding opportunities in one place."
         />
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="overview-grid">
+          <div className="overview-profile rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
               Profile Snapshot
             </p>
@@ -41,7 +41,7 @@ export function HomePage() {
               <p>Status: Verified when your KYC is approved.</p>
             </div>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="overview-next rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Next Steps</p>
             <h3 className="mt-3 text-xl font-semibold text-slate-900">Launch your next move</h3>
             <p className="mt-3 text-sm text-slate-600">
