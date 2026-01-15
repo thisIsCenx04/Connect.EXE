@@ -9,6 +9,7 @@ import com.connectexe.project.domain.enums.ProjectVisibility;
 import com.connectexe.project.dto.ProjectCreateRequest;
 import com.connectexe.project.dto.ProjectMemberAddRequest;
 import com.connectexe.project.dto.ProjectMemberResponse;
+import com.connectexe.project.dto.ProjectMatchResponse;
 import com.connectexe.project.dto.ProjectResponse;
 import com.connectexe.project.dto.ProjectUpdateRequest;
 import com.connectexe.project.security.UserPrincipal;
@@ -133,6 +134,22 @@ public class ProjectController {
             principal
         );
         return ResponseEntity.ok(ApiResponse.ok("Projects loaded", response));
+    }
+
+    @GetMapping("/matching")
+    public ResponseEntity<ApiResponse<List<ProjectMatchResponse>>> match(
+        @RequestParam(value = "stage", required = false) ProjectStage stage,
+        @RequestParam(value = "industry", required = false) String industry,
+        @RequestParam(value = "minFundingUsd", required = false) java.math.BigDecimal minFundingUsd,
+        @RequestParam(value = "maxFundingUsd", required = false) java.math.BigDecimal maxFundingUsd,
+        @RequestParam(value = "country", required = false) String country,
+        @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        List<ProjectMatchResponse> response = projectService.matchProjects(
+            new ProjectService.ProjectMatchCriteria(stage, industry, minFundingUsd, maxFundingUsd, country),
+            principal
+        );
+        return ResponseEntity.ok(ApiResponse.ok("Projects matched", response));
     }
 
     @GetMapping("/mine")

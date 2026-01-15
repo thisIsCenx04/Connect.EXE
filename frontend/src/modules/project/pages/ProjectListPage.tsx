@@ -137,11 +137,11 @@ export function ProjectListPage() {
               <select
                 value={filters.stage}
                 onChange={(event) => setFilters({ ...filters, stage: event.target.value })}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="">Tat ca</option>
+                <option value="" className="bg-[#111827] text-white">Tat ca</option>
                 {stages.map((stage) => (
-                  <option key={stage} value={stage}>
+                  <option key={stage} value={stage} className="bg-[#111827] text-white">
                     {stage}
                   </option>
                 ))}
@@ -152,11 +152,11 @@ export function ProjectListPage() {
               <select
                 value={filters.dealType}
                 onChange={(event) => setFilters({ ...filters, dealType: event.target.value })}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
+                className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="">Tat ca</option>
+                <option value="" className="bg-[#111827] text-white">Tat ca</option>
                 {dealTypes.map((deal) => (
-                  <option key={deal} value={deal}>
+                  <option key={deal} value={deal} className="bg-[#111827] text-white">
                     {deal}
                   </option>
                 ))}

@@ -603,6 +603,27 @@ CREATE INDEX IF NOT EXISTS idx_hof_media_post ON hall_of_fame_post_media(post_id
 -- 8) MATCHING + CHAT
 -- =========================================================
 
+CREATE TABLE IF NOT EXISTS investor_preferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  industries text,
+  stages text,
+  min_funding_usd numeric(14,2),
+  max_funding_usd numeric(14,2),
+  country varchar(2),
+  city varchar(120),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_investor_preferences_user ON investor_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_investor_preferences_country ON investor_preferences(country);
+
+DROP TRIGGER IF EXISTS trg_investor_preferences_updated_at ON investor_preferences;
+CREATE TRIGGER trg_investor_preferences_updated_at
+BEFORE UPDATE ON investor_preferences
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
 CREATE TABLE IF NOT EXISTS match_recommendations (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id     uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,

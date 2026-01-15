@@ -13,6 +13,7 @@ import com.connectexe.project.domain.enums.ProjectVisibility;
 import com.connectexe.project.dto.ProjectMemberAddRequest;
 import com.connectexe.project.dto.ProjectMemberResponse;
 import com.connectexe.project.dto.ProjectLinkResponse;
+import com.connectexe.project.dto.ProjectMatchResponse;
 import com.connectexe.project.dto.ProjectMediaResponse;
 import com.connectexe.project.repository.ProjectMemberRepository;
 import com.connectexe.project.dto.ProjectCreateRequest;
@@ -28,6 +29,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Locale;
@@ -294,6 +296,18 @@ public class ProjectService {
             .toList();
     }
 
+    public List<ProjectMatchResponse> matchProjects(ProjectMatchCriteria criteria, UserPrincipal principal) {
+        Specification<Project> spec = Specification.where(ProjectSpecifications.hasStatus(ProjectStatus.PUBLISHED))
+            .and(ProjectSpecifications.hasModerationStatus(ProjectModerationStatus.APPROVED))
+            .and(ProjectSpecifications.hasVisibility(ProjectVisibility.PUBLIC));
+        List<Project> projects = projectRepository.findAll(spec);
+        return projects.stream()
+            .map(project -> new ProjectMatchResponse(toResponse(project), scoreProject(project, criteria)))
+            .filter(response -> response.score() > 0)
+            .sorted((left, right) -> Integer.compare(right.score(), left.score()))
+            .toList();
+    }
+
     public ProjectMemberResponse addMember(UUID projectId,
                                            ProjectMemberAddRequest request,
                                            UserPrincipal principal) {
@@ -489,6 +503,56 @@ public class ProjectService {
         projectAttachmentRepository.saveAll(entities);
     }
 
+    private int scoreProject(Project project, ProjectMatchCriteria criteria) {
+        int score = 0;
+        if (criteria.industry() != null
+            && project.getIndustry() != null
+            && criteria.industry().equalsIgnoreCase(project.getIndustry())) {
+            score += 40;
+        }
+        if (criteria.stage() != null && criteria.stage() == project.getStage()) {
+            score += 30;
+        }
+        if (criteria.minFundingUsd() != null || criteria.maxFundingUsd() != null) {
+            BigDecimal projectMin = project.getFundingNeedUsd();
+            BigDecimal projectMax = project.getFundingTargetUsd();
+            if (projectMin == null) {
+                projectMin = projectMax;
+            }
+            if (projectMax == null) {
+                projectMax = projectMin;
+            }
+            if (matchesFunding(criteria.minFundingUsd(), criteria.maxFundingUsd(), projectMin, projectMax)) {
+                score += 20;
+            }
+        }
+        if (criteria.country() != null
+            && project.getCountry() != null
+            && criteria.country().equalsIgnoreCase(project.getCountry())) {
+            score += 10;
+        }
+        return score;
+    }
+
+    private boolean matchesFunding(BigDecimal minFundingUsd,
+                                   BigDecimal maxFundingUsd,
+                                   BigDecimal projectMin,
+                                   BigDecimal projectMax) {
+        if (projectMin == null && projectMax == null) {
+            return false;
+        }
+        if (projectMin == null) {
+            projectMin = projectMax;
+        }
+        if (projectMax == null) {
+            projectMax = projectMin;
+        }
+        BigDecimal effectiveMin = minFundingUsd == null ? projectMin : minFundingUsd;
+        BigDecimal effectiveMax = maxFundingUsd == null ? projectMax : maxFundingUsd;
+        return projectMin.compareTo(effectiveMax) <= 0
+            && projectMax.compareTo(effectiveMin) >= 0;
+    }
+
     public record ProjectFilters(
         com.connectexe.project.domain.enums.ProjectStage stage,
         String industry,
@@ -497,5 +561,13 @@ public class ProjectService {
         com.connectexe.project.domain.enums.ProjectStatus status,
         com.connectexe.project.domain.enums.ProjectModerationStatus moderationStatus,
         com.connectexe.project.domain.enums.ProjectVisibility visibility
+    ) {}
+
+    public record ProjectMatchCriteria(
+        com.connectexe.project.domain.enums.ProjectStage stage,
+        String industry,
+        BigDecimal minFundingUsd,
+        BigDecimal maxFundingUsd,
+        String country
     ) {}
 }
