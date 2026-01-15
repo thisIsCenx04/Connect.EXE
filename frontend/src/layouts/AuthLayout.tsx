@@ -8,11 +8,21 @@ export function AuthLayout() {
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
-        background: 'radial-gradient(circle at top, #f7f3ef 0%, #f0e6dd 45%, #ffe8d6 100%)',
+        background:
+          'radial-gradient(circle at 20% 20%, rgba(88,101,242,0.18), transparent 45%), radial-gradient(circle at 80% 0%, rgba(168,85,247,0.18), transparent 50%), #0b0f1f',
       }}
     >
       <Container maxWidth="sm">
-        <Paper elevation={8} sx={{ p: 4, borderRadius: 3 }}>
+        <Paper
+          elevation={8}
+          sx={{
+            p: 4,
+            borderRadius: 3,
+            border: '1px solid rgba(255,255,255,0.08)',
+            backgroundColor: 'rgba(15,23,42,0.9)',
+            color: 'text.primary',
+          }}
+        >
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
             Connect.EXE
           </Typography>

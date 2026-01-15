@@ -1,4 +1,4 @@
-import { Alert, Box, Button, Chip, CircularProgress, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Box, Button, Chip, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -121,36 +121,46 @@ export function ProfilePage() {
           )}
         </Stack>
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2}>
-            <TextField label="Full name" {...register('fullName')} InputLabelProps={{ shrink: true }} />
-            <TextField label="Avatar URL" {...register('avatarUrl')} InputLabelProps={{ shrink: true }} />
-            <TextField label="Headline" {...register('headline')} InputLabelProps={{ shrink: true }} />
-            <TextField label="Bio" {...register('bio')} multiline minRows={3} InputLabelProps={{ shrink: true }} />
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <TextField label="Country code" {...register('country')} inputProps={{ maxLength: 2 }} InputLabelProps={{ shrink: true }} />
-              <TextField label="City" {...register('city')} InputLabelProps={{ shrink: true }} />
-            </Stack>
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && <Alert severity="success">{success}</Alert>}
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <Button type="submit" variant="contained" disabled={saving}>
-                {saving ? <CircularProgress size={18} color="inherit" /> : 'Save changes'}
-              </Button>
-              <Button variant="outlined" disabled={saving} onClick={() => navigate('/')}>
-                Back to home
-              </Button>
-              <Button variant="outlined" disabled={saving} onClick={() => navigate('/change-password')}>
-                Change password
-              </Button>
-              {(profile?.role ?? user?.role) === 'INVESTOR' && (
-                <Button variant="outlined" disabled={saving} onClick={() => navigate('/kyc')}>
-                  Submit KYC
+        <Paper
+          elevation={4}
+          sx={{
+            p: 3,
+            borderRadius: 3,
+            border: '1px solid rgba(255,255,255,0.08)',
+            backgroundColor: 'rgba(15,23,42,0.85)',
+          }}
+        >
+          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2}>
+              <TextField label="Full name" {...register('fullName')} InputLabelProps={{ shrink: true }} />
+              <TextField label="Avatar URL" {...register('avatarUrl')} InputLabelProps={{ shrink: true }} />
+              <TextField label="Headline" {...register('headline')} InputLabelProps={{ shrink: true }} />
+              <TextField label="Bio" {...register('bio')} multiline minRows={3} InputLabelProps={{ shrink: true }} />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <TextField label="Country code" {...register('country')} inputProps={{ maxLength: 2 }} InputLabelProps={{ shrink: true }} />
+                <TextField label="City" {...register('city')} InputLabelProps={{ shrink: true }} />
+              </Stack>
+              {error && <Alert severity="error">{error}</Alert>}
+              {success && <Alert severity="success">{success}</Alert>}
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <Button type="submit" variant="contained" disabled={saving}>
+                  {saving ? <CircularProgress size={18} color="inherit" /> : 'Save changes'}
                 </Button>
-              )}
+                <Button variant="outlined" disabled={saving} onClick={() => navigate('/')}>
+                  Back to home
+                </Button>
+                <Button variant="outlined" disabled={saving} onClick={() => navigate('/change-password')}>
+                  Change password
+                </Button>
+                {(profile?.role ?? user?.role) === 'INVESTOR' && (
+                  <Button variant="outlined" disabled={saving} onClick={() => navigate('/kyc')}>
+                    Submit KYC
+                  </Button>
+                )}
+              </Stack>
             </Stack>
-          </Stack>
-        </Box>
+          </Box>
+        </Paper>
       </Stack>
     </Box>
   )

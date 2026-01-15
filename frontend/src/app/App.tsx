@@ -28,15 +28,20 @@ import { updateUser } from '../modules/auth/store/authSlice'
 
 const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: 'dark',
     primary: {
-      main: '#0f4c5c',
+      main: '#38bdf8',
     },
     secondary: {
-      main: '#e36414',
+      main: '#a855f7',
     },
     background: {
-      default: '#f7f3ef',
+      default: '#0b0f1f',
+      paper: '#0f172a',
+    },
+    text: {
+      primary: '#e2e8f0',
+      secondary: '#94a3b8',
     },
   },
   typography: {
