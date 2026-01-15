@@ -1,4 +1,4 @@
-﻿package com.connectexe.halloffame.domain.entity;
+package com.connectexe.halloffame.domain.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;

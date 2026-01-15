@@ -1,4 +1,4 @@
-﻿package com.connectexe.halloffame.repository;
+package com.connectexe.halloffame.repository;
 
 import com.connectexe.halloffame.domain.entity.HallOfFamePostMedia;
 import org.springframework.data.jpa.repository.JpaRepository;

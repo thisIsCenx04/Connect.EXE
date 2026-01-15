@@ -1,4 +1,4 @@
-﻿package com.connectexe.halloffame.dto;
+package com.connectexe.halloffame.dto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;

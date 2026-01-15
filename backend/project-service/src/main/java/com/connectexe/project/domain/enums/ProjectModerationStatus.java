@@ -1,4 +1,4 @@
-﻿package com.connectexe.project.domain.enums;
+package com.connectexe.project.domain.enums;
 
 public enum ProjectModerationStatus {
     PENDING,

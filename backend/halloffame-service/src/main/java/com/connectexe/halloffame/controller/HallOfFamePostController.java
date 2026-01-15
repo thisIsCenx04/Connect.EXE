@@ -1,4 +1,4 @@
-﻿package com.connectexe.halloffame.controller;
+package com.connectexe.halloffame.controller;
 
 import com.connectexe.common.dto.ApiResponse;
 import com.connectexe.halloffame.domain.enums.HallOfFamePostStatus;

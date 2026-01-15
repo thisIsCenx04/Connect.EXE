@@ -1,4 +1,4 @@
-﻿package com.connectexe.halloffame.repository;
+package com.connectexe.halloffame.repository;
 
 import com.connectexe.halloffame.domain.entity.HallOfFamePost;
 import com.connectexe.halloffame.domain.enums.HallOfFamePostStatus;
