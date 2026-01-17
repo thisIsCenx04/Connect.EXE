@@ -13,7 +13,7 @@ export function MyProjectsPage() {
       const data = await listMyProjects()
       setProjects(data)
     } catch {
-      setError('Khong the tai du an cua ban.')
+      setError('Không thể tải dự án của bạn.')
     } finally {
       setLoading(false)
     }
@@ -35,17 +35,17 @@ export function MyProjectsPage() {
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 md:flex-row md:items-center">
+      <section className="card-neo flex flex-col items-start justify-between gap-4 rounded-3xl p-6 md:flex-row md:items-center">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Dashboard</p>
-          <h1 className="text-2xl font-semibold text-white">Du an cua toi</h1>
-          <p className="mt-2 text-sm text-white/70">Theo doi trang thai duyet va cap nhat noi dung.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Bảng điều khiển</p>
+          <h1 className="display-font text-2xl font-semibold text-white">Dự án của tôi</h1>
+          <p className="mt-2 text-sm text-white/70">Theo dõi trạng thái duyệt và cập nhật nội dung.</p>
         </div>
         <Link
           to="/projects/new"
-          className="rounded-full bg-gradient-to-r from-sky-500 to-purple-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-glow"
+          className="rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
         >
-          Tao du an
+          Tạo dự án
         </Link>
       </section>
 
@@ -57,12 +57,12 @@ export function MyProjectsPage() {
 
       {projects.length === 0 && !loading ? (
         <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
-          Chua co du an nao.
+          Chưa có dự án nào.
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {projects.map((project) => (
-            <div key={project.id} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <div key={project.id} className="card-surface rounded-2xl p-5">
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-white">{project.title}</h3>
@@ -80,22 +80,22 @@ export function MyProjectsPage() {
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   to={`/projects/${project.id}`}
-                  className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+                  className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
                 >
                   Xem
                 </Link>
                 <Link
                   to={`/projects/${project.id}/edit`}
-                  className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+                  className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
                 >
-                  Chinh sua
+                  Chỉnh sửa
                 </Link>
                 <button
                   type="button"
                   onClick={() => handleSubmit(project.id)}
-                  className="rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+                  className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
                 >
-                  Gui duyet
+                  Gửi duyệt
                 </button>
               </div>
             </div>

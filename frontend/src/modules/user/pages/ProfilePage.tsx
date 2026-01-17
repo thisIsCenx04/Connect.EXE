@@ -1,4 +1,3 @@
-import { Alert, Box, Button, Chip, CircularProgress, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -104,64 +103,118 @@ export function ProfilePage() {
   }
 
   return (
-    <Box>
-      <Stack spacing={3} maxWidth={720}>
-        <Stack spacing={1}>
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Typography variant="h4">Your profile</Typography>
-          </Stack>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="body2">Role: {profile?.role ?? user?.role ?? 'USER'}</Typography>
-            {isVerified && <Chip color="secondary" label="Verified" size="small" />}
-          </Stack>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Profile</p>
+          <h1 className="display-font text-2xl font-semibold text-white">Your profile</h1>
+          <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/50">
+            <span>Role: {profile?.role ?? user?.role ?? 'USER'}</span>
+            {isVerified && (
+              <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-emerald-200">
+                Verified
+              </span>
+            )}
+            {(profile?.role ?? user?.role) === 'INVESTOR' && (
+              <span>KYC: {kycStatus ?? '...'}</span>
+            )}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={() => navigate('/change-password')}
+            className="rounded-full btn-ghost px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80"
+          >
+            Change password
+          </button>
           {(profile?.role ?? user?.role) === 'INVESTOR' && (
-            <Typography variant="body2">
-              KYC status: {kycStatus ?? '...'}
-            </Typography>
+            <button
+              type="button"
+              onClick={() => navigate('/kyc')}
+              className="rounded-full btn-ghost px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80"
+            >
+              Submit KYC
+            </button>
           )}
-        </Stack>
+        </div>
+      </div>
 
-        <Paper
-          elevation={4}
-          sx={{
-            p: 3,
-            borderRadius: 3,
-            border: '1px solid rgba(255,255,255,0.08)',
-            backgroundColor: 'rgba(15,23,42,0.85)',
-          }}
-        >
-          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              <TextField label="Full name" {...register('fullName')} InputLabelProps={{ shrink: true }} />
-              <TextField label="Avatar URL" {...register('avatarUrl')} InputLabelProps={{ shrink: true }} />
-              <TextField label="Headline" {...register('headline')} InputLabelProps={{ shrink: true }} />
-              <TextField label="Bio" {...register('bio')} multiline minRows={3} InputLabelProps={{ shrink: true }} />
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <TextField label="Country code" {...register('country')} inputProps={{ maxLength: 2 }} InputLabelProps={{ shrink: true }} />
-                <TextField label="City" {...register('city')} InputLabelProps={{ shrink: true }} />
-              </Stack>
-              {error && <Alert severity="error">{error}</Alert>}
-              {success && <Alert severity="success">{success}</Alert>}
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <Button type="submit" variant="contained" disabled={saving}>
-                  {saving ? <CircularProgress size={18} color="inherit" /> : 'Save changes'}
-                </Button>
-                <Button variant="outlined" disabled={saving} onClick={() => navigate('/')}>
-                  Back to home
-                </Button>
-                <Button variant="outlined" disabled={saving} onClick={() => navigate('/change-password')}>
-                  Change password
-                </Button>
-                {(profile?.role ?? user?.role) === 'INVESTOR' && (
-                  <Button variant="outlined" disabled={saving} onClick={() => navigate('/kyc')}>
-                    Submit KYC
-                  </Button>
-                )}
-              </Stack>
-            </Stack>
-          </Box>
-        </Paper>
-      </Stack>
-    </Box>
+      <form onSubmit={handleSubmit(onSubmit)} className="card-surface max-w-3xl rounded-3xl p-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
+            Full name
+            <input
+              {...register('fullName')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
+            Avatar URL
+            <input
+              {...register('avatarUrl')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
+            Headline
+            <input
+              {...register('headline')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
+            Bio
+            <textarea
+              {...register('bio')}
+              rows={3}
+              className="w-full rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Country code
+            <input
+              {...register('country')}
+              maxLength={2}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            City
+            <input
+              {...register('city')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+        </div>
+        {error && (
+          <div className="mt-4 rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mt-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            {success}
+          </div>
+        )}
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="submit"
+            disabled={saving}
+            className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+          >
+            {saving ? 'Saving...' : 'Save changes'}
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => navigate('/')}
+            className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
+          >
+            Back to home
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }

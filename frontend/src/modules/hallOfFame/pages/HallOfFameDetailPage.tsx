@@ -17,10 +17,10 @@ export function HallOfFameDetailPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Hall of Fame</p>
-          <h1 className="text-3xl font-semibold md:text-4xl">{entry.title}</h1>
+          <h1 className="display-font text-3xl font-semibold md:text-4xl">{entry.title}</h1>
           <p className="text-sm text-white/70">{entry.summary ?? ''}</p>
           <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
             <span>{entry.type}</span>
@@ -31,7 +31,7 @@ export function HallOfFameDetailPage() {
 
       <section className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+          <div className="card-surface overflow-hidden rounded-3xl">
             <div className="aspect-[16/9] w-full bg-white/10">
               {entry.coverUrl ? (
                 <img src={entry.coverUrl} alt={entry.title} className="h-full w-full object-cover" />
@@ -59,7 +59,7 @@ export function HallOfFameDetailPage() {
 
         <aside className="space-y-4">
           {(entry.tags ?? []).length > 0 && (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="card-surface rounded-3xl p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Tags</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {entry.tags?.map((tag) => (
@@ -75,7 +75,7 @@ export function HallOfFameDetailPage() {
           )}
 
           {(entry.links ?? []).length > 0 && (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="card-surface rounded-3xl p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Lien ket</p>
               <div className="mt-4 space-y-2 text-sm text-white/70">
                 {entry.links?.map((link) => (
@@ -96,7 +96,7 @@ export function HallOfFameDetailPage() {
 
           <Link
             to="/hall-of-fame"
-            className="inline-flex rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="inline-flex rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
             Quay lai danh sach
           </Link>

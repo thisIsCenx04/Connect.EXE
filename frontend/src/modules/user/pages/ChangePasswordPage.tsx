@@ -1,4 +1,3 @@
-import { Alert, Box, Button, CircularProgress, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -56,42 +55,69 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <Box>
-      <Stack spacing={3} maxWidth={520}>
-        <Typography variant="h4">Change password</Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2}>
-            <TextField
-              label="Current password"
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Settings</p>
+        <h1 className="display-font text-2xl font-semibold text-white">Change password</h1>
+      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="card-surface max-w-xl rounded-3xl p-6">
+        <div className="grid gap-4">
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Current password
+            <input
               type="password"
               {...register('currentPassword')}
               required
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
             />
-            <TextField
-              label="New password"
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            New password
+            <input
               type="password"
               {...register('newPassword')}
               required
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
             />
-            <TextField
-              label="Confirm new password"
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Confirm new password
+            <input
               type="password"
               {...register('confirmPassword')}
               required
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
             />
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && <Alert severity="success">{success}</Alert>}
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <Button type="submit" variant="contained" disabled={saving}>
-                {saving ? <CircularProgress size={18} color="inherit" /> : 'Update password'}
-              </Button>
-              <Button variant="outlined" disabled={saving} onClick={() => navigate('/profile')}>
-                Cancel
-              </Button>
-            </Stack>
-          </Stack>
-        </Box>
-      </Stack>
-    </Box>
+          </label>
+          {error && (
+            <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+              {success}
+            </div>
+          )}
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+            >
+              {saving ? 'Updating...' : 'Update password'}
+            </button>
+            <button
+              type="button"
+              disabled={saving}
+              onClick={() => navigate('/profile')}
+              className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   )
 }

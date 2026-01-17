@@ -43,36 +43,36 @@ export function ProjectListPage() {
     project.media?.find((item) => item.role === 'COVER')?.fileUrl ?? null
 
   const stats = [
-    { label: 'Du an noi bat', value: `${projects.length || 0}+` },
-    { label: 'Mentor dong hanh', value: '20+' },
-    { label: 'Vong goi von', value: '$12.4M' },
+    { label: 'Dự án nổi bật', value: `${projects.length || 0}+` },
+    { label: 'Mentor đồng hành', value: '20+' },
+    { label: 'Vòng gọi vốn', value: '$12.4M' },
   ]
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top,#1f2b57,transparent_60%)] from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Project Marketplace</p>
-            <h1 className="text-3xl font-semibold md:text-4xl">Du an khoi nghiep tieu bieu 2025</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Sàn Dự Án</p>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">Dự án khởi nghiệp tiêu biểu 2025</h1>
             <p className="max-w-2xl text-sm text-white/70">
-              Kham pha cac du an noi bat, theo doi traction va ket noi voi mentor hoac nha dau tu phu hop.
+              Khám phá các dự án nổi bật, theo dõi traction và kết nối với mentor hoặc nhà đầu tư phù hợp.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             {user && (
               <Link
                 to="/projects/mine"
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/90 transition hover:border-white/60"
+                className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/90 transition hover:border-white/60"
               >
-                Du an cua toi
+                Dự án của tôi
               </Link>
             )}
             <Link
               to="/projects/new"
-              className="rounded-full bg-gradient-to-r from-sky-500 to-purple-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-glow"
+              className="rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
             >
-              Tao du an
+              Tạo dự án
             </Link>
           </div>
         </div>
@@ -96,7 +96,7 @@ export function ProjectListPage() {
               <Link
                 key={project.id}
                 to={`/projects/${project.id}`}
-                className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/30"
+                className="group card-surface overflow-hidden rounded-2xl transition hover:border-white/30"
               >
                 <div className="aspect-[16/9] w-full overflow-hidden bg-white/10">
                   {resolveCover(project) ? (
@@ -129,17 +129,17 @@ export function ProjectListPage() {
             ))}
           </div>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Filters</p>
+        <div className="card-surface rounded-2xl p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Bộ lọc</p>
           <div className="mt-4 space-y-3 text-sm text-white/80">
             <label className="block">
-              <span className="text-xs text-white/50">Giai doan</span>
+              <span className="text-xs text-white/50">Giai đoạn</span>
               <select
                 value={filters.stage}
                 onChange={(event) => setFilters({ ...filters, stage: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="" className="bg-[#111827] text-white">Tat ca</option>
+                <option value="" className="bg-[#111827] text-white">Tất cả</option>
                 {stages.map((stage) => (
                   <option key={stage} value={stage} className="bg-[#111827] text-white">
                     {stage}
@@ -148,13 +148,13 @@ export function ProjectListPage() {
               </select>
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Nhu cau</span>
+              <span className="text-xs text-white/50">Nhu cầu</span>
               <select
                 value={filters.dealType}
                 onChange={(event) => setFilters({ ...filters, dealType: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="" className="bg-[#111827] text-white">Tat ca</option>
+                <option value="" className="bg-[#111827] text-white">Tất cả</option>
                 {dealTypes.map((deal) => (
                   <option key={deal} value={deal} className="bg-[#111827] text-white">
                     {deal}
@@ -163,7 +163,7 @@ export function ProjectListPage() {
               </select>
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Linh vuc</span>
+              <span className="text-xs text-white/50">Lĩnh vực</span>
               <input
                 value={filters.industry}
                 onChange={(event) => setFilters({ ...filters, industry: event.target.value })}
@@ -172,7 +172,7 @@ export function ProjectListPage() {
               />
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Quoc gia</span>
+              <span className="text-xs text-white/50">Quốc gia</span>
               <input
                 value={filters.country}
                 onChange={(event) => setFilters({ ...filters, country: event.target.value })}
@@ -185,9 +185,9 @@ export function ProjectListPage() {
               type="button"
               onClick={loadProjects}
               disabled={loading}
-              className="w-full rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:bg-white/20"
+              className="w-full rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:bg-white/20"
             >
-              {loading ? 'Dang tai...' : 'Ap dung bo loc'}
+              {loading ? 'Đang tải...' : 'Áp dụng bộ lọc'}
             </button>
           </div>
         </div>
@@ -195,9 +195,9 @@ export function ProjectListPage() {
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Danh sach du an</h2>
+          <h2 className="display-font text-xl font-semibold text-white">Danh sách dự án</h2>
           <span className="text-xs uppercase tracking-[0.2em] text-white/50">
-            {projects.length} du an
+            {projects.length} dự án
           </span>
         </div>
         {projects.length === 0 && !loading ? (
@@ -210,7 +210,7 @@ export function ProjectListPage() {
               <Link
                 key={project.id}
                 to={`/projects/${project.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/30"
+                className="group card-surface flex h-full flex-col overflow-hidden rounded-2xl transition hover:border-white/30"
               >
                 <div className="aspect-[4/3] w-full overflow-hidden bg-white/10">
                   {resolveCover(project) ? (

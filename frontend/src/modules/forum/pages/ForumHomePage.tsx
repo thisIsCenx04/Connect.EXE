@@ -26,11 +26,11 @@ export function ForumHomePage() {
 
   return (
     <div className="space-y-10">
-      <section className="rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top,#2b1f4a,transparent_60%)] from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Forum</p>
-            <h1 className="text-3xl font-semibold md:text-4xl">Dien dan ket noi cong dong</h1>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">Dien dan ket noi cong dong</h1>
             <p className="max-w-2xl text-sm text-white/70">
               Kham pha cac chu de noi bat, dat cau hoi va chia se ki nang de ket noi voi cong dong startup.
             </p>
@@ -41,11 +41,11 @@ export function ForumHomePage() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-4xl rounded-[28px] border border-white/10 bg-gradient-to-br from-[#121b35] via-[#14142c] to-[#0b0f1f] p-6 shadow-xl md:p-10">
+      <section className="mx-auto w-full max-w-4xl rounded-[28px] card-surface p-6 shadow-xl md:p-10">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-white/50">Categories</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Chu de noi bat</h2>
+            <h2 className="display-font mt-2 text-2xl font-semibold text-white">Chu de noi bat</h2>
           </div>
           <span className="text-xs uppercase tracking-[0.2em] text-white/50">
             {categories.length} muc

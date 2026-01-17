@@ -144,11 +144,11 @@ export function ProjectFormPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Project Workspace</p>
-            <h1 className="text-2xl font-semibold text-white md:text-3xl">
+            <h1 className="display-font text-2xl font-semibold text-white md:text-3xl">
               {id ? 'Chinh sua du an' : 'Tao du an moi'}
             </h1>
             <p className="mt-2 text-sm text-white/70">
@@ -158,7 +158,7 @@ export function ProjectFormPage() {
           <button
             type="button"
             onClick={() => navigate('/projects')}
-            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:border-white/60"
+            className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/60"
           >
             Quay lai danh sach
           </button>
@@ -166,7 +166,7 @@ export function ProjectFormPage() {
       </section>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div className="card-surface rounded-3xl p-6">
           <h2 className="text-lg font-semibold text-white">Thong tin co ban</h2>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <label className="space-y-2 md:col-span-2">
@@ -258,7 +258,7 @@ export function ProjectFormPage() {
         </div>
 
         {showFunding && (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+          <div className="card-surface rounded-3xl p-6">
             <h2 className="text-lg font-semibold text-white">Goi von</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <label className="space-y-2">
@@ -300,7 +300,7 @@ export function ProjectFormPage() {
           </div>
         )}
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div className="card-surface rounded-3xl p-6">
           <h2 className="text-lg font-semibold text-white">Traction & Pitch</h2>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
             <label className="space-y-2 md:col-span-2">
@@ -329,13 +329,13 @@ export function ProjectFormPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div className="card-surface rounded-3xl p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">Lien ket</h2>
             <button
               type="button"
               onClick={() => setLinks((prev) => [...prev, { type: 'WEBSITE', url: '' }])}
-              className="rounded-full border border-white/20 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
+              className="rounded-full btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
             >
               Them lien ket
             </button>
@@ -383,13 +383,13 @@ export function ProjectFormPage() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+        <div className="card-surface rounded-3xl p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">Media</h2>
             <button
               type="button"
               onClick={() => setMedia((prev) => [...prev, { fileUrl: '', role: 'GALLERY' }])}
-              className="rounded-full border border-white/20 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
+              className="rounded-full btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
             >
               Them media
             </button>
@@ -441,7 +441,7 @@ export function ProjectFormPage() {
           <button
             type="submit"
             disabled={loading}
-            className="rounded-full bg-gradient-to-r from-sky-500 to-purple-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-glow"
+            className="rounded-full btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
           >
             {loading ? 'Dang luu...' : 'Luu du an'}
           </button>
@@ -449,7 +449,7 @@ export function ProjectFormPage() {
             type="button"
             onClick={() => navigate('/projects')}
             disabled={loading}
-            className="rounded-full border border-white/20 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="rounded-full btn-ghost px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
             Huy
           </button>

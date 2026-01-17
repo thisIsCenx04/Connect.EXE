@@ -1,13 +1,13 @@
 ﻿export const heroContent = {
-  title: 'Discover standout startup teams and the stories behind their projects.',
+  title: 'Khám phá các đội startup nổi bật và câu chuyện đằng sau dự án của họ.',
   subtitle:
-    'Explore curated projects, pitch decks, and growth signals in a single marketplace. Follow founders, track traction, and prepare for fundraising with clarity.',
-  primaryLabel: 'Explore projects',
-  secondaryLabel: 'Learn more',
+    'Khám phá các dự án được tuyển chọn, pitch deck và tín hiệu tăng trưởng trong một sàn giao dịch. Theo dõi founders, đánh giá tiến độ và chuẩn bị cho việc gọi vốn một cách rõ ràng.',
+  primaryLabel: 'Khám phá dự án',
+  secondaryLabel: 'Tìm hiểu thêm',
   stats: [
-    { label: 'Active Projects', value: '102' },
-    { label: 'Verified Mentors', value: '48' },
-    { label: 'Funding Rounds', value: '$12.4M' },
+    { label: 'Dự án hoạt động', value: '102' },
+    { label: 'Mentor xác minh', value: '48' },
+    { label: 'Vòng gọi vốn', value: '$12.4M' },
   ],
 }
 

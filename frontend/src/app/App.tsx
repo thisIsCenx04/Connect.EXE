@@ -25,6 +25,8 @@ import { ChatPage } from '../modules/chat/pages/ChatPage'
 import { ForumHomePage } from '../modules/forum/pages/ForumHomePage'
 import { ForumCategoryPage } from '../modules/forum/pages/ForumCategoryPage'
 import { ForumPostDetailPage } from '../modules/forum/pages/ForumPostDetailPage'
+import { ForumCreatePostPage } from '../modules/forum/pages/ForumCreatePostPage'
+import { AboutPage } from '../modules/about/AboutPage'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
@@ -34,14 +36,14 @@ const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#38bdf8',
+      main: '#8b5cf6',
     },
     secondary: {
-      main: '#a855f7',
+      main: '#38bdf8',
     },
     background: {
-      default: '#0b0f1f',
-      paper: '#0f172a',
+      default: '#05070f',
+      paper: '#0f1326',
     },
     text: {
       primary: '#e2e8f0',
@@ -49,7 +51,11 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: '"Source Sans 3", "Segoe UI", sans-serif',
+    fontFamily: '"Manrope", "Segoe UI", sans-serif',
+    h1: { fontFamily: '"Sora", "Manrope", sans-serif' },
+    h2: { fontFamily: '"Sora", "Manrope", sans-serif' },
+    h3: { fontFamily: '"Sora", "Manrope", sans-serif' },
+    h4: { fontFamily: '"Sora", "Manrope", sans-serif' },
   },
 })
 
@@ -103,6 +109,15 @@ export function App() {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/categories/:slug" element={<ForumCategoryPage />} />
             <Route path="/forum/posts/:id" element={<ForumPostDetailPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route
+              path="/forum/create"
+              element={
+                <RequireAuth>
+                  <ForumCreatePostPage />
+                </RequireAuth>
+              }
+            />
             <Route
               path="/hall-of-fame/apply"
               element={

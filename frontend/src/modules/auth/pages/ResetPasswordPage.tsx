@@ -1,4 +1,3 @@
-import { Alert, Box, Button, CircularProgress, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
@@ -38,20 +37,50 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing={2}>
-        <Typography variant="h4">Set a new password</Typography>
-        <TextField label="New password" type="password" {...register('newPassword')} required />
-        <TextField label="Confirm password" type="password" {...register('confirmPassword')} required />
-        {error && <Alert severity="error">{error}</Alert>}
-        {success && <Alert severity="success">{success}</Alert>}
-        <Button type="submit" variant="contained" size="large" disabled={isSubmitting}>
-          {isSubmitting ? <CircularProgress size={18} color="inherit" /> : 'Reset password'}
-        </Button>
-        <Typography variant="body2">
-          Back to <Link to="/login">Sign in</Link>
-        </Typography>
-      </Stack>
-    </Box>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <label className="block space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+        New password
+        <input
+          type="password"
+          {...register('newPassword')}
+          required
+          className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
+          placeholder="Create a strong password"
+        />
+      </label>
+      <label className="block space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+        Confirm password
+        <input
+          type="password"
+          {...register('confirmPassword')}
+          required
+          className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
+          placeholder="Re-enter password"
+        />
+      </label>
+      {error && (
+        <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+          {success}
+        </div>
+      )}
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+      >
+        {isSubmitting ? 'Resetting...' : 'Reset password'}
+      </button>
+      <div className="text-center text-xs uppercase tracking-[0.2em] text-white/40">
+        Back to{' '}
+        <Link to="/login" className="text-white/80 hover:text-white">
+          Sign in
+        </Link>
+      </div>
+    </form>
   )
 }
