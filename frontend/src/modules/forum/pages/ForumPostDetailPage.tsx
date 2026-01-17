@@ -140,7 +140,7 @@ export function ForumPostDetailPage() {
   if (!post && loading) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
-        Dang tai bai viet...
+        Đang tải bài viết...
       </div>
     )
   }
@@ -148,31 +148,31 @@ export function ForumPostDetailPage() {
   if (!post) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-sm text-white/60">
-        Bai viet khong ton tai.
+        Bài viết không tồn tại.
       </div>
     )
   }
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111b33] via-[#151537] to-[#0b0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
               {post.categoryName ?? 'Forum'}
             </p>
-            <h1 className="text-3xl font-semibold md:text-4xl">{post.title}</h1>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">{post.title}</h1>
             <div className="flex flex-wrap gap-4 text-xs uppercase tracking-[0.2em] text-white/50">
               <span>{authorLabel}</span>
               <span>{formatDateTime(post.createdAt)}</span>
-              <span>{post.commentCount} comments</span>
+              <span>{post.commentCount} bình luận</span>
             </div>
           </div>
           <Link
             to={post.categorySlug ? `/forum/categories/${post.categorySlug}` : '/forum'}
-            className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80"
+            className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
-            Quay lai
+            Quay lại
           </Link>
         </div>
         <div className="mt-6 space-y-4 text-sm text-white/70">
@@ -202,14 +202,14 @@ export function ForumPostDetailPage() {
 
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Binh luan</h2>
+          <h2 className="display-font text-xl font-semibold text-white">Bình luận</h2>
           <span className="text-xs uppercase tracking-[0.2em] text-white/50">
-            {comments.length} binh luan
+            {comments.length} bình luận
           </span>
         </div>
         {comments.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/60">
-            Chua co binh luan nao. Hay bat dau cuoc tro chuyen.
+            Chưa có bình luận nào. Hãy bắt đầu cuộc trò chuyện.
           </div>
         ) : (
           <div className="space-y-3">
@@ -228,29 +228,29 @@ export function ForumPostDetailPage() {
           </div>
         )}
         {user ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.2em] text-white/50">Viet binh luan moi</p>
+          <div className="card-surface rounded-2xl p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-white/50">Viết bình luận mới</p>
             <textarea
               value={commentInput}
               onChange={(event) => setCommentInput(event.target.value)}
               rows={3}
               className="mt-3 w-full rounded-2xl border border-white/10 bg-black/40 p-3 text-sm text-white"
-              placeholder="Chia se y kien cua ban..."
+              placeholder="Chia sẻ ý kiến của bạn..."
             />
             <div className="mt-3 flex justify-end">
               <button
                 type="button"
                 onClick={handleCommentSubmit}
                 disabled={commentLoading}
-                className="rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white"
+                className="rounded-full btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white"
               >
-                {commentLoading ? 'Dang gui...' : 'Gui binh luan'}
+                {commentLoading ? 'Đang gửi...' : 'Gửi bình luận'}
               </button>
             </div>
           </div>
         ) : (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/60">
-            Dang nhap de binh luan bai viet.
+            Đăng nhập để bình luận bài viết.
           </div>
         )}
       </section>

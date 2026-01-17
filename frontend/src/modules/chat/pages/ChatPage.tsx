@@ -175,7 +175,7 @@ export function ChatPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-      <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+      <section className="card-surface rounded-2xl p-5">
         <div className="mb-4 text-xs uppercase tracking-[0.3em] text-white/50">Matching</div>
         {isFounder && (
           <>
@@ -198,7 +198,7 @@ export function ChatPage() {
                   <div className="text-xs text-white/50">Score {match.score}</div>
                   <button
                     type="button"
-                    className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+                    className="mt-3 w-full rounded-full btn-primary px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
                     onClick={() => handleStartChat(match.userId, match.fullName || 'Investor')}
                   >
                     Chat
@@ -263,7 +263,7 @@ export function ChatPage() {
               <button
                 type="button"
                 onClick={refreshProjectMatches}
-                className="w-full rounded-full bg-gradient-to-r from-emerald-500 to-lime-500 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-black"
+                className="w-full rounded-full btn-primary px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white"
               >
                 Refresh matches
               </button>
@@ -275,7 +275,7 @@ export function ChatPage() {
                   <div className="text-xs text-white/50">Score {match.score}</div>
                   <button
                     type="button"
-                    className="mt-3 w-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide"
+                    className="mt-3 w-full rounded-full btn-primary px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
                     onClick={() => handleStartChat(match.project.ownerId, match.project.title)}
                   >
                     Chat
@@ -289,7 +289,7 @@ export function ChatPage() {
           </>
         )}
       </section>
-      <section className="flex min-h-[480px] flex-col rounded-2xl border border-white/10 bg-white/5">
+      <section className="card-surface flex min-h-[480px] flex-col rounded-2xl">
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
           <div>
             <div className="text-xs uppercase tracking-[0.3em] text-white/50">Chat</div>
@@ -343,7 +343,7 @@ export function ChatPage() {
             <button
               type="button"
               onClick={handleSendMessage}
-              className="rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white"
+              className="rounded-full btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white"
             >
               Send
             </button>

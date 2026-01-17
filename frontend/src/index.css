@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -8,16 +8,26 @@
   font-family: 'Manrope', 'Segoe UI', sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color-scheme: light;
-  color: #0f172a;
-  background-color: #f8fafc;
+  color-scheme: dark;
+  color: #e2e8f0;
+  background-color: #05070f;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  --ink: #05070f;
+  --surface: rgba(16, 19, 35, 0.92);
+  --surface-strong: rgba(9, 12, 24, 0.96);
+  --card-border: rgba(148, 163, 184, 0.18);
+  --accent: #8b5cf6;
+  --accent-2: #38bdf8;
+  --accent-3: #f97316;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  background: radial-gradient(circle at 15% 20%, rgba(91, 33, 182, 0.35), transparent 42%),
+    radial-gradient(circle at 80% 10%, rgba(14, 165, 233, 0.3), transparent 48%),
+    linear-gradient(180deg, #05070f 0%, #0b0f1f 50%, #05070f 100%);
 }
 
 select {
@@ -32,10 +42,10 @@ select option {
 }
 
 .glass-panel {
-  backdrop-filter: blur(16px);
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(18px);
+  background: rgba(12, 16, 30, 0.62);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  box-shadow: 0 18px 40px rgba(4, 6, 16, 0.55);
 }
 
 .neon-circle {
@@ -73,6 +83,200 @@ select option {
 .dot-nav span.active {
   background: #38bdf8;
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.9);
+}
+
+.display-font {
+  font-family: 'Sora', 'Manrope', sans-serif;
+}
+
+.page-shell {
+  position: relative;
+  min-height: 100vh;
+  background: radial-gradient(circle at 12% 18%, rgba(79, 70, 229, 0.28), transparent 40%),
+    radial-gradient(circle at 78% 8%, rgba(20, 184, 166, 0.22), transparent 45%),
+    radial-gradient(circle at 25% 92%, rgba(79, 70, 229, 0.18), transparent 25%),
+    radial-gradient(circle at 75% 88%, rgba(56, 189, 248, 0.12), transparent 22%),
+    linear-gradient(160deg, rgba(8, 10, 20, 0.98) 0%, rgba(10, 13, 28, 0.96) 60%, rgba(5, 7, 15, 1) 100%);
+}
+
+.app-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle at 35% 20%, rgba(255, 255, 255, 0.06), transparent 45%),
+    radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.03), transparent 55%),
+    radial-gradient(circle at 20% 95%, rgba(139, 92, 246, 0.08), transparent 20%),
+    radial-gradient(circle at 80% 92%, rgba(56, 189, 248, 0.06), transparent 18%);
+  opacity: 0.65;
+}
+
+.glass-bar {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(to bottom, rgba(10, 12, 28, 0.98) 0%, rgba(10, 12, 28, 0.85) 40%, rgba(10, 12, 28, 0.4) 70%, transparent 100%);
+  backdrop-filter: blur(4px);
+  padding-top: 20px;
+  padding-bottom: 25px;
+}
+
+.card-surface {
+  background: linear-gradient(135deg, rgba(15, 18, 36, 0.9), rgba(8, 10, 22, 0.95));
+  border: 1px solid var(--card-border);
+  box-shadow: 0 24px 50px rgba(4, 6, 16, 0.55);
+}
+
+.card-neo {
+  background: linear-gradient(145deg, rgba(24, 20, 44, 0.9), rgba(10, 11, 26, 0.95));
+  border: 1px solid rgba(108, 92, 231, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 20px 40px rgba(4, 6, 16, 0.55);
+}
+
+.btn-primary {
+  background: linear-gradient(120deg, #7c3aed 0%, #38bdf8 100%);
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
+}
+
+.btn-ghost {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.pill-tab {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.hero-grid {
+  background-image: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.18), transparent 42%),
+    radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.2), transparent 45%),
+    linear-gradient(120deg, rgba(9, 11, 24, 0.9), rgba(18, 14, 36, 0.95));
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fade-up 0.7s ease forwards;
+}
+
+/* Search highlight animation */
+.search-highlight {
+  animation: search-flash 1.5s ease-out forwards;
+}
+
+@keyframes search-flash {
+  0% {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+/* Keyword highlight - white background, black text with flash effect */
+.keyword-highlight {
+  background-color: white !important;
+  color: black !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline;
+  animation: keyword-flash 1.2s ease-out;
+}
+
+.keyword-highlight-fade {
+  animation: keyword-fade-out 1s ease-out forwards !important;
+}
+
+@keyframes keyword-flash {
+  0% {
+    background-color: yellow;
+    color: black;
+    box-shadow: 0 0 25px rgba(255, 255, 0, 1);
+    transform: scale(1.1);
+  }
+  20% {
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    transform: scale(1);
+  }
+  40% {
+    background-color: yellow;
+    color: black;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+    transform: scale(1.05);
+  }
+  60% {
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    transform: scale(1);
+  }
+  80% {
+    background-color: rgba(255, 255, 200, 1);
+    color: black;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    transform: scale(1);
+  }
+  100% {
+    background-color: white;
+    color: black;
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes keyword-fade-out {
+  0% {
+    background-color: white;
+    color: black;
+  }
+  100% {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+
+.fade-up.delay-1 {
+  animation-delay: 0.1s;
+}
+
+.fade-up.delay-2 {
+  animation-delay: 0.2s;
+}
+
+.fade-up.delay-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes fade-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.logo-img {
+  display: inline-block;
+  height: 40px;
+  width: auto;
+}
+
+.logo-img[data-size='sm'] {
+  height: 32px;
+}
+
+.logo-img[data-size='md'] {
+  height: 44px;
+}
+
+.logo-img[data-size='lg'] {
+  height: 56px;
 }
 
 .flip-card {

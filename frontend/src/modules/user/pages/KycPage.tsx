@@ -1,4 +1,3 @@
-import { Alert, Box, Button, CircularProgress, MenuItem, Stack, TextField, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
@@ -75,53 +74,122 @@ export function KycPage() {
 
   if (user?.role !== 'INVESTOR') {
     return (
-      <Box>
-        <Typography variant="h5">KYC is only required for investors.</Typography>
-        <Button sx={{ mt: 2 }} variant="contained" onClick={() => navigate('/profile')}>
+      <div className="space-y-4">
+        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 text-white/70">
+          KYC is only required for investors.
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/profile')}
+          className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+        >
           Back to profile
-        </Button>
-      </Box>
+        </button>
+      </div>
     )
   }
 
   return (
-    <Box>
-      <Stack spacing={3} maxWidth={720}>
-        <Stack spacing={1}>
-          <Typography variant="h4">Investor verification</Typography>
-          <Typography variant="body2">Current status: {status ?? '...'}</Typography>
-        </Stack>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Verification</p>
+        <h1 className="display-font text-2xl font-semibold text-white">Investor verification</h1>
+        <p className="text-sm text-white/70">Current status: {status ?? '...'}</p>
+      </div>
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2}>
-            <TextField label="Legal name" {...register('legalName')} />
-            <TextField label="Organization" {...register('organization')} />
-            <TextField label="Website" {...register('website')} />
-            <TextField label="LinkedIn URL" {...register('linkedinUrl')} />
-            <TextField select label="Document type" {...register('docType')}>
-              <MenuItem value="ID_CARD">ID Card</MenuItem>
-              <MenuItem value="PASSPORT">Passport</MenuItem>
-              <MenuItem value="DRIVER_LICENSE">Driver license</MenuItem>
-              <MenuItem value="BUSINESS_LICENSE">Business license</MenuItem>
-            </TextField>
-            <TextField label="Document number" {...register('docNumber')} />
-            <TextField label="Document file URL" {...register('docFileUrl')} />
-            {error && <Alert severity="error">{error}</Alert>}
-            {success && <Alert severity="success">{success}</Alert>}
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <Button type="submit" variant="contained" disabled={submitting}>
-                {submitting ? <CircularProgress size={18} color="inherit" /> : 'Submit KYC'}
-              </Button>
-              <Button variant="outlined" disabled={submitting} onClick={() => navigate('/profile')}>
-                Back to profile
-              </Button>
-              <Button variant="text" disabled={submitting} onClick={() => navigate('/')}>
-                Back to home
-              </Button>
-            </Stack>
-          </Stack>
-        </Box>
-      </Stack>
-    </Box>
+      <form onSubmit={handleSubmit(onSubmit)} className="card-surface max-w-2xl rounded-3xl p-6">
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Legal name
+            <input
+              {...register('legalName')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Organization
+            <input
+              {...register('organization')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Website
+            <input
+              {...register('website')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            LinkedIn URL
+            <input
+              {...register('linkedinUrl')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Document type
+            <select
+              {...register('docType')}
+              className="w-full rounded-full border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white"
+            >
+              <option value="ID_CARD">ID Card</option>
+              <option value="PASSPORT">Passport</option>
+              <option value="DRIVER_LICENSE">Driver license</option>
+              <option value="BUSINESS_LICENSE">Business license</option>
+            </select>
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            Document number
+            <input
+              {...register('docNumber')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+          <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
+            Document file URL
+            <input
+              {...register('docFileUrl')}
+              className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
+            />
+          </label>
+        </div>
+        {error && (
+          <div className="mt-4 rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mt-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            {success}
+          </div>
+        )}
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="submit"
+            disabled={submitting}
+            className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
+          >
+            {submitting ? 'Submitting...' : 'Submit KYC'}
+          </button>
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => navigate('/profile')}
+            className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
+          >
+            Back to profile
+          </button>
+          <button
+            type="button"
+            disabled={submitting}
+            onClick={() => navigate('/')}
+            className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
+          >
+            Back to home
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }

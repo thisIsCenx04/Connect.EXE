@@ -26,11 +26,11 @@ export function ProjectDetailPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Project Story</p>
-            <h1 className="text-3xl font-semibold md:text-4xl">{project.title}</h1>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">{project.title}</h1>
             <p className="text-sm text-white/70">{project.summary ?? project.description}</p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -49,7 +49,7 @@ export function ProjectDetailPage() {
 
       <section className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5">
+          <div className="card-surface overflow-hidden rounded-3xl">
             <div className="aspect-[16/9] w-full bg-white/10">
               {cover ? (
                 <img src={cover} alt={project.title} className="h-full w-full object-cover" />
@@ -88,7 +88,7 @@ export function ProjectDetailPage() {
         </div>
 
         <aside className="space-y-4">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <div className="card-surface rounded-3xl p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Thong tin goi von</p>
             <div className="mt-4 space-y-3 text-sm text-white/80">
               <div className="flex items-center justify-between">
@@ -110,14 +110,14 @@ export function ProjectDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+          <div className="card-surface rounded-3xl p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Traction</p>
             <p className="mt-3 text-sm text-white/70">{project.tractionSummary ?? 'Chua cap nhat'}</p>
             <p className="mt-3 text-sm text-white/70">{project.tractionMetrics ?? ''}</p>
           </div>
 
           {(project.links ?? []).length > 0 && (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+            <div className="card-surface rounded-3xl p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Lien ket</p>
               <div className="mt-4 space-y-2 text-sm text-white/70">
                 {project.links?.map((link) => (
@@ -139,14 +139,14 @@ export function ProjectDetailPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               to="/projects"
-              className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:border-white/60"
+              className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:border-white/60"
             >
               Quay lai danh sach
             </Link>
             {isOwner && (
               <Link
                 to={`/projects/${project.id}/edit`}
-                className="rounded-full bg-gradient-to-r from-sky-500 to-purple-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-glow"
+                className="rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
               >
                 Chinh sua
               </Link>

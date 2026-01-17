@@ -144,3 +144,8 @@ export async function hideProject(id: string): Promise<Project> {
   const response = await projectApi.put(`/api/projects/${id}/hide`)
   return response.data.data
 }
+
+export async function listIndustries(): Promise<string[]> {
+  const response = await projectApi.get('/api/projects/industries')
+  return response.data.data
+}

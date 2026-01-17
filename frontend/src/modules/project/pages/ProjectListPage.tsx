@@ -1,14 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppSelector } from '../../../app/hooks'
-import { listProjects, type Project } from '../../../services/project'
-
-const stages = ['IDEA', 'MVP', 'REVENUE', 'EXIT_READY']
-const dealTypes = ['COFOUNDER', 'FUNDING', 'SELL_PROJECT', 'HIRE_TEAM']
+import { listProjects, listIndustries, type Project } from '../../../services/project'
+import { PROJECT_STAGES, DEAL_TYPES, PROJECT_SECTIONS } from '@/constants/project'
 
 export function ProjectListPage() {
   const user = useAppSelector((state) => state.auth.user)
   const [projects, setProjects] = useState<Project[]>([])
+  const [industries, setIndustries] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({
     stage: '',
@@ -34,6 +33,7 @@ export function ProjectListPage() {
 
   useEffect(() => {
     loadProjects()
+    listIndustries().then(setIndustries).catch(() => {})
   }, [])
 
   const featured = useMemo(() => projects.slice(0, 2), [projects])
@@ -42,105 +42,47 @@ export function ProjectListPage() {
   const resolveCover = (project: Project) =>
     project.media?.find((item) => item.role === 'COVER')?.fileUrl ?? null
 
-  const stats = [
-    { label: 'Du an noi bat', value: `${projects.length || 0}+` },
-    { label: 'Mentor dong hanh', value: '20+' },
-    { label: 'Vong goi von', value: '$12.4M' },
-  ]
-
   return (
     <div className="space-y-10">
-      <section className="rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top,#1f2b57,transparent_60%)] from-[#10162b] via-[#171236] to-[#0c0f1f] p-6 shadow-xl md:p-10">
+      <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Project Marketplace</p>
-            <h1 className="text-3xl font-semibold md:text-4xl">Du an khoi nghiep tieu bieu 2025</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">{PROJECT_SECTIONS.hero.label}</p>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">{PROJECT_SECTIONS.hero.title}</h1>
             <p className="max-w-2xl text-sm text-white/70">
-              Kham pha cac du an noi bat, theo doi traction va ket noi voi mentor hoac nha dau tu phu hop.
+              {PROJECT_SECTIONS.hero.description}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             {user && (
               <Link
                 to="/projects/mine"
-                className="rounded-full border border-white/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/90 transition hover:border-white/60"
+                className="rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/90 transition hover:border-white/60"
               >
-                Du an cua toi
+                {PROJECT_SECTIONS.hero.myProjectsButton}
               </Link>
             )}
             <Link
               to="/projects/new"
-              className="rounded-full bg-gradient-to-r from-sky-500 to-purple-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-glow"
+              className="rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
             >
-              Tao du an
+              {PROJECT_SECTIONS.hero.createButton}
             </Link>
           </div>
         </div>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/70"
-            >
-              <p className="text-xs uppercase tracking-[0.2em] text-white/50">{stat.label}</p>
-              <p className="mt-2 text-2xl font-semibold text-white">{stat.value}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:grid-cols-4">
-        <div className="md:col-span-3">
-          <div className="grid gap-4 md:grid-cols-2">
-            {featured.map((project) => (
-              <Link
-                key={project.id}
-                to={`/projects/${project.id}`}
-                className="group overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/30"
-              >
-                <div className="aspect-[16/9] w-full overflow-hidden bg-white/10">
-                  {resolveCover(project) ? (
-                    <img
-                      src={resolveCover(project) as string}
-                      alt={project.title}
-                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.2em] text-white/40">
-                      Cover
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-3 p-5">
-                  <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-white/50">
-                    <span>{project.industry}</span>
-                    <span>{project.stage}</span>
-                  </div>
-                  <h3 className="text-lg font-semibold text-white">{project.title}</h3>
-                  <p className="text-sm text-white/70">
-                    {(project.summary ?? project.description ?? '').slice(0, 120)}
-                  </p>
-                  <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
-                    <span>{project.dealType}</span>
-                    <span>{project.status}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Filters</p>
-          <div className="mt-4 space-y-3 text-sm text-white/80">
+        {/* Bộ lọc - thay thế 3 thẻ stats */}
+        <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60 mb-4">{PROJECT_SECTIONS.filter.label}</p>
+          <div className="grid gap-4 md:grid-cols-5 items-end">
             <label className="block">
-              <span className="text-xs text-white/50">Giai doan</span>
+              <span className="text-xs text-white/50">{PROJECT_SECTIONS.filter.stage.label}</span>
               <select
                 value={filters.stage}
                 onChange={(event) => setFilters({ ...filters, stage: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="" className="bg-[#111827] text-white">Tat ca</option>
-                {stages.map((stage) => (
+                <option value="" className="bg-[#111827] text-white">{PROJECT_SECTIONS.filter.stage.placeholder}</option>
+                {PROJECT_STAGES.map((stage) => (
                   <option key={stage} value={stage} className="bg-[#111827] text-white">
                     {stage}
                   </option>
@@ -148,14 +90,14 @@ export function ProjectListPage() {
               </select>
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Nhu cau</span>
+              <span className="text-xs text-white/50">{PROJECT_SECTIONS.filter.dealType.label}</span>
               <select
                 value={filters.dealType}
                 onChange={(event) => setFilters({ ...filters, dealType: event.target.value })}
                 className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
               >
-                <option value="" className="bg-[#111827] text-white">Tat ca</option>
-                {dealTypes.map((deal) => (
+                <option value="" className="bg-[#111827] text-white">{PROJECT_SECTIONS.filter.dealType.placeholder}</option>
+                {DEAL_TYPES.map((deal) => (
                   <option key={deal} value={deal} className="bg-[#111827] text-white">
                     {deal}
                   </option>
@@ -163,16 +105,22 @@ export function ProjectListPage() {
               </select>
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Linh vuc</span>
-              <input
+              <span className="text-xs text-white/50">Lĩnh vực</span>
+              <select
                 value={filters.industry}
                 onChange={(event) => setFilters({ ...filters, industry: event.target.value })}
-                className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white"
-                placeholder="Fintech, AI, Edu..."
-              />
+                className="mt-1 w-full rounded-xl border border-white/10 bg-[#111827] px-3 py-2 text-sm text-white [color-scheme:dark]"
+              >
+                <option value="" className="bg-[#111827] text-white">Tất cả</option>
+                {industries.map((industry) => (
+                  <option key={industry} value={industry} className="bg-[#111827] text-white">
+                    {industry}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="block">
-              <span className="text-xs text-white/50">Quoc gia</span>
+              <span className="text-xs text-white/50">Quốc gia</span>
               <input
                 value={filters.country}
                 onChange={(event) => setFilters({ ...filters, country: event.target.value })}
@@ -185,19 +133,57 @@ export function ProjectListPage() {
               type="button"
               onClick={loadProjects}
               disabled={loading}
-              className="w-full rounded-full bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:bg-white/20"
+              className="w-full rounded-full btn-ghost px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 transition hover:bg-white/20 border border-white/10"
             >
-              {loading ? 'Dang tai...' : 'Ap dung bo loc'}
+              {loading ? 'Đang tải...' : 'Áp dụng bộ lọc'}
             </button>
           </div>
         </div>
       </section>
 
+      <section className="grid gap-4 md:grid-cols-2">
+        {featured.map((project) => (
+          <Link
+            key={project.id}
+            to={`/projects/${project.id}`}
+            className="group card-surface overflow-hidden rounded-2xl transition hover:border-white/30"
+          >
+            <div className="aspect-[16/9] w-full overflow-hidden bg-white/10">
+              {resolveCover(project) ? (
+                <img
+                  src={resolveCover(project) as string}
+                  alt={project.title}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.2em] text-white/40">
+                  Cover
+                </div>
+              )}
+            </div>
+            <div className="space-y-3 p-5">
+              <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-white/50">
+                <span>{project.industry}</span>
+                <span>{project.stage}</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white">{project.title}</h3>
+              <p className="text-sm text-white/70">
+                {(project.summary ?? project.description ?? '').slice(0, 120)}
+              </p>
+              <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
+                <span>{project.dealType}</span>
+                <span>{project.status}</span>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </section>
+
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">Danh sach du an</h2>
+          <h2 className="display-font text-xl font-semibold text-white">Danh sách dự án</h2>
           <span className="text-xs uppercase tracking-[0.2em] text-white/50">
-            {projects.length} du an
+            {projects.length} dự án
           </span>
         </div>
         {projects.length === 0 && !loading ? (
@@ -210,7 +196,7 @@ export function ProjectListPage() {
               <Link
                 key={project.id}
                 to={`/projects/${project.id}`}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition hover:border-white/30"
+                className="group card-surface flex h-full flex-col overflow-hidden rounded-2xl transition hover:border-white/30"
               >
                 <div className="aspect-[4/3] w-full overflow-hidden bg-white/10">
                   {resolveCover(project) ? (

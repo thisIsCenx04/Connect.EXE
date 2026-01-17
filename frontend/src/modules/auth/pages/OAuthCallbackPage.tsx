@@ -1,4 +1,3 @@
-import { Alert, Box, Stack, Typography } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch } from '../../../app/hooks'
@@ -43,11 +42,15 @@ export function OAuthCallbackPage() {
   }, [dispatch, navigate])
 
   return (
-    <Box>
-      <Stack spacing={2}>
-        <Typography variant="h4">Signing you in...</Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-      </Stack>
-    </Box>
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
+        Signing you in...
+      </div>
+      {error && (
+        <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          {error}
+        </div>
+      )}
+    </div>
   )
 }

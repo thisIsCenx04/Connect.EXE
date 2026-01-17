@@ -13,11 +13,11 @@ type TagListProps = {
 }
 
 export function CardTitle({ children, className }: CardTitleProps) {
-  return <h3 className={`text-lg font-semibold text-slate-900 ${className ?? ''}`}>{children}</h3>
+  return <h3 className={`text-lg font-semibold text-white ${className ?? ''}`}>{children}</h3>
 }
 
 export function CardBody({ children, className }: CardBodyProps) {
-  return <p className={`text-sm text-slate-600 ${className ?? ''}`}>{children}</p>
+  return <p className={`text-sm text-white/70 ${className ?? ''}`}>{children}</p>
 }
 
 export function TagList({ tags }: TagListProps) {
@@ -26,7 +26,7 @@ export function TagList({ tags }: TagListProps) {
       {tags.map((tag) => (
         <span
           key={tag}
-          className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-500"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/60"
         >
           {tag}
         </span>
