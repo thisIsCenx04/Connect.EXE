@@ -158,6 +158,90 @@ select option {
   animation: fade-up 0.7s ease forwards;
 }
 
+/* Search highlight animation */
+.search-highlight {
+  animation: search-flash 1.5s ease-out forwards;
+}
+
+@keyframes search-flash {
+  0% {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    background-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+/* Keyword highlight - white background, black text with flash effect */
+.keyword-highlight {
+  background-color: white !important;
+  color: black !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline;
+  animation: keyword-flash 1.2s ease-out;
+}
+
+.keyword-highlight-fade {
+  animation: keyword-fade-out 1s ease-out forwards !important;
+}
+
+@keyframes keyword-flash {
+  0% {
+    background-color: yellow;
+    color: black;
+    box-shadow: 0 0 25px rgba(255, 255, 0, 1);
+    transform: scale(1.1);
+  }
+  20% {
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    transform: scale(1);
+  }
+  40% {
+    background-color: yellow;
+    color: black;
+    box-shadow: 0 0 20px rgba(255, 255, 0, 0.8);
+    transform: scale(1.05);
+  }
+  60% {
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    transform: scale(1);
+  }
+  80% {
+    background-color: rgba(255, 255, 200, 1);
+    color: black;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+    transform: scale(1);
+  }
+  100% {
+    background-color: white;
+    color: black;
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes keyword-fade-out {
+  0% {
+    background-color: white;
+    color: black;
+  }
+  100% {
+    background-color: transparent;
+    color: inherit;
+  }
+}
+
 .fade-up.delay-1 {
   animation-delay: 0.1s;
 }

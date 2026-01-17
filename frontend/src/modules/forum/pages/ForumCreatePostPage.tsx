@@ -6,15 +6,7 @@ import {
   listForumCategories,
   type ForumCategory,
 } from '../../../services/forum'
-
-const fallbackCategories: ForumCategory[] = [
-  { id: 'news', name: 'Tin Tức', slug: 'tin-tuc', sortOrder: 1 },
-  { id: 'new-posts', name: 'Bài Đăng Mới', slug: 'bai-dang-moi', sortOrder: 2 },
-  { id: 'qa', name: 'Hỏi Đáp & Tư Vấn', slug: 'hoi-dap-tu-van', sortOrder: 3 },
-  { id: 'team', name: 'Tìm Kiếm Nhóm & Thành Viên', slug: 'tim-kiem-nhom-thanh-vien', sortOrder: 4 },
-  { id: 'resources', name: 'Học Liệu & Templates', slug: 'hoc-lieu-templates', sortOrder: 5 },
-  { id: 'skills', name: 'Kỹ Năng & Học Tập', slug: 'ky-nang-hoc-tap', sortOrder: 6 },
-]
+import { FALLBACK_CATEGORIES } from '@/constants/forum'
 
 export function ForumCreatePostPage() {
   const navigate = useNavigate()
@@ -22,7 +14,7 @@ export function ForumCreatePostPage() {
   const categorySlug = searchParams.get('category')
   const user = useAppSelector((state) => state.auth.user)
 
-  const [categories, setCategories] = useState<ForumCategory[]>(fallbackCategories)
+  const [categories, setCategories] = useState<ForumCategory[]>([...FALLBACK_CATEGORIES])
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('')
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -48,7 +40,7 @@ export function ForumCreatePostPage() {
             }
           }
         } else if (categorySlug) {
-          const found = fallbackCategories.find((c) => c.slug === categorySlug)
+          const found = FALLBACK_CATEGORIES.find((c) => c.slug === categorySlug)
           if (found) {
             setSelectedCategoryId(found.id)
           }
@@ -56,7 +48,7 @@ export function ForumCreatePostPage() {
       })
       .catch(() => {
         if (categorySlug) {
-          const found = fallbackCategories.find((c) => c.slug === categorySlug)
+          const found = FALLBACK_CATEGORIES.find((c) => c.slug === categorySlug)
           if (found) {
             setSelectedCategoryId(found.id)
           }

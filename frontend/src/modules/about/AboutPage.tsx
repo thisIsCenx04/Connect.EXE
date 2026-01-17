@@ -1,60 +1,40 @@
 import { Logo } from '../../components/Logo'
-
-// Team members data
-const teamMembers = [
-  {
-    name: 'Nghê Kim Ngân',
-    role: 'CEO',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    name: 'Nguyễn Hoàng Anh Tuấn',
-    role: 'Chief Design Officer',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    name: 'Lê Tô Thái An',
-    role: 'Chief Product Officer',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    name: 'Bùi Võ Trung Tín',
-    role: 'Chief Technology Officer',
-    image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    name: 'Nguyễn Thùy Dung',
-    role: 'Chief Communications Officer',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&auto=format&fit=crop&q=80',
-  },
-]
+import { TEAM_MEMBERS, ABOUT_SECTIONS } from '@/constants/about'
 
 export function AboutPage() {
   return (
     <div className="space-y-16 pb-12">
       {/* Hero Section with Logo */}
-      <section className="card-neo overflow-hidden rounded-[32px] p-8 md:p-12">
-        <div className="flex flex-col items-start gap-6">
-          <Logo size="lg" />
-          <p className="max-w-3xl text-sm leading-relaxed text-white/70 md:text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </p>
+      <section className="space-y-6">
+        {/* Logo aligned left */}
+        <Logo size="md" />
+        
+        {/* Description card with title inside */}
+        <div className="relative overflow-hidden rounded-[20px] border border-white/10 bg-gradient-to-r from-violet-600/30 via-purple-600/20 to-transparent p-8 backdrop-blur-sm md:p-12">
+          <div className="absolute inset-0 bg-[rgba(15,18,35,0.7)]" />
+          <div className="relative space-y-4">
+            <h2 className="text-2xl font-bold text-white md:text-3xl">{ABOUT_SECTIONS.about.title}</h2>
+            <p className="max-w-4xl text-base leading-relaxed text-white/90 md:text-lg">
+              {ABOUT_SECTIONS.about.description[0]}
+            </p>
+            <p>
+              {ABOUT_SECTIONS.about.description[1]}
+            </p>
+            <p>
+              {ABOUT_SECTIONS.about.description[2]}
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Team Members Section */}
       <section className="space-y-8">
         <div>
-          <h2 className="text-2xl font-bold text-white md:text-3xl">Thành viên</h2>
-          <p className="text-lg text-white/70">connect.exe</p>
+          <h2 className="text-2xl font-bold text-white md:text-3xl">{ABOUT_SECTIONS.team.title}</h2>
         </div>
         
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          {teamMembers.map((member) => (
+          {TEAM_MEMBERS.map((member) => (
             <div key={member.name} className="space-y-3">
               <div className="aspect-square overflow-hidden rounded-2xl border border-white/10">
                 <img
@@ -73,24 +53,16 @@ export function AboutPage() {
       </section>
 
       {/* Vision & Mission Section */}
-      <section className="card-neo overflow-hidden rounded-[32px] p-8 md:p-12">
+      <section className="card-neo overflow-hidden rounded-[20px] p-8 md:p-12">
         <div className="space-y-6">
-          <h2 className="text-2xl font-bold text-white md:text-3xl">Tầm Nhìn và Sứ Mệnh</h2>
+          <h2 className="text-2xl font-bold text-white md:text-3xl">{ABOUT_SECTIONS.vision.title}</h2>
           
           <p className="text-sm leading-relaxed text-white/70 md:text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            {ABOUT_SECTIONS.vision.content[0]}
           </p>
           
           <p className="text-sm leading-relaxed text-white/70 md:text-base">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-            labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-            voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            {ABOUT_SECTIONS.vision.content[1]}
           </p>
         </div>
       </section>

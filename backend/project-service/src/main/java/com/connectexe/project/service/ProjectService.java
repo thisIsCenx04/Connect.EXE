@@ -45,10 +45,10 @@ public class ProjectService {
     private final ProjectTagRepository projectTagRepository;
 
     public ProjectService(ProjectRepository projectRepository,
-                          ProjectMemberRepository projectMemberRepository,
-                          ProjectLinkRepository projectLinkRepository,
-                          ProjectAttachmentRepository projectAttachmentRepository,
-                          ProjectTagRepository projectTagRepository) {
+            ProjectMemberRepository projectMemberRepository,
+            ProjectLinkRepository projectLinkRepository,
+            ProjectAttachmentRepository projectAttachmentRepository,
+            ProjectTagRepository projectTagRepository) {
         this.projectRepository = projectRepository;
         this.projectMemberRepository = projectMemberRepository;
         this.projectLinkRepository = projectLinkRepository;
@@ -89,8 +89,8 @@ public class ProjectService {
         ProjectMember founder = new ProjectMember();
         founder.setProjectId(saved.getId());
         founder.setUserId(principal.getUserId());
-        ProjectMemberRole creatorRole =
-            request.getCreatorRole() == null ? ProjectMemberRole.FOUNDER : request.getCreatorRole();
+        ProjectMemberRole creatorRole = request.getCreatorRole() == null ? ProjectMemberRole.FOUNDER
+                : request.getCreatorRole();
         founder.setRole(creatorRole);
         projectMemberRepository.save(founder);
         return toResponse(saved);
@@ -98,7 +98,7 @@ public class ProjectService {
 
     public ProjectResponse update(UUID id, ProjectUpdateRequest request, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         requireOwnerOrAdmin(project, principal);
 
         if (request.getTitle() != null) {
@@ -199,14 +199,14 @@ public class ProjectService {
 
     public void delete(UUID id, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         requireOwnerOrAdmin(project, principal);
         projectRepository.delete(project);
     }
 
     public ProjectResponse get(UUID id, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         if (isPublic(project) || isOwnerOrAdmin(project, principal)) {
             return toResponse(project);
         }
@@ -215,7 +215,7 @@ public class ProjectService {
 
     public ProjectResponse submitForReview(UUID id, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         requireOwnerOrAdmin(project, principal);
         project.setModerationStatus(ProjectModerationStatus.PENDING);
         project.setSubmittedAt(OffsetDateTime.now());
@@ -226,7 +226,7 @@ public class ProjectService {
     public ProjectResponse approve(UUID id, UserPrincipal principal) {
         requireAdmin(principal);
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         project.setModerationStatus(ProjectModerationStatus.APPROVED);
         project.setVisibility(ProjectVisibility.PUBLIC);
         project.setStatus(ProjectStatus.PUBLISHED);
@@ -242,7 +242,7 @@ public class ProjectService {
     public ProjectResponse reject(UUID id, UserPrincipal principal) {
         requireAdmin(principal);
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         project.setModerationStatus(ProjectModerationStatus.REJECTED);
         project.setVisibility(ProjectVisibility.PRIVATE);
         project.setReviewedBy(principal.getUserId());
@@ -254,7 +254,7 @@ public class ProjectService {
     public ProjectResponse hide(UUID id, UserPrincipal principal) {
         requireAdmin(principal);
         Project project = projectRepository.findById(id)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         project.setVisibility(ProjectVisibility.HIDDEN);
         project.setStatus(ProjectStatus.HIDDEN);
         project.setReviewedBy(principal.getUserId());
@@ -276,12 +276,12 @@ public class ProjectService {
             }
         }
         Specification<Project> spec = Specification.where(ProjectSpecifications.hasStage(filters.stage()))
-            .and(ProjectSpecifications.hasIndustry(filters.industry()))
-            .and(ProjectSpecifications.hasCountry(filters.country()))
-            .and(ProjectSpecifications.hasDealType(filters.dealType()))
-            .and(ProjectSpecifications.hasStatus(filters.status()))
-            .and(ProjectSpecifications.hasModerationStatus(filters.moderationStatus()))
-            .and(ProjectSpecifications.hasVisibility(filters.visibility()));
+                .and(ProjectSpecifications.hasIndustry(filters.industry()))
+                .and(ProjectSpecifications.hasCountry(filters.country()))
+                .and(ProjectSpecifications.hasDealType(filters.dealType()))
+                .and(ProjectSpecifications.hasStatus(filters.status()))
+                .and(ProjectSpecifications.hasModerationStatus(filters.moderationStatus()))
+                .and(ProjectSpecifications.hasVisibility(filters.visibility()));
 
         List<Project> projects = projectRepository.findAll(spec);
         return projects.stream().map(this::toResponse).toList();
@@ -292,28 +292,32 @@ public class ProjectService {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Unauthorized");
         }
         return projectRepository.findByOwnerId(principal.getUserId()).stream()
-            .map(this::toResponse)
-            .toList();
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public List<String> listIndustries() {
+        return projectRepository.findDistinctIndustries();
     }
 
     public List<ProjectMatchResponse> matchProjects(ProjectMatchCriteria criteria, UserPrincipal principal) {
         Specification<Project> spec = Specification.where(ProjectSpecifications.hasStatus(ProjectStatus.PUBLISHED))
-            .and(ProjectSpecifications.hasModerationStatus(ProjectModerationStatus.APPROVED))
-            .and(ProjectSpecifications.hasVisibility(ProjectVisibility.PUBLIC));
+                .and(ProjectSpecifications.hasModerationStatus(ProjectModerationStatus.APPROVED))
+                .and(ProjectSpecifications.hasVisibility(ProjectVisibility.PUBLIC));
         List<Project> projects = projectRepository.findAll(spec);
         return projects.stream()
-            .map(project -> new ProjectMatchResponse(toResponse(project), scoreProject(project, criteria)))
-            .filter(response -> response.score() > 0)
-            .sorted((left, right) -> Integer.compare(right.score(), left.score()))
-            .toList();
+                .map(project -> new ProjectMatchResponse(toResponse(project), scoreProject(project, criteria)))
+                .filter(response -> response.score() > 0)
+                .sorted((left, right) -> Integer.compare(right.score(), left.score()))
+                .toList();
     }
 
     public ProjectMemberResponse addMember(UUID projectId,
-                                           ProjectMemberAddRequest request,
-                                           UserPrincipal principal) {
+            ProjectMemberAddRequest request,
+            UserPrincipal principal) {
         requireAuthenticated(principal);
         Project project = projectRepository.findById(projectId)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
         requireOwnerOrAdmin(project, principal);
 
         if (projectMemberRepository.existsByProjectIdAndUserId(projectId, request.getUserId())) {
@@ -330,80 +334,79 @@ public class ProjectService {
 
     private ProjectResponse toResponse(Project project) {
         List<String> tags = projectTagRepository.findByProjectId(project.getId()).stream()
-            .map(ProjectTag::getTag)
-            .toList();
-        List<ProjectLinkResponse> links = projectLinkRepository.findByProjectIdOrderBySortOrderAsc(project.getId()).stream()
-            .map(link -> new ProjectLinkResponse(
-                link.getId(),
-                link.getType(),
-                link.getLabel(),
-                link.getUrl(),
-                link.getSortOrder()
-            ))
-            .toList();
-        List<ProjectMediaResponse> media = projectAttachmentRepository.findByProjectIdOrderBySortOrderAsc(project.getId()).stream()
-            .map(attachment -> new ProjectMediaResponse(
-                attachment.getId(),
-                attachment.getFileUrl(),
-                attachment.getFileType(),
-                attachment.getRole(),
-                attachment.getSortOrder(),
-                attachment.getCaption()
-            ))
-            .toList();
+                .map(ProjectTag::getTag)
+                .toList();
+        List<ProjectLinkResponse> links = projectLinkRepository.findByProjectIdOrderBySortOrderAsc(project.getId())
+                .stream()
+                .map(link -> new ProjectLinkResponse(
+                        link.getId(),
+                        link.getType(),
+                        link.getLabel(),
+                        link.getUrl(),
+                        link.getSortOrder()))
+                .toList();
+        List<ProjectMediaResponse> media = projectAttachmentRepository
+                .findByProjectIdOrderBySortOrderAsc(project.getId()).stream()
+                .map(attachment -> new ProjectMediaResponse(
+                        attachment.getId(),
+                        attachment.getFileUrl(),
+                        attachment.getFileType(),
+                        attachment.getRole(),
+                        attachment.getSortOrder(),
+                        attachment.getCaption()))
+                .toList();
         return new ProjectResponse(
-            project.getId(),
-            project.getOwnerId(),
-            project.getTitle(),
-            project.getSlug(),
-            project.getDescription(),
-            project.getSummary(),
-            project.getContent(),
-            project.getStage(),
-            project.getIndustry(),
-            project.getCountry(),
-            project.getStatus(),
-            project.getModerationStatus(),
-            project.getVisibility(),
-            project.getDealType(),
-            project.getFundingTargetUsd(),
-            project.getFundingNeedUsd(),
-            project.getFundingRaisedUsd(),
-            project.getValuationUsd(),
-            project.getEquityPercent(),
-            project.getTractionSummary(),
-            project.getFundingTimeline(),
-            project.getTractionMetrics(),
-            project.getPitchDeckUrl(),
-            project.isFeatured(),
-            project.getFeaturedRank(),
-            tags,
-            links,
-            media,
-            project.getPublishedAt(),
-            project.getClosedAt(),
-            project.getSubmittedAt(),
-            project.getReviewedBy(),
-            project.getReviewedAt(),
-            project.getCreatedAt(),
-            project.getUpdatedAt()
-        );
+                project.getId(),
+                project.getOwnerId(),
+                project.getTitle(),
+                project.getSlug(),
+                project.getDescription(),
+                project.getSummary(),
+                project.getContent(),
+                project.getStage(),
+                project.getIndustry(),
+                project.getCountry(),
+                project.getStatus(),
+                project.getModerationStatus(),
+                project.getVisibility(),
+                project.getDealType(),
+                project.getFundingTargetUsd(),
+                project.getFundingNeedUsd(),
+                project.getFundingRaisedUsd(),
+                project.getValuationUsd(),
+                project.getEquityPercent(),
+                project.getTractionSummary(),
+                project.getFundingTimeline(),
+                project.getTractionMetrics(),
+                project.getPitchDeckUrl(),
+                project.isFeatured(),
+                project.getFeaturedRank(),
+                tags,
+                links,
+                media,
+                project.getPublishedAt(),
+                project.getClosedAt(),
+                project.getSubmittedAt(),
+                project.getReviewedBy(),
+                project.getReviewedAt(),
+                project.getCreatedAt(),
+                project.getUpdatedAt());
     }
 
     private ProjectMemberResponse toMemberResponse(ProjectMember member) {
         return new ProjectMemberResponse(
-            member.getId(),
-            member.getProjectId(),
-            member.getUserId(),
-            member.getRole(),
-            member.getCreatedAt()
-        );
+                member.getId(),
+                member.getProjectId(),
+                member.getUserId(),
+                member.getRole(),
+                member.getCreatedAt());
     }
 
     private String generateSlug(String title) {
-        String base = title == null ? "" : title.toLowerCase(Locale.US)
-            .replaceAll("[^a-z0-9]+", "-")
-            .replaceAll("(^-|-$)", "");
+        String base = title == null ? ""
+                : title.toLowerCase(Locale.US)
+                        .replaceAll("[^a-z0-9]+", "-")
+                        .replaceAll("(^-|-$)", "");
         String slug = base.isBlank() ? UUID.randomUUID().toString() : base;
         if (!projectRepository.existsBySlug(slug)) {
             return slug;
@@ -448,8 +451,8 @@ public class ProjectService {
 
     private boolean isPublic(Project project) {
         return project.getStatus() == ProjectStatus.PUBLISHED
-            && project.getModerationStatus() == ProjectModerationStatus.APPROVED
-            && project.getVisibility() == ProjectVisibility.PUBLIC;
+                && project.getModerationStatus() == ProjectModerationStatus.APPROVED
+                && project.getVisibility() == ProjectVisibility.PUBLIC;
     }
 
     private void replaceTags(UUID projectId, List<String> tags) {
@@ -458,9 +461,9 @@ public class ProjectService {
             return;
         }
         List<ProjectTag> entities = tags.stream()
-            .filter(tag -> tag != null && !tag.isBlank())
-            .map(tag -> new ProjectTag(projectId, tag.trim()))
-            .toList();
+                .filter(tag -> tag != null && !tag.isBlank())
+                .map(tag -> new ProjectTag(projectId, tag.trim()))
+                .toList();
         projectTagRepository.saveAll(entities);
     }
 
@@ -470,16 +473,16 @@ public class ProjectService {
             return;
         }
         List<ProjectLink> entities = links.stream()
-            .map(link -> {
-                ProjectLink entity = new ProjectLink();
-                entity.setProjectId(projectId);
-                entity.setType(link.getType());
-                entity.setLabel(link.getLabel());
-                entity.setUrl(link.getUrl());
-                entity.setSortOrder(link.getSortOrder() == null ? 0 : link.getSortOrder());
-                return entity;
-            })
-            .toList();
+                .map(link -> {
+                    ProjectLink entity = new ProjectLink();
+                    entity.setProjectId(projectId);
+                    entity.setType(link.getType());
+                    entity.setLabel(link.getLabel());
+                    entity.setUrl(link.getUrl());
+                    entity.setSortOrder(link.getSortOrder() == null ? 0 : link.getSortOrder());
+                    return entity;
+                })
+                .toList();
         projectLinkRepository.saveAll(entities);
     }
 
@@ -489,25 +492,25 @@ public class ProjectService {
             return;
         }
         List<ProjectAttachment> entities = media.stream()
-            .map(item -> {
-                ProjectAttachment entity = new ProjectAttachment();
-                entity.setProjectId(projectId);
-                entity.setFileUrl(item.getFileUrl());
-                entity.setFileType(item.getFileType());
-                entity.setRole(item.getRole());
-                entity.setSortOrder(item.getSortOrder());
-                entity.setCaption(item.getCaption());
-                return entity;
-            })
-            .toList();
+                .map(item -> {
+                    ProjectAttachment entity = new ProjectAttachment();
+                    entity.setProjectId(projectId);
+                    entity.setFileUrl(item.getFileUrl());
+                    entity.setFileType(item.getFileType());
+                    entity.setRole(item.getRole());
+                    entity.setSortOrder(item.getSortOrder());
+                    entity.setCaption(item.getCaption());
+                    return entity;
+                })
+                .toList();
         projectAttachmentRepository.saveAll(entities);
     }
 
     private int scoreProject(Project project, ProjectMatchCriteria criteria) {
         int score = 0;
         if (criteria.industry() != null
-            && project.getIndustry() != null
-            && criteria.industry().equalsIgnoreCase(project.getIndustry())) {
+                && project.getIndustry() != null
+                && criteria.industry().equalsIgnoreCase(project.getIndustry())) {
             score += 40;
         }
         if (criteria.stage() != null && criteria.stage() == project.getStage()) {
@@ -527,17 +530,17 @@ public class ProjectService {
             }
         }
         if (criteria.country() != null
-            && project.getCountry() != null
-            && criteria.country().equalsIgnoreCase(project.getCountry())) {
+                && project.getCountry() != null
+                && criteria.country().equalsIgnoreCase(project.getCountry())) {
             score += 10;
         }
         return score;
     }
 
     private boolean matchesFunding(BigDecimal minFundingUsd,
-                                   BigDecimal maxFundingUsd,
-                                   BigDecimal projectMin,
-                                   BigDecimal projectMax) {
+            BigDecimal maxFundingUsd,
+            BigDecimal projectMin,
+            BigDecimal projectMax) {
         if (projectMin == null && projectMax == null) {
             return false;
         }
@@ -550,24 +553,24 @@ public class ProjectService {
         BigDecimal effectiveMin = minFundingUsd == null ? projectMin : minFundingUsd;
         BigDecimal effectiveMax = maxFundingUsd == null ? projectMax : maxFundingUsd;
         return projectMin.compareTo(effectiveMax) <= 0
-            && projectMax.compareTo(effectiveMin) >= 0;
+                && projectMax.compareTo(effectiveMin) >= 0;
     }
 
     public record ProjectFilters(
-        com.connectexe.project.domain.enums.ProjectStage stage,
-        String industry,
-        String country,
-        com.connectexe.project.domain.enums.DealType dealType,
-        com.connectexe.project.domain.enums.ProjectStatus status,
-        com.connectexe.project.domain.enums.ProjectModerationStatus moderationStatus,
-        com.connectexe.project.domain.enums.ProjectVisibility visibility
-    ) {}
+            com.connectexe.project.domain.enums.ProjectStage stage,
+            String industry,
+            String country,
+            com.connectexe.project.domain.enums.DealType dealType,
+            com.connectexe.project.domain.enums.ProjectStatus status,
+            com.connectexe.project.domain.enums.ProjectModerationStatus moderationStatus,
+            com.connectexe.project.domain.enums.ProjectVisibility visibility) {
+    }
 
     public record ProjectMatchCriteria(
-        com.connectexe.project.domain.enums.ProjectStage stage,
-        String industry,
-        BigDecimal minFundingUsd,
-        BigDecimal maxFundingUsd,
-        String country
-    ) {}
+            com.connectexe.project.domain.enums.ProjectStage stage,
+            String industry,
+            BigDecimal minFundingUsd,
+            BigDecimal maxFundingUsd,
+            String country) {
+    }
 }

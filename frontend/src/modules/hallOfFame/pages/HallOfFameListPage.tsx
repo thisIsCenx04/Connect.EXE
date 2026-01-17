@@ -1,8 +1,7 @@
 ﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { listHallOfFamePosts, type HallOfFamePost } from '../../../services/hallOfFame'
-
-const types = ['STARTUP', 'PERSON', 'PROJECT_STORY']
+import { HALL_OF_FAME_TYPES, HALL_OF_FAME_SECTIONS } from '@/constants/hallOfFame'
 
 export function HallOfFameListPage() {
   const [entries, setEntries] = useState<HallOfFamePost[]>([])
@@ -24,9 +23,9 @@ export function HallOfFameListPage() {
   }, [])
 
   const stats = [
-    { label: 'Bài viết', value: `${entries.length || 0}+` },
-    { label: 'Nhân vật nổi bật', value: '12+' },
-    { label: 'Dự án truyền cảm hứng', value: '30+' },
+    { label: HALL_OF_FAME_SECTIONS.stats.posts.label, value: `${entries.length || 0}${HALL_OF_FAME_SECTIONS.stats.posts.suffix}` },
+    { label: HALL_OF_FAME_SECTIONS.stats.people.label, value: HALL_OF_FAME_SECTIONS.stats.people.value },
+    { label: HALL_OF_FAME_SECTIONS.stats.projects.label, value: HALL_OF_FAME_SECTIONS.stats.projects.value },
   ]
 
   return (
@@ -34,10 +33,10 @@ export function HallOfFameListPage() {
       <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Sảnh Danh Vọng</p>
-            <h1 className="display-font text-3xl font-semibold md:text-4xl">Câu chuyện truyền cảm hứng</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">{HALL_OF_FAME_SECTIONS.hero.label}</p>
+            <h1 className="display-font text-3xl font-semibold md:text-4xl">{HALL_OF_FAME_SECTIONS.hero.title}</h1>
             <p className="max-w-2xl text-sm text-white/70">
-              Bài viết nổi bật do admin tuyển chọn hoặc chuyển từ Sàn Dự Án.
+              {HALL_OF_FAME_SECTIONS.hero.description}
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -45,7 +44,7 @@ export function HallOfFameListPage() {
               to="/hall-of-fame/apply"
               className="rounded-full btn-primary px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
             >
-              Tạo bài viết
+              {HALL_OF_FAME_SECTIONS.hero.createButton}
             </Link>
           </div>
         </div>
@@ -63,14 +62,14 @@ export function HallOfFameListPage() {
       </section>
 
       <section className="flex flex-wrap items-center gap-3">
-        <span className="text-xs uppercase tracking-[0.2em] text-white/60">Bộ lọc</span>
+        <span className="text-xs uppercase tracking-[0.2em] text-white/60">{HALL_OF_FAME_SECTIONS.filter.label}</span>
         <select
           value={type}
           onChange={(event) => setType(event.target.value)}
           className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
         >
-          <option value="">Tất cả</option>
-          {types.map((item) => (
+          <option value="">{HALL_OF_FAME_SECTIONS.filter.allOption}</option>
+          {HALL_OF_FAME_TYPES.map((item) => (
             <option key={item} value={item}>
               {item}
             </option>

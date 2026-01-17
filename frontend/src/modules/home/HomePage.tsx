@@ -1,128 +1,13 @@
 import { Link } from 'react-router-dom'
-
-// Hero Banner Images
-const heroBanner = 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=1200&auto=format&fit=crop&q=80'
-
-// Partner logos (placeholder)
-const partnerLogos = [
-  { name: 'FPT', logo: '🏢' },
-  { name: 'VNG', logo: '🎮' },
-  { name: 'VinGroup', logo: '🏛️' },
-  { name: 'VNPT', logo: '📡' },
-  { name: 'Viettel', logo: '📶' },
-  { name: 'Momo', logo: '💳' },
-]
-
-// Stats data
-const statsData = [
-  { value: '50+', label: 'Hệ thống workshop toàn quốc' },
-  { value: '100+', label: 'Cố vấn chuyên gia' },
-  { value: '20+', label: 'Đối tác doanh nghiệp' },
-  { value: '500+', label: 'Dự án đã hỗ trợ' },
-  { value: '50+', label: 'Sự kiện mỗi năm' },
-  { value: '100+', label: 'Giải thưởng' },
-]
-
-// Featured projects 2025
-const featuredProjects2025 = [
-  {
-    id: '1',
-    title: 'DiMO',
-    subtitle: 'Ứng dụng thanh toán thông minh',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop&q=80',
-    featured: true,
-  },
-  {
-    id: '2',
-    title: 'FPT Edu Experience Space',
-    subtitle: 'Không gian trải nghiệm giáo dục',
-    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '3',
-    title: 'AITHENOS',
-    subtitle: 'Giải nhất cuộc thi AI 2025',
-    image: 'https://images.unsplash.com/photo-1677442135136-760c813dce39?w=600&auto=format&fit=crop&q=80',
-    badge: 'GIẢI NHẤT',
-  },
-  {
-    id: '4',
-    title: 'BizTalk',
-    subtitle: 'Nền tảng kết nối doanh nghiệp',
-    image: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=600&auto=format&fit=crop&q=80',
-  },
-]
-
-// Other notable projects
-const otherProjects = [
-  {
-    id: '5',
-    title: 'Best Forex Trading Platform',
-    category: 'Fintech',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '6',
-    title: 'Top 15 Innovation',
-    category: 'Tech',
-    image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '7',
-    title: 'Smart City Solution',
-    category: 'IoT',
-    image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?w=400&auto=format&fit=crop&q=80',
-  },
-]
-
-// Startup products 2025
-const startupProducts = [
-  {
-    id: '8',
-    title: 'Nhóm sinh viên làm mường mưa sinh học từ vỏ quất',
-    image: 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '9',
-    title: 'Quản đội khởi nghiệp',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '10',
-    title: 'Top 12 Innovation Award',
-    image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=400&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '11',
-    title: 'AI Healthcare Solution',
-    image: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&auto=format&fit=crop&q=80',
-  },
-]
-
-// Hall of Fame stories
-const hallOfFameStories = [
-  {
-    id: '1',
-    title: 'From dorm room to demo day',
-    author: 'Nguyễn Văn A',
-    description: 'Câu chuyện từ ký túc xá đến ngày demo - hành trình của một startup sinh viên.',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '2',
-    title: 'How a pivot unlocked traction',
-    author: 'Trần Thị B',
-    description: 'Bài học từ việc pivot sản phẩm và tìm ra product-market fit.',
-    image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80',
-  },
-  {
-    id: '3',
-    title: 'Building for impact',
-    author: 'Lê Văn C',
-    description: 'Xây dựng startup với mục tiêu tạo ra giá trị xã hội.',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&auto=format&fit=crop&q=80',
-  },
-]
+import {
+  HERO_BANNER_IMAGE,
+  PARTNER_LOGOS,
+  STATS_DATA,
+  FEATURED_PROJECTS_2025,
+  OTHER_PROJECTS,
+  STARTUP_PRODUCTS,
+  HALL_OF_FAME_STORIES,
+} from '@/constants/home'
 
 export function HomePage() {
   return (
@@ -131,7 +16,7 @@ export function HomePage() {
       <section className="relative overflow-hidden rounded-[32px] border border-white/10">
         <div className="relative aspect-[21/9] w-full">
           <img
-            src={heroBanner}
+            src={HERO_BANNER_IMAGE}
             alt="Made in Vietnam"
             className="h-full w-full object-cover"
           />
@@ -152,7 +37,7 @@ export function HomePage() {
       {/* Stats Section */}
       <section className="space-y-6">
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-          {statsData.map((stat, index) => (
+          {STATS_DATA.map((stat, index) => (
             <div
               key={index}
               className="card-surface rounded-2xl p-4 text-center"
@@ -170,7 +55,7 @@ export function HomePage() {
           Đối tác đồng hành
         </p>
         <div className="flex flex-wrap items-center justify-center gap-8">
-          {partnerLogos.map((partner) => (
+          {PARTNER_LOGOS.map((partner) => (
             <div
               key={partner.name}
               className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-2xl"
@@ -187,16 +72,16 @@ export function HomePage() {
         <div className="grid lg:grid-cols-2">
           <div className="relative aspect-video lg:aspect-auto">
             <img
-              src={featuredProjects2025[0].image}
-              alt={featuredProjects2025[0].title}
+              src={FEATURED_PROJECTS_2025[0].image}
+              alt={FEATURED_PROJECTS_2025[0].title}
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6">
               <h2 className="display-font text-4xl font-bold text-white md:text-5xl">
-                {featuredProjects2025[0].title}
+                {FEATURED_PROJECTS_2025[0].title}
               </h2>
-              <p className="mt-2 text-sm text-white/70">{featuredProjects2025[0].subtitle}</p>
+              <p className="mt-2 text-sm text-white/70">{FEATURED_PROJECTS_2025[0].subtitle}</p>
               <div className="mt-4 flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-white/50" />
                 <span className="h-2 w-2 rounded-full bg-white" />
@@ -232,11 +117,10 @@ export function HomePage() {
       {/* Projects Grid */}
       <section className="space-y-6">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects2025.slice(1).map((project) => (
-            <Link
+          {FEATURED_PROJECTS_2025.slice(1).map((project) => (
+            <div
               key={project.id}
-              to={`/projects/${project.id}`}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5"
+              className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/5 transition-transform duration-200 hover:scale-[1.02]"
             >
               <div className="aspect-[4/3] overflow-hidden">
                 <img
@@ -255,13 +139,13 @@ export function HomePage() {
                 <h3 className="text-lg font-bold text-white">{project.title}</h3>
                 <p className="mt-1 text-sm text-white/60">{project.subtitle}</p>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
 
       {/* Other Notable Projects */}
-      <section className="space-y-6">
+      <section id="featured-projects" className="space-y-6 scroll-mt-24">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
@@ -279,11 +163,10 @@ export function HomePage() {
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {otherProjects.map((project) => (
-            <Link
+          {OTHER_PROJECTS.map((project) => (
+            <div
               key={project.id}
-              to={`/projects/${project.id}`}
-              className="group card-surface overflow-hidden rounded-2xl"
+              className="group cursor-pointer card-surface overflow-hidden rounded-2xl transition-transform duration-200 hover:scale-[1.02]"
             >
               <div className="aspect-[16/10] overflow-hidden">
                 <img
@@ -298,13 +181,13 @@ export function HomePage() {
                 </span>
                 <h3 className="mt-1 font-semibold text-white">{project.title}</h3>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
 
       {/* Startup Products 2025 */}
-      <section className="space-y-6">
+      <section id="startup-products" className="space-y-6 scroll-mt-24">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">
             Sản phẩm
@@ -314,11 +197,10 @@ export function HomePage() {
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {startupProducts.map((product) => (
-            <Link
+          {STARTUP_PRODUCTS.map((product) => (
+            <div
               key={product.id}
-              to={`/projects/${product.id}`}
-              className="group card-surface overflow-hidden rounded-2xl"
+              className="group cursor-pointer card-surface overflow-hidden rounded-2xl transition-transform duration-200 hover:scale-[1.02]"
             >
               <div className="aspect-square overflow-hidden">
                 <img
@@ -330,7 +212,7 @@ export function HomePage() {
               <div className="p-4">
                 <h3 className="text-sm font-medium text-white line-clamp-2">{product.title}</h3>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </section>
@@ -354,7 +236,7 @@ export function HomePage() {
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          {hallOfFameStories.map((story) => (
+          {HALL_OF_FAME_STORIES.map((story) => (
             <Link
               key={story.id}
               to={`/hall-of-fame/${story.id}`}
@@ -378,7 +260,7 @@ export function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="card-neo overflow-hidden rounded-[32px]">
+      <section id="cta-section" className="card-neo overflow-hidden rounded-[32px] scroll-mt-24">
         <div className="relative px-8 py-12 text-center md:px-16 md:py-16">
           <div className="absolute inset-0 bg-gradient-to-r from-violet-600/20 via-purple-600/20 to-fuchsia-600/20" />
           <div className="relative space-y-6">

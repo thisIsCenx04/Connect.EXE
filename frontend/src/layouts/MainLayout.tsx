@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
+import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { io, type Socket } from 'socket.io-client'
 import { useAppDispatch, useAppSelector } from '../app/hooks'
 import { Logo } from '../components/Logo'
@@ -11,10 +11,16 @@ import {
   type ChatMessage,
   type ConversationSummary,
 } from '../services/chat'
+import {
+  SEARCH_DATA,
+  FOOTER_CONTENT,
+  type SearchItem,
+} from '@/constants/layout'
 
 export function MainLayout() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const user = useAppSelector((state) => state.auth.user)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
@@ -26,6 +32,202 @@ export function MainLayout() {
   const chatSocketRef = useRef<Socket | null>(null)
   const conversationRef = useRef<string | null>(null)
   const messagesRef = useRef<HTMLDivElement | null>(null)
+  
+  // Search states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<SearchItem[]>([])
+  const [showSearchDropdown, setShowSearchDropdown] = useState(false)
+  const searchRef = useRef<HTMLDivElement | null>(null)
+
+  // Check if current path matches nav item
+  const isActivePath = useCallback((path: string) => {
+    if (path === '/') return location.pathname === '/'
+    return location.pathname.startsWith(path)
+  }, [location.pathname])
+
+  // Handle search
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query)
+    if (query.trim().length < 2) {
+      setSearchResults([])
+      setShowSearchDropdown(false)
+      return
+    }
+    const lowerQuery = query.toLowerCase()
+    const results = SEARCH_DATA.filter(item => 
+      item.title.toLowerCase().includes(lowerQuery) ||
+      item.keywords.some(kw => kw.includes(lowerQuery))
+    )
+    setSearchResults(results)
+    setShowSearchDropdown(results.length > 0)
+  }, [])
+
+  // Handle search result click
+  const handleSearchResultClick = useCallback((item: SearchItem) => {
+    setShowSearchDropdown(false)
+    // Use item.title as the keyword to highlight, not the search query
+    const keyword = item.title
+    setSearchQuery('')
+    
+    if (item.section) {
+      // Navigate to home first if not there
+      if (location.pathname !== '/') {
+        navigate('/')
+        // Wait for navigation then scroll and highlight
+        setTimeout(() => {
+          const element = document.getElementById(item.section!)
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+          // Highlight the keyword after scrolling
+          if (keyword) {
+            setTimeout(() => highlightKeyword(keyword), 300)
+          }
+        }, 100)
+      } else {
+        const element = document.getElementById(item.section)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+        // Highlight the keyword after scrolling
+        if (keyword) {
+          setTimeout(() => highlightKeyword(keyword), 300)
+        }
+      }
+    } else {
+      // Navigate and highlight keyword on the target page
+      navigate(item.path)
+      if (keyword) {
+        setTimeout(() => {
+          highlightKeyword(keyword)
+        }, 300)
+      }
+    }
+  }, [navigate, location.pathname])
+
+  // Function to highlight keyword on page
+  const highlightKeyword = useCallback((keyword: string) => {
+    if (!keyword) return
+    
+    // Remove any existing highlights
+    document.querySelectorAll('.keyword-highlight').forEach(el => {
+      const parent = el.parentNode
+      if (parent) {
+        parent.replaceChild(document.createTextNode(el.textContent || ''), el)
+        parent.normalize()
+      }
+    })
+    
+    const lowerKeyword = keyword.toLowerCase()
+    const mainContent = document.querySelector('main')
+    if (!mainContent) return
+    
+    // Find text nodes containing the keyword
+    const walker = document.createTreeWalker(
+      mainContent,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) => {
+          const text = node.textContent?.toLowerCase() || ''
+          if (text.includes(lowerKeyword)) {
+            return NodeFilter.FILTER_ACCEPT
+          }
+          return NodeFilter.FILTER_REJECT
+        }
+      }
+    )
+    
+    const nodesToHighlight: { node: Text; startIndex: number }[] = []
+    let currentNode = walker.nextNode()
+    
+    while (currentNode) {
+      const text = currentNode.textContent?.toLowerCase() || ''
+      const index = text.indexOf(lowerKeyword)
+      if (index !== -1) {
+        nodesToHighlight.push({ node: currentNode as Text, startIndex: index })
+        break // Only highlight first occurrence
+      }
+      currentNode = walker.nextNode()
+    }
+    
+    // Highlight the first match
+    if (nodesToHighlight.length > 0) {
+      const { node, startIndex } = nodesToHighlight[0]
+      const originalText = node.textContent || ''
+      const matchedText = originalText.substring(startIndex, startIndex + keyword.length)
+      
+      // Split the text node
+      const before = document.createTextNode(originalText.substring(0, startIndex))
+      const after = document.createTextNode(originalText.substring(startIndex + keyword.length))
+      
+      // Create highlight span
+      const highlightSpan = document.createElement('span')
+      highlightSpan.className = 'keyword-highlight'
+      highlightSpan.textContent = matchedText
+      
+      // Replace the node
+      const parent = node.parentNode
+      if (parent) {
+        parent.insertBefore(before, node)
+        parent.insertBefore(highlightSpan, node)
+        parent.insertBefore(after, node)
+        parent.removeChild(node)
+        
+        // Scroll to the highlighted element
+        highlightSpan.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        
+        // Remove highlight when clicking anywhere
+        const removeHighlight = (e: MouseEvent) => {
+          const target = e.target as HTMLElement
+          // Only remove if clicking on non-interactive elements
+          if (!target.closest('a, button, input, select, textarea')) {
+            highlightSpan.classList.add('keyword-highlight-fade')
+            setTimeout(() => {
+              const parent = highlightSpan.parentNode
+              if (parent) {
+                parent.replaceChild(document.createTextNode(highlightSpan.textContent || ''), highlightSpan)
+                parent.normalize()
+              }
+            }, 1000)
+            document.removeEventListener('click', removeHighlight)
+          }
+        }
+        
+        setTimeout(() => {
+          document.addEventListener('click', removeHighlight)
+        }, 500)
+      }
+    }
+  }, [])
+
+  // Handle "Khám phá dự án" click - scroll to featured section
+  const handleExploreProjectsClick = useCallback(() => {
+    if (location.pathname !== '/') {
+      navigate('/')
+      setTimeout(() => {
+        const element = document.getElementById('featured-projects')
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }
+      }, 100)
+    } else {
+      const element = document.getElementById('featured-projects')
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }, [navigate, location.pathname])
+
+  // Close search dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const initials = useMemo(() => {
     const name = user?.fullName ?? 'Guest'
@@ -128,77 +330,131 @@ export function MainLayout() {
     <div className="page-shell text-white">
       <div className="app-sheen" aria-hidden="true" />
       <header className="glass-bar relative z-50">
-        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between gap-8 px-8 py-3">
-          <button
-            type="button"
-            onClick={() => navigate('/')}
-            className="flex shrink-0 items-center text-white"
-          >
-            <Logo size="sm" />
-          </button>
+        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-0.5">
+          {/* Left side - Logo */}
+          <div className="flex shrink-0 items-center">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="flex items-center text-white"
+            >
+              <Logo size="sm" />
+            </button>
+          </div>
           
           {/* Combined nav container with all items */}
-          <nav className="hidden flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 lg:flex">
-            <div className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.15em] text-white/70">
-              <button onClick={() => navigate('/')} className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">
+          <nav className="mx-4 hidden flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 lg:flex">
+            <div className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-[0.15em] text-white/70">
+              <button 
+                onClick={() => navigate('/')} 
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/') && location.pathname === '/' ? 'bg-white/10 text-white' : ''}`}
+              >
                 Trang chủ
               </button>
-              <button onClick={() => navigate('/projects')} className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">
-                Sản phẩm
-              </button>
-              <button onClick={() => navigate('/forum')} className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">
-                Diễn đàn
-              </button>
-              <button onClick={() => navigate('/hall-of-fame')} className="whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white">
+              <button 
+                onClick={() => navigate('/projects')} 
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/projects') ? 'bg-white/10 text-white' : ''}`}
+              >
                 Dự án
               </button>
+              <button 
+                onClick={() => navigate('/forum')} 
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/forum') ? 'bg-white/10 text-white' : ''}`}
+              >
+                Diễn đàn
+              </button>
+              <button 
+                onClick={() => navigate('/hall-of-fame')} 
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/hall-of-fame') ? 'bg-white/10 text-white' : ''}`}
+              >
+                Sảnh danh vọng
+              </button>
               
-              {/* Search input */}
-              <div className="mx-2 flex items-center gap-1">
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm..."
-                  className="w-28 bg-transparent px-2 py-1 text-xs text-white placeholder-white/40 outline-none xl:w-36"
-                />
-                <button className="flex items-center justify-center text-white/60 transition hover:text-white">
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
-                  </svg>
-                </button>
+              {/* Search input with dropdown */}
+              <div className="relative mx-2" ref={searchRef}>
+                <div className="flex items-center gap-1">
+                  <button type="button" className="flex items-center justify-center text-white/60 transition hover:text-white">
+                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+                    </svg>
+                  </button>
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    onFocus={() => searchQuery.length >= 2 && setShowSearchDropdown(true)}
+                    className="w-28 bg-transparent px-2 py-1 text-sm text-white placeholder-white/40 outline-none xl:w-36"
+                  />
+                </div>
+                {/* Search dropdown */}
+                {showSearchDropdown && searchResults.length > 0 && (
+                  <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-white/10 bg-[#0a0d1d]/95 p-2 shadow-xl backdrop-blur-md">
+                    {searchResults.map((item, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleSearchResultClick(item)}
+                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/10 hover:text-white"
+                      >
+                        <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 text-white/40" fill="none" stroke="currentColor" strokeWidth="1.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                        <div>
+                          <div className="font-medium">{item.title}</div>
+                          <div className="text-xs text-white/50">{item.path}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               
               <span className="text-white/30">|</span>
               <span className="whitespace-nowrap cursor-default px-3 py-2">Tin Tức</span>
               <span className="text-white/30">|</span>
-              <button onClick={() => navigate('/projects')} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+              <button onClick={handleExploreProjectsClick} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
                 Khám phá dự án
               </button>
               <span className="text-white/30">|</span>
-              <button onClick={() => navigate('/about')} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+              <button 
+                onClick={() => navigate('/about')} 
+                className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/about') ? 'bg-white/10 text-white' : ''}`}
+              >
                 Về chúng tôi
               </button>
             </div>
           </nav>
           
           {/* Mobile nav */}
-          <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70 md:flex lg:hidden">
-            <button onClick={() => navigate('/')} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+          <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.2em] text-white/70 md:flex lg:hidden">
+            <button 
+              onClick={() => navigate('/')} 
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/') && location.pathname === '/' ? 'bg-white/10 text-white' : ''}`}
+            >
               Trang chủ
             </button>
-            <button onClick={() => navigate('/projects')} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+            <button 
+              onClick={() => navigate('/projects')} 
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/projects') ? 'bg-white/10 text-white' : ''}`}
+            >
               Sản phẩm
             </button>
-            <button onClick={() => navigate('/forum')} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+            <button 
+              onClick={() => navigate('/forum')} 
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/forum') ? 'bg-white/10 text-white' : ''}`}
+            >
               Diễn đàn
             </button>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-4">
+          {/* Right side - User menu */}
+          <div className="flex shrink-0 items-center gap-3">
             {!user && (
               <button
                 type="button"
                 onClick={() => navigate('/register')}
-                className="hidden whitespace-nowrap rounded-full border border-violet-500/50 bg-transparent px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-violet-400 transition hover:bg-violet-500/20 md:inline-flex"
+                className="hidden whitespace-nowrap rounded-full border border-violet-500/50 bg-transparent px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-violet-400 transition hover:bg-violet-500/20 md:inline-flex"
               >
                 Sign Up
               </button>
@@ -207,26 +463,26 @@ export function MainLayout() {
               <button
                 type="button"
                 onClick={() => setMenuOpen((open) => !open)}
-                className="flex items-center gap-3 rounded-full border border-white/20 bg-white/5 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-white/50"
+                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-white/50"
               >
                 {user?.avatarUrl ? (
                   <img
                     src={user.avatarUrl}
                     alt={user.fullName ?? 'User'}
-                    className="h-7 w-7 rounded-full border border-white/20 object-cover"
+                    className="h-7 w-7 shrink-0 rounded-full border border-white/20 object-cover"
                   />
                 ) : (
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/20 bg-white/10 text-[10px] font-semibold text-white/80">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white/80">
                     {initials}
                   </span>
                 )}
-                <span className="hidden text-[10px] uppercase tracking-[0.2em] text-white/80 sm:inline">
+                <span className="max-w-[80px] truncate text-xs uppercase tracking-[0.15em] text-white/80">
                   {user?.fullName ?? 'Guest'}
                 </span>
               </button>
               {menuOpen && (
                 <div className="absolute right-1/2 mt-3 w-56 translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a0d1d]/80 p-2 shadow-xl backdrop-blur-md">
-                  <div className="px-3 py-2 text-xs uppercase tracking-[0.3em] text-white/50">
+                  <div className="px-3 py-2 text-sm uppercase tracking-[0.3em] text-white/50">
                     {user?.fullName ?? 'Guest'}
                   </div>
                   <button
@@ -273,32 +529,32 @@ export function MainLayout() {
           <div className="grid gap-8 md:grid-cols-4">
             <div className="space-y-3">
               <Logo size="sm" />
-              <p className="text-sm text-white/60">
-                Nền tảng khởi nghiệp dành cho founders, mentors và nhà đầu tư.
+              <p className="text-base text-white/60">
+                {FOOTER_CONTENT.description}
               </p>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Khám phá</p>
-              <div className="mt-3 space-y-2 text-sm text-white/70">
-                <button onClick={() => navigate('/projects')} className="block text-left hover:text-white">Dự án</button>
-                <button onClick={() => navigate('/hall-of-fame')} className="block text-left hover:text-white">Sảnh danh vọng</button>
-                <button onClick={() => navigate('/forum')} className="block text-left hover:text-white">Diễn đàn</button>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.explore.title}</p>
+              <div className="mt-3 space-y-2 text-base text-white/70">
+                {FOOTER_CONTENT.sections.explore.items.map((item) => (
+                  <button key={item.path} onClick={() => navigate(item.path)} className="block text-left hover:text-white">{item.label}</button>
+                ))}
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Menu</p>
-              <div className="mt-3 space-y-2 text-sm text-white/70">
-                <button onClick={() => navigate('/profile')} className="block text-left hover:text-white">Hồ sơ</button>
-                <button onClick={() => navigate('/projects/mine')} className="block text-left hover:text-white">Dự án của tôi</button>
-                <button onClick={() => navigate('/projects/new')} className="block text-left hover:text-white">Tạo dự án</button>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.menu.title}</p>
+              <div className="mt-3 space-y-2 text-base text-white/70">
+                {FOOTER_CONTENT.sections.menu.items.map((item) => (
+                  <button key={item.path} onClick={() => navigate(item.path)} className="block text-left hover:text-white">{item.label}</button>
+                ))}
               </div>
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50">Địa chỉ văn phòng</p>
-              <p className="mt-3 text-sm text-white/70">FPT University, Cần Thơ Campus</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.office.title}</p>
+              <p className="mt-3 text-base text-white/70">{FOOTER_CONTENT.sections.office.address}</p>
               <div className="mt-4 flex items-center gap-3">
                 <a
-                  href="https://www.facebook.com/profile.php?id=61581595885701"
+                  href={FOOTER_CONTENT.social.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white"
@@ -308,7 +564,7 @@ export function MainLayout() {
                   </svg>
                 </a>
                 <a
-                  href="https://linkedin.com"
+                  href={FOOTER_CONTENT.social.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white"
@@ -318,7 +574,7 @@ export function MainLayout() {
                   </svg>
                 </a>
                 <a
-                  href="https://twitter.com"
+                  href={FOOTER_CONTENT.social.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-white hover:bg-white hover:text-black"
@@ -330,7 +586,7 @@ export function MainLayout() {
               </div>
             </div>
           </div>
-          <div className="mt-8 text-xs uppercase tracking-[0.2em] text-white/40">© 2026 connect.exe</div>
+          <div className="mt-8 text-sm uppercase tracking-[0.2em] text-white/40">{FOOTER_CONTENT.copyright}</div>
         </div>
       </footer>
       {user && (
@@ -338,7 +594,7 @@ export function MainLayout() {
           <button
             type="button"
             onClick={() => setChatOpen(true)}
-            className="fixed bottom-6 right-6 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 btn-primary text-white shadow-lg transition hover:scale-105"
+            className="fixed bottom-6 right-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-white/10 btn-primary text-white shadow-lg transition hover:scale-105"
             aria-label="Chat"
           >
             <svg
@@ -358,7 +614,7 @@ export function MainLayout() {
           </button>
           {chatOpen && (
             <div
-              className="fixed inset-0 z-50 flex items-end justify-end bg-black/40 p-4"
+              className="fixed inset-0 z-[70] flex items-end justify-end bg-black/40 p-4"
               onClick={() => setChatOpen(false)}
             >
               <div
