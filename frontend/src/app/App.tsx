@@ -22,6 +22,9 @@ import { HallOfFameListPage } from '../modules/hallOfFame/pages/HallOfFameListPa
 import { HallOfFameDetailPage } from '../modules/hallOfFame/pages/HallOfFameDetailPage'
 import { HallOfFameApplyPage } from '../modules/hallOfFame/pages/HallOfFameApplyPage'
 import { ChatPage } from '../modules/chat/pages/ChatPage'
+import { ForumHomePage } from '../modules/forum/pages/ForumHomePage'
+import { ForumCategoryPage } from '../modules/forum/pages/ForumCategoryPage'
+import { ForumPostDetailPage } from '../modules/forum/pages/ForumPostDetailPage'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
@@ -97,6 +100,9 @@ export function App() {
             <Route path="/projects/:id" element={<ProjectDetailPage />} />
             <Route path="/hall-of-fame" element={<HallOfFameListPage />} />
             <Route path="/hall-of-fame/:id" element={<HallOfFameDetailPage />} />
+            <Route path="/forum" element={<ForumHomePage />} />
+            <Route path="/forum/categories/:slug" element={<ForumCategoryPage />} />
+            <Route path="/forum/posts/:id" element={<ForumPostDetailPage />} />
             <Route
               path="/hall-of-fame/apply"
               element={

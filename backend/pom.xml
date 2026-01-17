@@ -22,6 +22,7 @@
 		<module>auth-service</module>
 		<module>project-service</module>
 		<module>halloffame-service</module>
+		<module>forum-service</module>
 	</modules>
 
 	<properties>

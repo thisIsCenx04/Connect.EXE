@@ -1,4 +1,4 @@
-package com.connectexe.project.security;
+package com.connectexe.forum.security;
 
 import com.connectexe.common.dto.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

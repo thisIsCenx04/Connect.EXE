@@ -1,4 +1,4 @@
-package com.connectexe.project.security;
+package com.connectexe.forum.security;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
