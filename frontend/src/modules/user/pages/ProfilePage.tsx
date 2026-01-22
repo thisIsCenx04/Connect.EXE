@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
+import { type ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../app/hooks'
-import { getKyc, getUserProfile, updateUserProfile, type UserProfile } from '../../../services/user'
+import { getKyc, getUserProfile, updateUserProfile, uploadUserAvatar, type UserProfile } from '../../../services/user'
 import { updateUser } from '../../auth/store/authSlice'
 
 interface ProfileFormValues {
@@ -23,8 +23,9 @@ export function ProfilePage() {
   const [kycStatus, setKycStatus] = useState<string | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [saving, setSaving] = useState(false)
+  const [avatarUploading, setAvatarUploading] = useState(false)
 
-  const { register, handleSubmit, reset } = useForm<ProfileFormValues>({
+  const { register, handleSubmit, reset, setValue, watch } = useForm<ProfileFormValues>({
     defaultValues: {
       fullName: '',
       avatarUrl: '',
@@ -35,9 +36,13 @@ export function ProfilePage() {
     },
   })
 
+  const avatarUrl = watch('avatarUrl')
+
+  const currentRole = profile?.role ?? user?.role ?? 'USER'
+
   const isVerified = useMemo(() => {
-    return profile?.role && ['FOUNDER', 'INVESTOR'].includes(profile.role) && profile.verifiedStatus === 'APPROVED'
-  }, [profile])
+    return currentRole && ['FOUNDER', 'INVESTOR'].includes(currentRole) && profile?.verifiedStatus === 'APPROVED'
+  }, [currentRole, profile?.verifiedStatus])
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -62,7 +67,8 @@ export function ProfilePage() {
           country: profile.country ?? '',
           city: profile.city ?? '',
         })
-        if (profile.role === 'INVESTOR') {
+        const roleToCheck = profile.role ?? user?.role
+        if (roleToCheck === 'USER') {
           try {
             const kyc = await getKyc(profile.id)
             setKycStatus(kyc.status)
@@ -76,6 +82,23 @@ export function ProfilePage() {
     }
     loadProfile()
   }, [reset, user?.id])
+
+  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file || !user?.id) return
+    setError(null)
+    setSuccess(null)
+    setAvatarUploading(true)
+    try {
+      const uploaded = await uploadUserAvatar(user.id, file)
+      setValue('avatarUrl', uploaded.url, { shouldDirty: true })
+      setSuccess('Avatar uploaded. Save changes to apply.')
+    } catch {
+      setError('Avatar upload failed.')
+    } finally {
+      setAvatarUploading(false)
+    }
+  }
 
   const onSubmit = async (values: ProfileFormValues) => {
     if (!user?.id) return
@@ -102,6 +125,7 @@ export function ProfilePage() {
     }
   }
 
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -109,13 +133,13 @@ export function ProfilePage() {
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Profile</p>
           <h1 className="display-font text-2xl font-semibold text-white">Your profile</h1>
           <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/50">
-            <span>Role: {profile?.role ?? user?.role ?? 'USER'}</span>
+            <span>Role: {currentRole}</span>
             {isVerified && (
               <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-emerald-200">
                 Verified
               </span>
             )}
-            {(profile?.role ?? user?.role) === 'INVESTOR' && (
+            {currentRole === 'USER' && (
               <span>KYC: {kycStatus ?? '...'}</span>
             )}
           </div>
@@ -128,13 +152,13 @@ export function ProfilePage() {
           >
             Change password
           </button>
-          {(profile?.role ?? user?.role) === 'INVESTOR' && (
+          {currentRole === 'USER' && (
             <button
               type="button"
               onClick={() => navigate('/kyc')}
               className="rounded-full btn-ghost px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80"
             >
-              Submit KYC
+              G?i KYC n?ng c?p
             </button>
           )}
         </div>
@@ -149,6 +173,27 @@ export function ProfilePage() {
               className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
             />
           </label>
+          <div className="grid gap-3 md:col-span-2 md:grid-cols-[1fr_auto] md:items-end">
+            <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+              Upload avatar
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={avatarUploading || saving}
+                className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white file:mr-4 file:rounded-full file:border-0 file:bg-white/10 file:px-4 file:py-2 file:text-xs file:font-semibold file:uppercase file:tracking-[0.2em] file:text-white/80"
+              />
+            </label>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt="Avatar preview"
+                className="h-16 w-16 rounded-full border border-white/10 object-cover"
+              />
+            ) : (
+              <div className="h-16 w-16 rounded-full border border-white/10 bg-white/5" />
+            )}
+          </div>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
             Avatar URL
             <input
@@ -215,6 +260,8 @@ export function ProfilePage() {
           </button>
         </div>
       </form>
+
+      
     </div>
   )
 }

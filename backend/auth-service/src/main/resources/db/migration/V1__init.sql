@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS investor_kyc (
   doc_type        varchar(30),
   doc_number      varchar(100),
   doc_file_url    text,
+  requested_role  varchar(20),
 
   submitted_at    timestamptz NOT NULL DEFAULT now(),
   reviewed_by     uuid REFERENCES users(id) ON DELETE SET NULL,
@@ -786,6 +787,29 @@ INSERT INTO plan_entitlements (plan_code, key, limit_value) VALUES
   ('INVESTOR','INVESTOR_CONTACT',NULL),
   ('INVESTOR','MATCHING_PRIORITY',1)
 ON CONFLICT (plan_code, key) DO NOTHING;
+
+-- ADMIN SEED
+INSERT INTO users (
+  email,
+  password_hash,
+  full_name,
+  role,
+  email_verified,
+  email_verified_at,
+  is_active,
+  created_at,
+  updated_at
+) VALUES (
+  'connectexe.dev@gmail.com',
+  '$2a$10$7msF045d2BfRXvWnEgK2GOpRBPvPWhkzybzkPGsEpFYjQoAiFmkDi',
+  'ConnectEXE Admin',
+  'ADMIN',
+  true,
+  now(),
+  true,
+  now(),
+  now()
+) ON CONFLICT (email) DO NOTHING;
 
 -- =========================================================
 -- END

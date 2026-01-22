@@ -38,7 +38,8 @@ export function OAuthCallbackPage() {
         emailVerified,
       },
     }))
-    navigate('/')
+    const destination = role === 'ADMIN' ? '/admin' : '/'
+    navigate(destination)
   }, [dispatch, navigate])
 
   return (

@@ -17,13 +17,26 @@ import {
   type SearchItem,
 } from '@/constants/layout'
 
+type MobileMenuItem = {
+  key: string
+  label: string
+  onClick: () => void
+  className?: string
+  show?: boolean
+}
+
 export function MainLayout() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
   const user = useAppSelector((state) => state.auth.user)
+
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement | null>(null)
+  const mobileMenuRef = useRef<HTMLDivElement | null>(null)
+  const mobileButtonRef = useRef<HTMLButtonElement | null>(null)
+
   const [chatOpen, setChatOpen] = useState(false)
   const [conversations, setConversations] = useState<ConversationSummary[]>([])
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
@@ -32,7 +45,7 @@ export function MainLayout() {
   const chatSocketRef = useRef<Socket | null>(null)
   const conversationRef = useRef<string | null>(null)
   const messagesRef = useRef<HTMLDivElement | null>(null)
-  
+
   // Search states
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<SearchItem[]>([])
@@ -40,10 +53,28 @@ export function MainLayout() {
   const searchRef = useRef<HTMLDivElement | null>(null)
 
   // Check if current path matches nav item
-  const isActivePath = useCallback((path: string) => {
-    if (path === '/') return location.pathname === '/'
-    return location.pathname.startsWith(path)
-  }, [location.pathname])
+  const isActivePath = useCallback(
+    (path: string) => {
+      if (path === '/') return location.pathname === '/'
+      return location.pathname.startsWith(path)
+    },
+    [location.pathname]
+  )
+
+  const handleNavClick = useCallback(
+    (path: string) => {
+      setMobileMenuOpen(false)
+      if (location.pathname === path) {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        return
+      }
+      navigate(path)
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }, 50)
+    },
+    [location.pathname, navigate]
+  )
 
   // Handle search
   const handleSearch = useCallback((query: string) => {
@@ -54,75 +85,70 @@ export function MainLayout() {
       return
     }
     const lowerQuery = query.toLowerCase()
-    const results = SEARCH_DATA.filter(item => 
+    const results = SEARCH_DATA.filter((item) =>
       item.title.toLowerCase().includes(lowerQuery) ||
-      item.keywords.some(kw => kw.includes(lowerQuery))
+      item.keywords.some((kw) => kw.includes(lowerQuery))
     )
     setSearchResults(results)
     setShowSearchDropdown(results.length > 0)
   }, [])
 
   // Handle search result click
-  const handleSearchResultClick = useCallback((item: SearchItem) => {
-    setShowSearchDropdown(false)
-    // Use item.title as the keyword to highlight, not the search query
-    const keyword = item.title
-    setSearchQuery('')
-    
-    if (item.section) {
-      // Navigate to home first if not there
-      if (location.pathname !== '/') {
-        navigate('/')
-        // Wait for navigation then scroll and highlight
-        setTimeout(() => {
-          const element = document.getElementById(item.section!)
+  const handleSearchResultClick = useCallback(
+    (item: SearchItem) => {
+      setShowSearchDropdown(false)
+      const keyword = item.title
+      setSearchQuery('')
+
+      if (item.section) {
+        if (location.pathname !== '/') {
+          navigate('/')
+          setTimeout(() => {
+            const element = document.getElementById(item.section!)
+            if (element) {
+              element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            }
+            if (keyword) {
+              setTimeout(() => highlightKeyword(keyword), 300)
+            }
+          }, 100)
+        } else {
+          const element = document.getElementById(item.section)
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' })
           }
-          // Highlight the keyword after scrolling
           if (keyword) {
             setTimeout(() => highlightKeyword(keyword), 300)
           }
-        }, 100)
+        }
       } else {
-        const element = document.getElementById(item.section)
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-        // Highlight the keyword after scrolling
+        navigate(item.path)
         if (keyword) {
-          setTimeout(() => highlightKeyword(keyword), 300)
+          setTimeout(() => {
+            highlightKeyword(keyword)
+          }, 300)
         }
       }
-    } else {
-      // Navigate and highlight keyword on the target page
-      navigate(item.path)
-      if (keyword) {
-        setTimeout(() => {
-          highlightKeyword(keyword)
-        }, 300)
-      }
-    }
-  }, [navigate, location.pathname])
+    },
+    [navigate, location.pathname]
+  )
 
   // Function to highlight keyword on page
   const highlightKeyword = useCallback((keyword: string) => {
     if (!keyword) return
-    
-    // Remove any existing highlights
-    document.querySelectorAll('.keyword-highlight').forEach(el => {
+
+    document.querySelectorAll('.keyword-highlight').forEach((el) => {
       const parent = el.parentNode
       if (parent) {
         parent.replaceChild(document.createTextNode(el.textContent || ''), el)
         parent.normalize()
       }
     })
-    
+
     const lowerKeyword = keyword.toLowerCase()
     const mainContent = document.querySelector('main')
     if (!mainContent) return
-    
-    // Find text nodes containing the keyword
+
     const walker = document.createTreeWalker(
       mainContent,
       NodeFilter.SHOW_TEXT,
@@ -133,66 +159,59 @@ export function MainLayout() {
             return NodeFilter.FILTER_ACCEPT
           }
           return NodeFilter.FILTER_REJECT
-        }
+        },
       }
     )
-    
+
     const nodesToHighlight: { node: Text; startIndex: number }[] = []
     let currentNode = walker.nextNode()
-    
+
     while (currentNode) {
       const text = currentNode.textContent?.toLowerCase() || ''
       const index = text.indexOf(lowerKeyword)
       if (index !== -1) {
         nodesToHighlight.push({ node: currentNode as Text, startIndex: index })
-        break // Only highlight first occurrence
+        break
       }
       currentNode = walker.nextNode()
     }
-    
-    // Highlight the first match
+
     if (nodesToHighlight.length > 0) {
       const { node, startIndex } = nodesToHighlight[0]
       const originalText = node.textContent || ''
       const matchedText = originalText.substring(startIndex, startIndex + keyword.length)
-      
-      // Split the text node
+
       const before = document.createTextNode(originalText.substring(0, startIndex))
       const after = document.createTextNode(originalText.substring(startIndex + keyword.length))
-      
-      // Create highlight span
+
       const highlightSpan = document.createElement('span')
       highlightSpan.className = 'keyword-highlight'
       highlightSpan.textContent = matchedText
-      
-      // Replace the node
+
       const parent = node.parentNode
       if (parent) {
         parent.insertBefore(before, node)
         parent.insertBefore(highlightSpan, node)
         parent.insertBefore(after, node)
         parent.removeChild(node)
-        
-        // Scroll to the highlighted element
+
         highlightSpan.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        
-        // Remove highlight when clicking anywhere
+
         const removeHighlight = (e: MouseEvent) => {
           const target = e.target as HTMLElement
-          // Only remove if clicking on non-interactive elements
           if (!target.closest('a, button, input, select, textarea')) {
             highlightSpan.classList.add('keyword-highlight-fade')
             setTimeout(() => {
-              const parent = highlightSpan.parentNode
-              if (parent) {
-                parent.replaceChild(document.createTextNode(highlightSpan.textContent || ''), highlightSpan)
-                parent.normalize()
+              const parent2 = highlightSpan.parentNode
+              if (parent2) {
+                parent2.replaceChild(document.createTextNode(highlightSpan.textContent || ''), highlightSpan)
+                parent2.normalize()
               }
             }, 1000)
             document.removeEventListener('click', removeHighlight)
           }
         }
-        
+
         setTimeout(() => {
           document.addEventListener('click', removeHighlight)
         }, 500)
@@ -202,6 +221,7 @@ export function MainLayout() {
 
   // Handle "Khám phá dự án" click - scroll to featured section
   const handleExploreProjectsClick = useCallback(() => {
+    setMobileMenuOpen(false)
     if (location.pathname !== '/') {
       navigate('/')
       setTimeout(() => {
@@ -241,13 +261,9 @@ export function MainLayout() {
   }, [user?.fullName])
 
   useEffect(() => {
-    if (!menuOpen) {
-      return
-    }
+    if (!menuOpen) return
     const handleClick = (event: MouseEvent) => {
-      if (!menuRef.current) {
-        return
-      }
+      if (!menuRef.current) return
       if (!menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false)
       }
@@ -257,9 +273,19 @@ export function MainLayout() {
   }, [menuOpen])
 
   useEffect(() => {
-    if (!chatOpen || !user?.id) {
-      return
+    if (!mobileMenuOpen) return
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (mobileMenuRef.current?.contains(target)) return
+      if (mobileButtonRef.current?.contains(target)) return
+      setMobileMenuOpen(false)
     }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [mobileMenuOpen])
+
+  useEffect(() => {
+    if (!chatOpen || !user?.id) return
     listConversations(user.id)
       .then((data) => {
         setConversations(data)
@@ -271,15 +297,11 @@ export function MainLayout() {
   }, [chatOpen, user?.id, activeConversationId])
 
   useEffect(() => {
-    if (!chatOpen || !user?.id) {
-      return
-    }
+    if (!chatOpen || !user?.id) return
     if (!chatSocketRef.current) {
       chatSocketRef.current = io(chatSocketUrl, { transports: ['websocket'] })
       chatSocketRef.current.on('message:new', (payload: ChatMessage) => {
-        if (payload.conversationId !== conversationRef.current) {
-          return
-        }
+        if (payload.conversationId !== conversationRef.current) return
         setMessages((prev) => [...prev, payload])
         if (payload.senderId !== user?.id) {
           chatSocketRef.current?.emit('message:read', {
@@ -308,13 +330,12 @@ export function MainLayout() {
 
   const handleLogout = () => {
     dispatch(logout())
+    setMobileMenuOpen(false)
     navigate('/login')
   }
 
   const handleSendMessage = () => {
-    if (!activeConversationId || !user?.id || !messageInput.trim()) {
-      return
-    }
+    if (!activeConversationId || !user?.id || !messageInput.trim()) return
     chatSocketRef.current?.emit('message:send', {
       conversationId: activeConversationId,
       senderId: user.id,
@@ -326,6 +347,66 @@ export function MainLayout() {
     }, 0)
   }
 
+  /**
+   * ✅ Refactor: mobile menu items (no duplication)
+   */
+  const mobileMenuBaseButtonClass =
+    'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition hover:border-white/30 hover:text-white'
+
+  const mobileMenuDangerButtonClass =
+    'w-full rounded-xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.25em] text-rose-200 transition hover:border-rose-400 hover:text-white'
+
+  const mobileMenuPrimaryButtonClass =
+    'w-full rounded-xl border border-violet-500/40 bg-violet-500/10 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.25em] text-violet-200 transition hover:border-violet-400 hover:text-white'
+
+  const mobileNavItems: MobileMenuItem[] = useMemo(() => {
+    return [
+      { key: 'home', label: 'Trang chủ', onClick: () => handleNavClick('/'), className: mobileMenuBaseButtonClass },
+      { key: 'projects', label: 'Dự án', onClick: () => handleNavClick('/projects'), className: mobileMenuBaseButtonClass },
+      { key: 'forum', label: 'Diễn đàn', onClick: () => handleNavClick('/forum'), className: mobileMenuBaseButtonClass },
+      { key: 'hof', label: 'Sảnh danh vọng', onClick: () => handleNavClick('/hall-of-fame'), className: mobileMenuBaseButtonClass },
+      { key: 'explore', label: 'Khám phá dự án', onClick: handleExploreProjectsClick, className: mobileMenuBaseButtonClass },
+      { key: 'about', label: 'Về chúng tôi', onClick: () => handleNavClick('/about'), className: mobileMenuBaseButtonClass },
+    ]
+  }, [handleExploreProjectsClick, handleNavClick, mobileMenuBaseButtonClass])
+
+  const mobileAuthItemsGuest: MobileMenuItem[] = useMemo(() => {
+    return [
+      { key: 'login', label: 'Đăng nhập', onClick: () => handleNavClick('/login'), className: mobileMenuBaseButtonClass },
+      { key: 'register', label: 'Đăng ký', onClick: () => handleNavClick('/register'), className: mobileMenuPrimaryButtonClass },
+    ]
+  }, [handleNavClick, mobileMenuBaseButtonClass, mobileMenuPrimaryButtonClass])
+
+  const mobileAuthItemsUser: MobileMenuItem[] = useMemo(() => {
+    return [
+      { key: 'profile', label: 'Hồ sơ', onClick: () => handleNavClick('/profile'), className: mobileMenuBaseButtonClass },
+      { key: 'mine', label: 'Dự án của tôi', onClick: () => handleNavClick('/projects/mine'), className: mobileMenuBaseButtonClass },
+      {
+        key: 'admin',
+        label: 'Admin dashboard',
+        onClick: () => handleNavClick('/admin/overview'),
+        className: mobileMenuBaseButtonClass,
+        show: user?.role === 'ADMIN',
+      },
+      { key: 'logout', label: 'Đăng xuất', onClick: handleLogout, className: mobileMenuDangerButtonClass },
+    ]
+  }, [handleLogout, handleNavClick, mobileMenuBaseButtonClass, mobileMenuDangerButtonClass, user?.role])
+
+  const renderMobileItems = useCallback((items: MobileMenuItem[]) => {
+    return items
+      .filter((item) => item.show !== false) // default show = true
+      .map((item) => (
+        <button
+          key={item.key}
+          type="button"
+          onClick={item.onClick}
+          className={item.className}
+        >
+          {item.label}
+        </button>
+      ))
+  }, [])
+
   return (
     <div className="page-shell text-white">
       <div className="app-sheen" aria-hidden="true" />
@@ -335,45 +416,55 @@ export function MainLayout() {
           <div className="flex shrink-0 items-center">
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => handleNavClick('/')}
               className="flex items-center text-white"
             >
               <Logo size="sm" />
             </button>
           </div>
-          
+
           {/* Combined nav container with all items */}
           <nav className="mx-4 hidden flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-3 py-1.5 lg:flex">
             <div className="flex items-center gap-1 text-[13px] font-semibold uppercase tracking-[0.15em] text-white/70">
-              <button 
-                onClick={() => navigate('/')} 
-                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/') && location.pathname === '/' ? 'bg-white/10 text-white' : ''}`}
-              >
-                Trang chủ
-              </button>
-              <button 
-                onClick={() => navigate('/projects')} 
-                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/projects') ? 'bg-white/10 text-white' : ''}`}
+              <button
+                onClick={() => handleNavClick('/projects')}
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${
+                  isActivePath('/projects') ? 'bg-white/10 text-white' : ''
+                }`}
               >
                 Dự án
               </button>
-              <button 
-                onClick={() => navigate('/forum')} 
-                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/forum') ? 'bg-white/10 text-white' : ''}`}
+              <button
+                onClick={() => handleNavClick('/forum')}
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${
+                  isActivePath('/forum') ? 'bg-white/10 text-white' : ''
+                }`}
               >
                 Diễn đàn
               </button>
-              <button 
-                onClick={() => navigate('/hall-of-fame')} 
-                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/hall-of-fame') ? 'bg-white/10 text-white' : ''}`}
+              <button
+              onClick={() => handleNavClick('/ai')}
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
+                isActivePath('/ai') ? 'bg-white/10 text-white' : ''}`}
+            >
+              AI Tools
+            </button>
+              <button
+                onClick={() => handleNavClick('/hall-of-fame')}
+                className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${
+                  isActivePath('/hall-of-fame') ? 'bg-white/10 text-white' : ''
+                }`}
               >
                 Sảnh danh vọng
               </button>
-              
+
               {/* Search input with dropdown */}
               <div className="relative mx-2" ref={searchRef}>
                 <div className="flex items-center gap-1">
-                  <button type="button" className="flex items-center justify-center text-white/60 transition hover:text-white">
+                  <button
+                    type="button"
+                    className="flex items-center justify-center text-white/60 transition hover:text-white"
+                  >
                     <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
                     </svg>
@@ -387,7 +478,7 @@ export function MainLayout() {
                     className="w-28 bg-transparent px-2 py-1 text-sm text-white placeholder-white/40 outline-none xl:w-36"
                   />
                 </div>
-                {/* Search dropdown */}
+
                 {showSearchDropdown && searchResults.length > 0 && (
                   <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-white/10 bg-[#0a0d1d]/95 p-2 shadow-xl backdrop-blur-md">
                     {searchResults.map((item, index) => (
@@ -409,40 +500,43 @@ export function MainLayout() {
                   </div>
                 )}
               </div>
-              
+
               <span className="text-white/30">|</span>
               <span className="whitespace-nowrap cursor-default px-3 py-2">Tin Tức</span>
               <span className="text-white/30">|</span>
-              <button onClick={handleExploreProjectsClick} className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white">
+              <button
+                onClick={handleExploreProjectsClick}
+                className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white"
+              >
                 Khám phá dự án
               </button>
               <span className="text-white/30">|</span>
-              <button 
-                onClick={() => navigate('/about')} 
-                className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/about') ? 'bg-white/10 text-white' : ''}`}
+              <button
+                onClick={() => handleNavClick('/about')}
+                className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
+                  isActivePath('/about') ? 'bg-white/10 text-white' : ''
+                }`}
               >
                 Về chúng tôi
               </button>
             </div>
           </nav>
-          
+
           {/* Mobile nav */}
           <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[13px] font-semibold uppercase tracking-[0.2em] text-white/70 md:flex lg:hidden">
-            <button 
-              onClick={() => navigate('/')} 
-              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/') && location.pathname === '/' ? 'bg-white/10 text-white' : ''}`}
-            >
-              Trang chủ
-            </button>
-            <button 
-              onClick={() => navigate('/projects')} 
-              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/projects') ? 'bg-white/10 text-white' : ''}`}
+            <button
+              onClick={() => handleNavClick('/projects')}
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
+                isActivePath('/projects') ? 'bg-white/10 text-white' : ''
+              }`}
             >
               Sản phẩm
             </button>
-            <button 
-              onClick={() => navigate('/forum')} 
-              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${isActivePath('/forum') ? 'bg-white/10 text-white' : ''}`}
+            <button
+              onClick={() => handleNavClick('/forum')}
+              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
+                isActivePath('/forum') ? 'bg-white/10 text-white' : ''
+              }`}
             >
               Diễn đàn
             </button>
@@ -450,80 +544,148 @@ export function MainLayout() {
 
           {/* Right side - User menu */}
           <div className="flex shrink-0 items-center gap-3">
-            {!user && (
-              <button
-                type="button"
-                onClick={() => navigate('/register')}
-                className="hidden whitespace-nowrap rounded-full border border-violet-500/50 bg-transparent px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-violet-400 transition hover:bg-violet-500/20 md:inline-flex"
-              >
-                Sign Up
-              </button>
-            )}
-            <div className="relative" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => setMenuOpen((open) => !open)}
-                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-white/50"
-              >
-                {user?.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.fullName ?? 'User'}
-                    className="h-7 w-7 shrink-0 rounded-full border border-white/20 object-cover"
-                  />
-                ) : (
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white/80">
-                    {initials}
+            {!user ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('/login')}
+                  className="hidden whitespace-nowrap rounded-full border border-white/20 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition hover:border-white/50 hover:text-white md:inline-flex"
+                >
+                  Đăng nhập
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleNavClick('/register')}
+                  className="hidden whitespace-nowrap rounded-full border border-violet-500/50 bg-transparent px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-violet-400 transition hover:bg-violet-500/20 md:inline-flex"
+                >
+                  Đăng ký
+                </button>
+              </>
+            ) : (
+              <div className="relative hidden md:block" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/80 transition hover:border-white/50"
+                >
+                  {user.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.fullName ?? 'User'}
+                      className="h-7 w-7 shrink-0 rounded-full border border-white/20 object-cover"
+                    />
+                  ) : (
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-xs font-semibold text-white/80">
+                      {initials}
+                    </span>
+                  )}
+                  <span className="max-w-[80px] truncate text-xs uppercase tracking-[0.15em] text-white/80">
+                    {user.fullName ?? 'User'}
                   </span>
-                )}
-                <span className="max-w-[80px] truncate text-xs uppercase tracking-[0.15em] text-white/80">
-                  {user?.fullName ?? 'Guest'}
-                </span>
-              </button>
-              {menuOpen && (
-                <div className="absolute right-1/2 mt-3 w-56 translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a0d1d]/80 p-2 shadow-xl backdrop-blur-md">
-                  <div className="px-3 py-2 text-sm uppercase tracking-[0.3em] text-white/50">
-                    {user?.fullName ?? 'Guest'}
+                </button>
+
+                {menuOpen && (
+                  <div className="absolute right-1/2 mt-3 w-56 translate-x-1/2 rounded-2xl border border-white/10 bg-[#0a0d1d]/80 p-2 shadow-xl backdrop-blur-md">
+                    <div className="px-3 py-2 text-sm uppercase tracking-[0.3em] text-white/50">
+                      {user.fullName ?? 'User'}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        handleNavClick('/profile')
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Hồ sơ
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        handleNavClick('/projects/mine')
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Dự án của tôi
+                    </button>
+
+                    {user.role === 'ADMIN' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMenuOpen(false)
+                          handleNavClick('/admin/overview')
+                        }}
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                      >
+                        Admin dashboard
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        handleLogout()
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Đăng xuất
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false)
-                      navigate('/profile')
-                    }}
-                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
-                  >
-                    Hồ sơ
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false)
-                      navigate('/projects')
-                    }}
-                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
-                  >
-                    Dự án
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMenuOpen(false)
-                      handleLogout()
-                    }}
-                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
+
+            <button
+              type="button"
+              ref={mobileButtonRef}
+              onClick={() => setMobileMenuOpen((open) => !open)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:text-white md:hidden"
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-menu"
+            >
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* ✅ Refactored Mobile Menu */}
+        {mobileMenuOpen && (
+          <div
+            id="mobile-nav-menu"
+            ref={mobileMenuRef}
+            className="w-full border-t border-white/10 bg-[#0a0d1d]/95 md:hidden"
+          >
+            <div className="mx-auto w-full max-w-[1400px] px-4 pb-4 pt-3">
+              <div className="flex items-center justify-between">
+                <div className="text-xs uppercase tracking-[0.3em] text-white/50">Menu</div>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                {renderMobileItems(mobileNavItems)}
+              </div>
+
+              <div className="mt-4 grid gap-2 border-t border-white/10 pt-4">
+                {!user
+                  ? renderMobileItems(mobileAuthItemsGuest)
+                  : renderMobileItems(mobileAuthItemsUser)}
+              </div>
+            </div>
+          </div>
+        )}
       </header>
+
       <main className="relative z-10 mx-auto w-full max-w-6xl px-6 py-10">
         <Outlet />
       </main>
+
       <footer className="relative z-10 mt-16 border-t border-white/10 bg-black/30 backdrop-blur-md">
         <div className="mx-auto w-full max-w-6xl px-6 py-10">
           <div className="grid gap-8 md:grid-cols-4">
@@ -533,25 +695,49 @@ export function MainLayout() {
                 {FOOTER_CONTENT.description}
               </p>
             </div>
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.explore.title}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">
+                {FOOTER_CONTENT.sections.explore.title}
+              </p>
               <div className="mt-3 space-y-2 text-base text-white/70">
                 {FOOTER_CONTENT.sections.explore.items.map((item) => (
-                  <button key={item.path} onClick={() => navigate(item.path)} className="block text-left hover:text-white">{item.label}</button>
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className="block text-left hover:text-white"
+                  >
+                    {item.label}
+                  </button>
                 ))}
               </div>
             </div>
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.menu.title}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">
+                {FOOTER_CONTENT.sections.menu.title}
+              </p>
               <div className="mt-3 space-y-2 text-base text-white/70">
                 {FOOTER_CONTENT.sections.menu.items.map((item) => (
-                  <button key={item.path} onClick={() => navigate(item.path)} className="block text-left hover:text-white">{item.label}</button>
+                  <button
+                    key={item.path}
+                    onClick={() => navigate(item.path)}
+                    className="block text-left hover:text-white"
+                  >
+                    {item.label}
+                  </button>
                 ))}
               </div>
             </div>
+
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">{FOOTER_CONTENT.sections.office.title}</p>
-              <p className="mt-3 text-base text-white/70">{FOOTER_CONTENT.sections.office.address}</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/50">
+                {FOOTER_CONTENT.sections.office.title}
+              </p>
+              <p className="mt-3 text-base text-white/70">
+                {FOOTER_CONTENT.sections.office.address}
+              </p>
+
               <div className="mt-4 flex items-center gap-3">
                 <a
                   href={FOOTER_CONTENT.social.facebook}
@@ -560,9 +746,10 @@ export function MainLayout() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </a>
+
                 <a
                   href={FOOTER_CONTENT.social.linkedin}
                   target="_blank"
@@ -570,9 +757,10 @@ export function MainLayout() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-[#0A66C2] hover:bg-[#0A66C2] hover:text-white"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                   </svg>
                 </a>
+
                 <a
                   href={FOOTER_CONTENT.social.twitter}
                   target="_blank"
@@ -580,15 +768,19 @@ export function MainLayout() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60 transition-all duration-200 hover:border-white hover:bg-white hover:text-black"
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
               </div>
             </div>
           </div>
-          <div className="mt-8 text-sm uppercase tracking-[0.2em] text-white/40">{FOOTER_CONTENT.copyright}</div>
+
+          <div className="mt-8 text-sm uppercase tracking-[0.2em] text-white/40">
+            {FOOTER_CONTENT.copyright}
+          </div>
         </div>
       </footer>
+
       {user && (
         <>
           <button
@@ -612,6 +804,7 @@ export function MainLayout() {
               />
             </svg>
           </button>
+
           {chatOpen && (
             <div
               className="fixed inset-0 z-[70] flex items-end justify-end bg-black/40 p-4"
@@ -632,6 +825,7 @@ export function MainLayout() {
                       Dong
                     </button>
                   </div>
+
                   <div className="flex-1 overflow-y-auto px-2 pb-3">
                     {conversations.length === 0 && (
                       <div className="px-3 py-4 text-xs text-white/50">Chua co cuoc hoi thoai.</div>
@@ -648,9 +842,7 @@ export function MainLayout() {
                         }`}
                       >
                         <div className="text-xs uppercase tracking-[0.2em] text-white/50">Conversation</div>
-                        <div className="mt-1 font-semibold text-white">
-                          {conversation.id.slice(0, 8)}
-                        </div>
+                        <div className="mt-1 font-semibold text-white">{conversation.id.slice(0, 8)}</div>
                         <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">
                           {new Date(conversation.created_at).toLocaleDateString()}
                         </div>
@@ -658,6 +850,7 @@ export function MainLayout() {
                     ))}
                   </div>
                 </div>
+
                 <div className="flex w-2/3 flex-col">
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div>
@@ -674,19 +867,16 @@ export function MainLayout() {
                       Dong
                     </button>
                   </div>
+
                   <div ref={messagesRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                    {messages.length === 0 && (
-                      <div className="text-sm text-white/50">Chua co tin nhan.</div>
-                    )}
+                    {messages.length === 0 && <div className="text-sm text-white/50">Chua co tin nhan.</div>}
                     {messages.map((message) => {
                       const isOwn = message.senderId === user.id
                       return (
                         <div
                           key={message.id}
                           className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${
-                            isOwn
-                              ? 'ml-auto bg-gradient-to-r from-sky-500 to-blue-600 text-white'
-                              : 'bg-black/40 text-white/80'
+                            isOwn ? 'ml-auto bg-gradient-to-r from-sky-500 to-blue-600 text-white' : 'bg-black/40 text-white/80'
                           }`}
                         >
                           <div>{message.content}</div>
@@ -697,6 +887,7 @@ export function MainLayout() {
                       )
                     })}
                   </div>
+
                   <div className="border-t border-white/10 p-4">
                     <div className="flex gap-3">
                       <input
@@ -705,9 +896,7 @@ export function MainLayout() {
                         className="flex-1 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm text-white"
                         placeholder="Type your message"
                         onKeyDown={(event) => {
-                          if (event.key === 'Enter') {
-                            handleSendMessage()
-                          }
+                          if (event.key === 'Enter') handleSendMessage()
                         }}
                       />
                       <button
@@ -720,6 +909,7 @@ export function MainLayout() {
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
           )}
