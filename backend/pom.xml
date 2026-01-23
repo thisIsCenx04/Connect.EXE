@@ -20,8 +20,13 @@
 	<modules>
 		<module>common-lib</module>
 		<module>auth-service</module>
+		<module>user-service</module>
 		<module>project-service</module>
 		<module>halloffame-service</module>
+		<module>forum-service</module>
+		<module>admin-service</module>
+		<module>ai-service</module>
+		<module>payment-service</module>
 	</modules>
 
 	<properties>
@@ -39,4 +44,15 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.36</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
 </project>

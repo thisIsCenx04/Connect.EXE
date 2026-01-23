@@ -1,12 +1,20 @@
 package com.connectexe.common.dto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponse {
-    private final String code;
-    private final String message;
-    private final String path;
-    private final Instant timestamp;
+    private String code;
+    private String message;
+    private String path;
+    private Instant timestamp;
 
     public ErrorResponse(String code, String message, String path) {
         this.code = code;
@@ -15,19 +23,4 @@ public class ErrorResponse {
         this.timestamp = Instant.now();
     }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public Instant getTimestamp() {
-        return timestamp;
-    }
 }

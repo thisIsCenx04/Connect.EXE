@@ -1,4 +1,7 @@
 package com.connectexe.halloffame.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -14,6 +17,9 @@ import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "hall_of_fame_votes")
+@Getter
+@Setter
+@NoArgsConstructor
 public class HallOfFameVote {
     @EmbeddedId
     private HallOfFameVoteId id;
@@ -30,31 +36,4 @@ public class HallOfFameVote {
     @CreationTimestamp
     private OffsetDateTime createdAt;
 
-    public HallOfFameVoteId getId() {
-        return id;
-    }
-
-    public void setId(HallOfFameVoteId id) {
-        this.id = id;
-    }
-
-    public HallOfFameEntry getEntry() {
-        return entry;
-    }
-
-    public void setEntry(HallOfFameEntry entry) {
-        this.entry = entry;
-    }
-
-    public short getValue() {
-        return value;
-    }
-
-    public void setValue(short value) {
-        this.value = value;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

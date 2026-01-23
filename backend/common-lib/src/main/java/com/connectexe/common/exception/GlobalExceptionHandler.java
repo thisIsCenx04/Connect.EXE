@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import java.util.stream.Collectors;
 
@@ -75,6 +76,13 @@ public class GlobalExceptionHandler {
         logger.warn("Bad request {} {}", request.getMethod(), request.getRequestURI(), ex);
         ErrorResponse body = new ErrorResponse("BAD_REQUEST", "Malformed request body", request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+
+    @ExceptionHandler(AsyncRequestNotUsableException.class)
+    public ResponseEntity<Void> handleAsyncNotUsable(AsyncRequestNotUsableException ex,
+                                                     HttpServletRequest request) {
+        logger.debug("Async request closed {} {}", request.getMethod(), request.getRequestURI());
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(Exception.class)

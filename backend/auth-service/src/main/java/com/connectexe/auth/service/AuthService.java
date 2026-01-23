@@ -153,14 +153,7 @@ public class AuthService {
     }
 
     private UserRole resolveRole(RegisterRequest request) {
-        UserRole role = request.getRole() == null ? UserRole.USER : request.getRole();
-        if (role != UserRole.USER
-            && role != UserRole.FOUNDER
-            && role != UserRole.INVESTOR
-            && role != UserRole.MENTOR) {
-            throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_ROLE", "Role not allowed for self-registration");
-        }
-        return role;
+        return UserRole.USER;
     }
 
     public void verifyEmail(EmailVerificationRequest request) {

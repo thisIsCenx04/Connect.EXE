@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAppSelector } from '../../app/hooks'
+import { tokenStorage } from '../../services/tokenStorage'
 
 export function RequireAuth({
   children,
@@ -9,9 +10,13 @@ export function RequireAuth({
   children: ReactNode
   roles?: string[]
 }) {
-  const { accessToken, user } = useAppSelector((state) => state.auth)
+  const { accessToken, refreshToken, user } = useAppSelector((state) => state.auth)
 
-  if (!accessToken) {
+  if ((!accessToken || tokenStorage.isTokenExpired(accessToken)) && refreshToken) {
+    return null
+  }
+
+  if (!accessToken || tokenStorage.isTokenExpired(accessToken)) {
     return <Navigate to="/login" replace />
   }
 

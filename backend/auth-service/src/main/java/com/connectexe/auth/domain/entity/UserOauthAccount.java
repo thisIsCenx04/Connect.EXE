@@ -1,4 +1,7 @@
 package com.connectexe.auth.domain.entity;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import com.connectexe.auth.domain.enums.OauthProvider;
 import jakarta.persistence.Column;
@@ -16,6 +19,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "user_oauth_accounts")
+@Getter
+@Setter
+@NoArgsConstructor
 public class UserOauthAccount {
     @Id
     @GeneratedValue
@@ -36,39 +42,4 @@ public class UserOauthAccount {
     @CreationTimestamp
     private OffsetDateTime createdAt;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public OauthProvider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(OauthProvider provider) {
-        this.provider = provider;
-    }
-
-    public String getProviderUid() {
-        return providerUid;
-    }
-
-    public void setProviderUid(String providerUid) {
-        this.providerUid = providerUid;
-    }
-
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

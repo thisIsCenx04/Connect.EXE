@@ -19,7 +19,7 @@ interface AuthState {
 const initialState: AuthState = {
   accessToken: tokenStorage.getAccessToken(),
   refreshToken: tokenStorage.getRefreshToken(),
-  user: null,
+  user: tokenStorage.getUser<AuthState['user']>(),
 }
 
 const authSlice = createSlice({
@@ -38,6 +38,7 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refreshToken
       state.user = action.payload.user
       tokenStorage.setTokens(action.payload.accessToken, action.payload.refreshToken)
+      tokenStorage.setUser(action.payload.user)
     },
     logout: (state) => {
       state.accessToken = null
@@ -47,6 +48,7 @@ const authSlice = createSlice({
     },
     updateUser: (state, action: PayloadAction<AuthState['user']>) => {
       state.user = action.payload
+      tokenStorage.setUser(action.payload)
     },
   },
 })

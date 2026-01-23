@@ -95,6 +95,23 @@ DO $$ BEGIN
   CREATE TYPE payment_provider AS ENUM ('STRIPE','MANUAL');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_enum e
+    JOIN pg_type t ON t.oid = e.enumtypid
+    WHERE t.typname = 'payment_provider' AND e.enumlabel = 'VNPAY'
+  ) THEN
+    ALTER TYPE payment_provider ADD VALUE 'VNPAY';
+  END IF;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_enum e
+    JOIN pg_type t ON t.oid = e.enumtypid
+    WHERE t.typname = 'payment_provider' AND e.enumlabel = 'MOMO'
+  ) THEN
+    ALTER TYPE payment_provider ADD VALUE 'MOMO';
+  END IF;
+END $$;
+
 -- audit
 DO $$ BEGIN
   CREATE TYPE audit_action AS ENUM ('CREATE','UPDATE','DELETE','APPROVE','REJECT','LOGIN');
@@ -169,6 +186,7 @@ CREATE TABLE IF NOT EXISTS investor_kyc (
   doc_type        varchar(30),
   doc_number      varchar(100),
   doc_file_url    text,
+  requested_role  varchar(20),
 
   submitted_at    timestamptz NOT NULL DEFAULT now(),
   reviewed_by     uuid REFERENCES users(id) ON DELETE SET NULL,
@@ -228,6 +246,22 @@ DO $$ BEGIN
   CREATE TYPE project_status AS ENUM ('DRAFT','PUBLISHED','MATCHING','IN_DEAL','CLOSED','HIDDEN');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
+DO $$ BEGIN
+  CREATE TYPE project_moderation_status AS ENUM ('PENDING','APPROVED','REJECTED');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_visibility AS ENUM ('PUBLIC','PRIVATE','HIDDEN');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_link_type AS ENUM ('WEBSITE','PITCH_DECK','DEMO','REPO','SOCIAL','OTHER');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE project_media_role AS ENUM ('COVER','GALLERY','DOCUMENT');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 CREATE TABLE IF NOT EXISTS projects (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   owner_id         uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -269,6 +303,20 @@ CREATE TRIGGER trg_projects_updated_at
 BEFORE UPDATE ON projects
 FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+ALTER TABLE projects
+  ADD COLUMN IF NOT EXISTS summary text,
+  ADD COLUMN IF NOT EXISTS content text,
+  ADD COLUMN IF NOT EXISTS moderation_status project_moderation_status NOT NULL DEFAULT 'PENDING',
+  ADD COLUMN IF NOT EXISTS visibility project_visibility NOT NULL DEFAULT 'PRIVATE',
+  ADD COLUMN IF NOT EXISTS funding_target_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS funding_raised_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS valuation_usd numeric(14,2),
+  ADD COLUMN IF NOT EXISTS funding_timeline text,
+  ADD COLUMN IF NOT EXISTS traction_metrics text,
+  ADD COLUMN IF NOT EXISTS submitted_at timestamptz,
+  ADD COLUMN IF NOT EXISTS reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS reviewed_at timestamptz;
+
 DO $$ BEGIN
   CREATE TYPE project_member_role AS ENUM ('FOUNDER','CO_FOUNDER','MEMBER','ADVISOR','INVESTOR');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -304,6 +352,23 @@ CREATE TABLE IF NOT EXISTS project_attachments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_attachments_project ON project_attachments(project_id);
+
+ALTER TABLE project_attachments
+  ADD COLUMN IF NOT EXISTS role project_media_role,
+  ADD COLUMN IF NOT EXISTS sort_order int,
+  ADD COLUMN IF NOT EXISTS caption text;
+
+CREATE TABLE IF NOT EXISTS project_links (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  project_id uuid NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  type project_link_type NOT NULL,
+  label varchar(120),
+  url text NOT NULL,
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_links_project ON project_links(project_id);
 
 
 CREATE TABLE IF NOT EXISTS project_interests (
@@ -486,10 +551,96 @@ CREATE TABLE IF NOT EXISTS hall_of_fame_votes (
   PRIMARY KEY (entry_id, user_id)
 );
 
+DO $$ BEGIN
+  CREATE TYPE hof_post_type AS ENUM ('STARTUP','PERSON','PROJECT_STORY');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_post_status AS ENUM ('DRAFT','PUBLISHED','ARCHIVED');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_link_type AS ENUM ('WEBSITE','PITCH_DECK','DEMO','REPO','SOCIAL','OTHER');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE hof_media_role AS ENUM ('COVER','GALLERY');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_posts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type hof_post_type NOT NULL,
+  source_project_id uuid REFERENCES projects(id) ON DELETE SET NULL,
+  title varchar(200) NOT NULL,
+  summary text,
+  body text NOT NULL,
+  cover_url text,
+  status hof_post_status NOT NULL DEFAULT 'DRAFT',
+  created_by uuid REFERENCES users(id) ON DELETE SET NULL,
+  published_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS trg_hof_posts_updated_at ON hall_of_fame_posts;
+CREATE TRIGGER trg_hof_posts_updated_at
+BEFORE UPDATE ON hall_of_fame_posts
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_tags (
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  tag varchar(50) NOT NULL,
+  PRIMARY KEY (post_id, tag)
+);
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_links (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  type hof_link_type NOT NULL,
+  label varchar(120),
+  url text NOT NULL,
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hof_links_post ON hall_of_fame_post_links(post_id);
+
+CREATE TABLE IF NOT EXISTS hall_of_fame_post_media (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES hall_of_fame_posts(id) ON DELETE CASCADE,
+  file_url text NOT NULL,
+  role hof_media_role NOT NULL DEFAULT 'GALLERY',
+  sort_order int NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hof_media_post ON hall_of_fame_post_media(post_id);
+
 
 -- =========================================================
 -- 8) MATCHING + CHAT
 -- =========================================================
+
+CREATE TABLE IF NOT EXISTS investor_preferences (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  industries text,
+  stages text,
+  min_funding_usd numeric(14,2),
+  max_funding_usd numeric(14,2),
+  country varchar(2),
+  city varchar(120),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_investor_preferences_user ON investor_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_investor_preferences_country ON investor_preferences(country);
+
+DROP TRIGGER IF EXISTS trg_investor_preferences_updated_at ON investor_preferences;
+CREATE TRIGGER trg_investor_preferences_updated_at
+BEFORE UPDATE ON investor_preferences
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 CREATE TABLE IF NOT EXISTS match_recommendations (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -583,6 +734,101 @@ CREATE TABLE IF NOT EXISTS usage_counters (
 
 CREATE INDEX IF NOT EXISTS idx_usage_user_period ON usage_counters(user_id, period_ym);
 
+CREATE TABLE IF NOT EXISTS payment_orders (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  plan_code plan_code NOT NULL REFERENCES plans(code),
+  duration_months int NOT NULL,
+  amount_vnd bigint NOT NULL,
+  provider payment_provider NOT NULL,
+  status varchar(20) NOT NULL DEFAULT 'PENDING',
+  order_code varchar(80) NOT NULL UNIQUE,
+  request_id varchar(80),
+  provider_trans_id varchar(120),
+  response_code varchar(40),
+  pay_url text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_payment_orders_user ON payment_orders(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_payment_orders_order_code ON payment_orders(order_code);
+
+DROP TRIGGER IF EXISTS trg_payment_orders_updated_at ON payment_orders;
+CREATE TRIGGER trg_payment_orders_updated_at
+BEFORE UPDATE ON payment_orders
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+
+-- =========================================================
+-- CONTENT + RESOURCES (Startup Hub / News / Library)
+-- =========================================================
+
+DO $$ BEGIN
+  CREATE TYPE content_type AS ENUM ('ARTICLE','EVENT','COMPETITION','TREND');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE content_status AS ENUM ('DRAFT','PUBLISHED','ARCHIVED');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE resource_type AS ENUM ('FILE','LINK');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE TABLE IF NOT EXISTS content_items (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type          content_type NOT NULL,
+  status        content_status NOT NULL DEFAULT 'DRAFT',
+  title         varchar(200) NOT NULL,
+  slug          varchar(220) UNIQUE,
+  summary       text,
+  body          text,
+  cover_url     text,
+  tags          text[],
+
+  -- optional event/competition fields
+  start_at      timestamptz,
+  end_at        timestamptz,
+  location      varchar(255),
+  external_url  text,
+
+  created_by    uuid REFERENCES users(id) ON DELETE SET NULL,
+  published_at  timestamptz,
+
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  updated_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_content_type_status ON content_items(type, status);
+CREATE INDEX IF NOT EXISTS idx_content_published ON content_items(published_at DESC);
+CREATE INDEX IF NOT EXISTS idx_content_title_trgm ON content_items USING gin (title gin_trgm_ops);
+
+DROP TRIGGER IF EXISTS trg_content_items_updated_at ON content_items;
+CREATE TRIGGER trg_content_items_updated_at
+BEFORE UPDATE ON content_items
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+CREATE TABLE IF NOT EXISTS resource_items (
+  id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  title         varchar(200) NOT NULL,
+  description   text,
+  type          resource_type NOT NULL,
+  url           text NOT NULL,
+  tags          text[],
+  status        content_status NOT NULL DEFAULT 'PUBLISHED',
+  created_by    uuid REFERENCES users(id) ON DELETE SET NULL,
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  updated_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_resource_status ON resource_items(status);
+CREATE INDEX IF NOT EXISTS idx_resource_title_trgm ON resource_items USING gin (title gin_trgm_ops);
+
+DROP TRIGGER IF EXISTS trg_resource_items_updated_at ON resource_items;
+CREATE TRIGGER trg_resource_items_updated_at
+BEFORE UPDATE ON resource_items
+FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- =========================================================
 -- 10) ADMIN / AUDIT LOGS
@@ -653,6 +899,29 @@ INSERT INTO plan_entitlements (plan_code, key, limit_value) VALUES
   ('INVESTOR','INVESTOR_CONTACT',NULL),
   ('INVESTOR','MATCHING_PRIORITY',1)
 ON CONFLICT (plan_code, key) DO NOTHING;
+
+-- ADMIN SEED
+INSERT INTO users (
+  email,
+  password_hash,
+  full_name,
+  role,
+  email_verified,
+  email_verified_at,
+  is_active,
+  created_at,
+  updated_at
+) VALUES (
+  'connectexe.dev@gmail.com',
+  '$2a$10$7msF045d2BfRXvWnEgK2GOpRBPvPWhkzybzkPGsEpFYjQoAiFmkDi',
+  'ConnectEXE Admin',
+  'ADMIN',
+  true,
+  now(),
+  true,
+  now(),
+  now()
+) ON CONFLICT (email) DO NOTHING;
 
 -- =========================================================
 -- END

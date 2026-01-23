@@ -1,10 +1,18 @@
 package com.connectexe.project.dto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import com.connectexe.project.domain.enums.ProjectMemberRole;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectMemberAddRequest {
     @NotNull
     private UUID userId;
@@ -12,19 +20,4 @@ public class ProjectMemberAddRequest {
     @NotNull
     private ProjectMemberRole role;
 
-    public UUID getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UUID userId) {
-        this.userId = userId;
-    }
-
-    public ProjectMemberRole getRole() {
-        return role;
-    }
-
-    public void setRole(ProjectMemberRole role) {
-        this.role = role;
-    }
 }

@@ -1,4 +1,8 @@
 package com.connectexe.project.dto;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import com.connectexe.project.domain.enums.DealType;
 import com.connectexe.project.domain.enums.ProjectMemberRole;
@@ -8,7 +12,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProjectCreateRequest {
     @NotBlank
     @Size(max = 200)
@@ -16,6 +25,10 @@ public class ProjectCreateRequest {
 
     @NotBlank
     private String description;
+
+    private String summary;
+
+    private String content;
 
     @NotNull
     private ProjectStage stage;
@@ -32,99 +45,28 @@ public class ProjectCreateRequest {
 
     private BigDecimal fundingNeedUsd;
 
+    private BigDecimal fundingTargetUsd;
+
+    private BigDecimal fundingRaisedUsd;
+
+    private BigDecimal valuationUsd;
+
     private BigDecimal equityPercent;
 
     private String tractionSummary;
+
+    private String fundingTimeline;
+
+    private String tractionMetrics;
 
     private String pitchDeckUrl;
 
     private ProjectMemberRole creatorRole;
 
-    public String getTitle() {
-        return title;
-    }
+    private List<String> tags;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    private List<ProjectLinkRequest> links;
 
-    public String getDescription() {
-        return description;
-    }
+    private List<ProjectMediaRequest> media;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ProjectStage getStage() {
-        return stage;
-    }
-
-    public void setStage(ProjectStage stage) {
-        this.stage = stage;
-    }
-
-    public String getIndustry() {
-        return industry;
-    }
-
-    public void setIndustry(String industry) {
-        this.industry = industry;
-    }
-
-    public DealType getDealType() {
-        return dealType;
-    }
-
-    public void setDealType(DealType dealType) {
-        this.dealType = dealType;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public BigDecimal getFundingNeedUsd() {
-        return fundingNeedUsd;
-    }
-
-    public void setFundingNeedUsd(BigDecimal fundingNeedUsd) {
-        this.fundingNeedUsd = fundingNeedUsd;
-    }
-
-    public BigDecimal getEquityPercent() {
-        return equityPercent;
-    }
-
-    public void setEquityPercent(BigDecimal equityPercent) {
-        this.equityPercent = equityPercent;
-    }
-
-    public String getTractionSummary() {
-        return tractionSummary;
-    }
-
-    public void setTractionSummary(String tractionSummary) {
-        this.tractionSummary = tractionSummary;
-    }
-
-    public String getPitchDeckUrl() {
-        return pitchDeckUrl;
-    }
-
-    public void setPitchDeckUrl(String pitchDeckUrl) {
-        this.pitchDeckUrl = pitchDeckUrl;
-    }
-
-    public ProjectMemberRole getCreatorRole() {
-        return creatorRole;
-    }
-
-    public void setCreatorRole(ProjectMemberRole creatorRole) {
-        this.creatorRole = creatorRole;
-    }
 }
