@@ -23,50 +23,68 @@ export function AdminRevenuePage() {
     }
   }, [])
 
-  const currencyFormatter = useMemo(() => new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }), [])
+  const currencyFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        maximumFractionDigits: 0,
+      }),
+    []
+  )
 
   const numberFormatter = useMemo(() => new Intl.NumberFormat('en-US'), [])
+
+  const maxPlanValue = useMemo(() => {
+    return revenue?.planBreakdown.reduce((max, plan) => Math.max(max, plan.activeSubscriptions), 0) ?? 0
+  }, [revenue])
 
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Revenue</p>
-        <h2 className="display-font text-xl font-semibold text-white">Subscription snapshot</h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Revenue</p>
+        <h2 className="display-font text-2xl font-semibold text-slate-900">Subscription snapshot</h2>
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
           {error}
         </div>
       )}
 
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
-        <div className="card-surface rounded-3xl border border-white/10 p-6">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/50">Total active</div>
-          <div className="mt-2 text-2xl font-semibold text-white">
+        <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Total active</div>
+          <div className="mt-2 text-2xl font-semibold text-slate-900">
             {revenue ? numberFormatter.format(revenue.activeSubscriptions) : '--'}
           </div>
-          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-white/50">Estimated monthly revenue</div>
-          <div className="mt-2 text-xl font-semibold text-white">
+          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">Estimated monthly revenue</div>
+          <div className="mt-2 text-xl font-semibold text-slate-900">
             {revenue ? currencyFormatter.format(revenue.estimatedMonthlyRevenue) : '--'}
           </div>
         </div>
-        <div className="card-surface rounded-3xl border border-white/10 p-6">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/50">Plan breakdown</div>
-          <div className="mt-4 space-y-3">
+        <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Plan breakdown</div>
+          <div className="mt-4 space-y-4">
             {revenue?.planBreakdown.map((plan) => (
-              <div key={plan.planCode} className="flex items-center justify-between text-sm text-white/80">
-                <span>{plan.planCode}</span>
-                <span>{numberFormatter.format(plan.activeSubscriptions)} subs</span>
-                <span className="text-white/60">{currencyFormatter.format(plan.estimatedMonthlyRevenue)}</span>
+              <div key={plan.planCode} className="space-y-2">
+                <div className="flex items-center justify-between text-sm text-slate-700">
+                  <span>{plan.planCode}</span>
+                  <span>{numberFormatter.format(plan.activeSubscriptions)} subs</span>
+                  <span className="text-slate-500">{currencyFormatter.format(plan.estimatedMonthlyRevenue)}</span>
+                </div>
+                <div className="h-2 rounded-full bg-slate-100">
+                  <div
+                    className="h-2 rounded-full bg-gradient-to-r from-orange-300 to-rose-300"
+                    style={{
+                      width: maxPlanValue === 0 ? '8%' : `${(plan.activeSubscriptions / maxPlanValue) * 100}%`,
+                    }}
+                  />
+                </div>
               </div>
             ))}
             {!revenue?.planBreakdown.length && (
-              <div className="text-sm text-white/50">No revenue data.</div>
+              <div className="text-sm text-slate-500">No revenue data.</div>
             )}
           </div>
         </div>

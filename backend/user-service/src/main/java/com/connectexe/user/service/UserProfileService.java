@@ -119,9 +119,25 @@ public class UserProfileService {
 
     public KycResponse getKyc(UUID userId, User requester) {
         assertSelfOrAdmin(userId, requester);
-        InvestorKyc kyc = investorKycRepository.findByUserId(userId)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "KYC_NOT_FOUND", "KYC not found"));
-        return toKycResponse(kyc);
+        return investorKycRepository.findByUserId(userId)
+            .map(this::toKycResponse)
+            .orElseGet(() -> new KycResponse(
+                null,
+                userId,
+                VerificationStatus.NONE,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            ));
     }
 
     public KycResponse reviewKyc(UUID userId, KycReviewRequest request, User requester) {

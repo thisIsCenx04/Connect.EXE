@@ -59,13 +59,13 @@ export function AdminAiUsagePage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">AI Usage</p>
-          <h2 className="display-font text-xl font-semibold text-white">Request volume</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">AI Usage</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Request volume</h2>
         </div>
         <select
           value={aiDays}
           onChange={(event) => setAiDays(Number(event.target.value))}
-          className="rounded-full border border-white/10 bg-black/40 px-4 py-2 text-xs text-white"
+          className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
         >
           <option value={7}>Last 7 days</option>
           <option value={14}>Last 14 days</option>
@@ -74,42 +74,42 @@ export function AdminAiUsagePage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
           {error}
         </div>
       )}
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="card-surface rounded-3xl border border-white/10 p-6">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/50">Requests by day</div>
+        <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Requests by day</div>
           <div className="mt-4 flex h-36 items-end gap-2">
             {dailyAi.map((item) => (
               <div key={item.day} className="flex h-full flex-1 flex-col items-center justify-end">
                 <div
-                  className="w-full rounded-full bg-gradient-to-t from-sky-500/70 to-indigo-400/70"
+                  className="w-full rounded-full bg-gradient-to-t from-orange-300 to-rose-300"
                   style={{
                     height: aiMax === 0 ? '10%' : `${Math.max(12, (item.total / aiMax) * 100)}%`,
                   }}
                 />
-                <div className="mt-2 text-[10px] text-white/40">{item.day.slice(5)}</div>
+                <div className="mt-2 text-[10px] text-slate-400">{item.day.slice(5)}</div>
               </div>
             ))}
             {dailyAi.length === 0 && (
-              <div className="text-sm text-white/50">No AI usage yet.</div>
+              <div className="text-sm text-slate-500">No AI usage yet.</div>
             )}
           </div>
         </div>
-        <div className="card-surface rounded-3xl border border-white/10 p-6">
-          <div className="text-xs uppercase tracking-[0.3em] text-white/50">Top users</div>
+        <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Top users</div>
           <div className="mt-4 space-y-3">
             {aiTopUsers.map((user) => (
-              <div key={user.name} className="flex items-center justify-between text-sm text-white/80">
+              <div key={user.name} className="flex items-center justify-between text-sm text-slate-700">
                 <span className="truncate">{user.name}</span>
-                <span className="text-white/60">{numberFormatter.format(user.total)}</span>
+                <span className="text-slate-500">{numberFormatter.format(user.total)}</span>
               </div>
             ))}
             {aiTopUsers.length === 0 && (
-              <div className="text-sm text-white/50">No usage data.</div>
+              <div className="text-sm text-slate-500">No usage data.</div>
             )}
           </div>
         </div>

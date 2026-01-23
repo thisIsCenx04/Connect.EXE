@@ -30,6 +30,10 @@ export function MainLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const user = useAppSelector((state) => state.auth.user)
+  const [isLight, setIsLight] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.localStorage.getItem('main-theme') === 'light'
+  })
 
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -51,6 +55,12 @@ export function MainLayout() {
   const [searchResults, setSearchResults] = useState<SearchItem[]>([])
   const [showSearchDropdown, setShowSearchDropdown] = useState(false)
   const searchRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    document.documentElement.classList.toggle('theme-light', isLight)
+    window.localStorage.setItem('main-theme', isLight ? 'light' : 'dark')
+  }, [isLight])
 
   // Check if current path matches nav item
   const isActivePath = useCallback(
@@ -219,24 +229,24 @@ export function MainLayout() {
     }
   }, [])
 
-  // Handle "Khám phá dự án" click - scroll to featured section
-  const handleExploreProjectsClick = useCallback(() => {
-    setMobileMenuOpen(false)
-    if (location.pathname !== '/') {
-      navigate('/')
-      setTimeout(() => {
-        const element = document.getElementById('featured-projects')
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-      }, 100)
-    } else {
-      const element = document.getElementById('featured-projects')
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    }
-  }, [navigate, location.pathname])
+  // // Handle "Khám phá dự án" click - scroll to featured section
+  // const handleExploreProjectsClick = useCallback(() => {
+  //   setMobileMenuOpen(false)
+  //   if (location.pathname !== '/') {
+  //     navigate('/')
+  //     setTimeout(() => {
+  //       const element = document.getElementById('featured-projects')
+  //       if (element) {
+  //         element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  //       }
+  //     }, 100)
+  //   } else {
+  //     const element = document.getElementById('featured-projects')
+  //     if (element) {
+  //       element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  //     }
+  //   }
+  // }, [navigate, location.pathname])
 
   // Close search dropdown when clicking outside
   useEffect(() => {
@@ -365,10 +375,10 @@ export function MainLayout() {
       { key: 'projects', label: 'Dự án', onClick: () => handleNavClick('/projects'), className: mobileMenuBaseButtonClass },
       { key: 'forum', label: 'Diễn đàn', onClick: () => handleNavClick('/forum'), className: mobileMenuBaseButtonClass },
       { key: 'hof', label: 'Sảnh danh vọng', onClick: () => handleNavClick('/hall-of-fame'), className: mobileMenuBaseButtonClass },
-      { key: 'explore', label: 'Khám phá dự án', onClick: handleExploreProjectsClick, className: mobileMenuBaseButtonClass },
+      { key: 'resources', label: 'Tài liệu', onClick: () => handleNavClick('/resources'), className: mobileMenuBaseButtonClass },
       { key: 'about', label: 'Về chúng tôi', onClick: () => handleNavClick('/about'), className: mobileMenuBaseButtonClass },
     ]
-  }, [handleExploreProjectsClick, handleNavClick, mobileMenuBaseButtonClass])
+  }, [handleNavClick, mobileMenuBaseButtonClass]) 
 
   const mobileAuthItemsGuest: MobileMenuItem[] = useMemo(() => {
     return [
@@ -381,6 +391,8 @@ export function MainLayout() {
     return [
       { key: 'profile', label: 'Hồ sơ', onClick: () => handleNavClick('/profile'), className: mobileMenuBaseButtonClass },
       { key: 'mine', label: 'Dự án của tôi', onClick: () => handleNavClick('/projects/mine'), className: mobileMenuBaseButtonClass },
+      { key: 'ai-tools', label: 'AI Tools', onClick: () => handleNavClick('/ai'), className: mobileMenuBaseButtonClass },
+      { key: 'pricing', label: 'Nâng cấp gói', onClick: () => handleNavClick('/pricing'), className: mobileMenuBaseButtonClass },
       {
         key: 'admin',
         label: 'Admin dashboard',
@@ -442,13 +454,7 @@ export function MainLayout() {
               >
                 Diễn đàn
               </button>
-              <button
-              onClick={() => handleNavClick('/ai')}
-              className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
-                isActivePath('/ai') ? 'bg-white/10 text-white' : ''}`}
-            >
-              AI Tools
-            </button>
+              
               <button
                 onClick={() => handleNavClick('/hall-of-fame')}
                 className={`whitespace-nowrap rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white ${
@@ -502,13 +508,20 @@ export function MainLayout() {
               </div>
 
               <span className="text-white/30">|</span>
-              <span className="whitespace-nowrap cursor-default px-3 py-2">Tin Tức</span>
+              <button
+                onClick={() => handleNavClick('/news')}
+                className={`whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white ${
+                  isActivePath('/news') ? 'bg-white/10 text-white' : ''
+                }`}
+              >
+                Tin Tức
+              </button>
               <span className="text-white/30">|</span>
               <button
-                onClick={handleExploreProjectsClick}
+                onClick={() => handleNavClick('/resources')}
                 className="whitespace-nowrap rounded-full px-3 py-2 transition hover:bg-white/10 hover:text-white"
               >
-                Khám phá dự án
+                Tài liệu
               </button>
               <span className="text-white/30">|</span>
               <button
@@ -544,6 +557,23 @@ export function MainLayout() {
 
           {/* Right side - User menu */}
           <div className="flex shrink-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsLight((prev) => !prev)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:text-white"
+              aria-label="Toggle theme"
+            >
+              {isLight ? (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <circle cx="12" cy="12" r="4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+                </svg>
+              )}
+            </button>
             {!user ? (
               <>
                 <button
@@ -610,6 +640,28 @@ export function MainLayout() {
                       className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
                     >
                       Dự án của tôi
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        handleNavClick('/ai')
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                    >
+                      AI Tools
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        handleNavClick('/pricing')
+                      }}
+                      className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
+                    >
+                      Nâng cấp gói
                     </button>
 
                     {user.role === 'ADMIN' && (
@@ -783,7 +835,7 @@ export function MainLayout() {
 
       {user && (
         <>
-          <button
+          {/* <button
             type="button"
             onClick={() => setChatOpen(true)}
             className="fixed bottom-6 right-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-white/10 btn-primary text-white shadow-lg transition hover:scale-105"
@@ -803,7 +855,7 @@ export function MainLayout() {
                 d="M8 10.5h8m-8 3h5m-5.5 7.5 2.5-3h7a5 5 0 0 0 5-5v-3a5 5 0 0 0-5-5H7a5 5 0 0 0-5 5v3a5 5 0 0 0 5 5h.5Z"
               />
             </svg>
-          </button>
+          </button> */}
 
           {chatOpen && (
             <div

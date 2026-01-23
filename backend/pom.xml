@@ -26,6 +26,7 @@
 		<module>forum-service</module>
 		<module>admin-service</module>
 		<module>ai-service</module>
+		<module>payment-service</module>
 	</modules>
 
 	<properties>

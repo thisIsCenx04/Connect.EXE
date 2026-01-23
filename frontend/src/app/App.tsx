@@ -29,6 +29,9 @@ import { ForumCategoryPage } from '../modules/forum/pages/ForumCategoryPage'
 import { ForumPostDetailPage } from '../modules/forum/pages/ForumPostDetailPage'
 import { ForumCreatePostPage } from '../modules/forum/pages/ForumCreatePostPage'
 import { AboutPage } from '../modules/about/AboutPage'
+import { StartupHubPage, ContentDetailPage } from '../modules/startupHub'
+import { ResourcesPage, ResourceDetailPage } from '../modules/resources'
+import { ContactAdminPage } from '../modules/contact/ContactAdminPage'
 import {
   AiChatPage,
   AiHistoryPage,
@@ -39,12 +42,14 @@ import {
 } from '../modules/ai'
 import {
   AdminAiUsagePage,
+  AdminContentPage,
   AdminKycPage,
   AdminOverviewPage,
   AdminProjectsPage,
   AdminRevenuePage,
   AdminUsersPage,
 } from '../modules/admin'
+import { BillingPage, PricingPage } from '../modules/payment'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
@@ -198,7 +203,13 @@ export function App() {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/categories/:slug" element={<ForumCategoryPage />} />
             <Route path="/forum/posts/:id" element={<ForumPostDetailPage />} />
+            <Route path="/news" element={<StartupHubPage />} />
+            <Route path="/news/:id" element={<ContentDetailPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/resources/:id" element={<ResourceDetailPage />} />
+            <Route path="/contact-admin" element={<ContactAdminPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route
               path="/forum/create"
               element={
@@ -296,6 +307,14 @@ export function App() {
               }
             />
             <Route
+              path="/billing"
+              element={
+                <RequireAuth>
+                  <BillingPage />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <RequireAuth>
@@ -341,6 +360,7 @@ export function App() {
             <Route path="users" element={<AdminUsersPage />} />
             <Route path="kyc" element={<AdminKycPage />} />
             <Route path="projects" element={<AdminProjectsPage />} />
+            <Route path="content" element={<AdminContentPage />} />
             <Route path="ai-usage" element={<AdminAiUsagePage />} />
             <Route path="revenue" element={<AdminRevenuePage />} />
           </Route>
