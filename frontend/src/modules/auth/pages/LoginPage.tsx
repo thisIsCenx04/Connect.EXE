@@ -10,6 +10,16 @@ interface LoginFormValues {
   password: string
 }
 
+const LOGIN_ERROR_MESSAGES: Record<string, string> = {
+  EMAIL_NOT_VERIFIED: 'Email not verified. Check your inbox for the verification link.',
+  INVALID_CREDENTIALS: 'Invalid email or password.',
+  UNAUTHORIZED: 'Invalid email or password.',
+  USER_NOT_FOUND: 'Account not found.',
+  VALIDATION_ERROR: 'Please enter both email and password.',
+  CONFIG_ERROR: 'Login is temporarily unavailable. Please try again later.',
+  INTERNAL_ERROR: 'Server error. Please try again later.',
+}
+
 export function LoginPage() {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm<LoginFormValues>()
   const [error, setError] = useState<string | null>(null)
@@ -26,14 +36,29 @@ export function LoginPage() {
         refreshToken: payload.refreshToken,
         user: payload.user,
       }))
-      navigate('/')
+      const destination = payload.user.role === 'ADMIN' ? '/admin' : '/'
+      navigate(destination)
     } catch (err) {
-      const apiError = err as { response?: { data?: { code?: string; message?: string } } }
-      if (apiError.response?.data?.code === 'EMAIL_NOT_VERIFIED') {
-        setError('Please verify your email before logging in.')
-      } else {
-        setError('Login failed. Please check your credentials.')
+      const apiError = err as { response?: { status?: number; data?: { code?: string; message?: string } } }
+      if (!apiError.response) {
+        setError('Unable to reach the server. Please check your connection.')
+        return
       }
+      const code = apiError.response.data?.code
+      const message = apiError.response.data?.message
+      if (code && LOGIN_ERROR_MESSAGES[code]) {
+        setError(LOGIN_ERROR_MESSAGES[code])
+        return
+      }
+      if (message) {
+        setError(message)
+        return
+      }
+      if (apiError.response.status === 401) {
+        setError('Invalid email or password.')
+        return
+      }
+      setError('Login failed. Please try again.')
     }
   }
 

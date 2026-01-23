@@ -1,6 +1,6 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  HERO_BANNER_IMAGE,
   PARTNER_LOGOS,
   STATS_DATA,
   FEATURED_PROJECTS_2025,
@@ -8,31 +8,87 @@ import {
   STARTUP_PRODUCTS,
   HALL_OF_FAME_STORIES,
 } from '@/constants/home'
+import { fetchContentList, fetchResourceList, type ContentItem, type ResourceItem } from '@/services/content'
+import { HeroCarousel } from './components/HeroCarousel'
+import { upcomingEvents, resourceHighlights } from './data'
+
+const fallbackHubItems: ContentItem[] = upcomingEvents.map((item, index) => ({
+  id: `fallback-event-${index}`,
+  type: 'EVENT',
+  status: 'PUBLISHED',
+  title: item.title,
+  summary: item.description,
+  tags: item.tags,
+  startAt: item.date,
+}))
+
+const fallbackResourceItems: ResourceItem[] = resourceHighlights.map((item, index) => ({
+  id: `fallback-resource-${index}`,
+  title: item.title,
+  description: item.description,
+  type: 'LINK',
+  url: '/resources',
+  tags: item.tags,
+  status: 'PUBLISHED',
+}))
+
+const formatDate = (value?: string | null) => {
+  if (!value) return '-'
+  return new Date(value).toLocaleDateString('vi-VN')
+}
 
 export function HomePage() {
+  const [hubItems, setHubItems] = useState<ContentItem[]>([])
+  const [resourceItems, setResourceItems] = useState<ResourceItem[]>([])
+
+  useEffect(() => {
+    let active = true
+    Promise.all([fetchContentList('EVENT'), fetchContentList('COMPETITION')])
+      .then(([events, competitions]) => {
+        if (!active) return
+        setHubItems([...events, ...competitions])
+      })
+      .catch(() => {
+        if (!active) return
+        setHubItems([])
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetchResourceList()
+      .then((data) => {
+        if (!active) return
+        setResourceItems(data)
+      })
+      .catch(() => {
+        if (!active) return
+        setResourceItems([])
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const hubHighlights = (hubItems.length > 0 ? hubItems : fallbackHubItems)
+    .slice()
+    .sort((a, b) => {
+      const aDate = Date.parse(a.startAt ?? a.publishedAt ?? a.createdAt ?? '') || 0
+      const bDate = Date.parse(b.startAt ?? b.publishedAt ?? b.createdAt ?? '') || 0
+      return bDate - aDate
+    })
+    .slice(0, 3)
+
+  const resourceHighlightsView = (resourceItems.length > 0 ? resourceItems : fallbackResourceItems)
+    .slice(0, 3)
+
   return (
     <div className="space-y-16 pb-12">
       {/* Hero Banner Section */}
-      <section className="relative overflow-hidden rounded-[32px] border border-white/10">
-        <div className="relative aspect-[21/9] w-full">
-          <img
-            src={HERO_BANNER_IMAGE}
-            alt="Made in Vietnam"
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-          <div className="absolute inset-0 flex items-center px-8 md:px-16">
-            <div className="space-y-4">
-              <h1 className="display-font text-4xl font-bold text-white md:text-6xl lg:text-7xl">
-                MADE IN<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500">
-                  VIETNAM
-                </span>
-              </h1>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel />
 
       {/* Stats Section */}
       <section className="space-y-6">
@@ -46,6 +102,112 @@ export function HomePage() {
               <p className="mt-1 text-xs text-white/60">{stat.label}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+
+
+      {/* Startup Hub Highlights */}
+      <section className="space-y-6">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Startup Hub</p>
+            <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">
+              Upcoming events & competitions
+            </h2>
+          </div>
+          <Link
+            to="/news"
+            className="hidden rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 md:inline-flex"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {hubHighlights.map((item) => {
+            const isFallback = item.id.startsWith('fallback-')
+            return (
+              <Link
+                key={item.id}
+                to={isFallback ? '/news' : `/news/${item.id}`}
+                className="group card-surface overflow-hidden rounded-2xl border border-white/10 transition-transform duration-200 hover:scale-[1.01]"
+              >
+                <div className="aspect-[16/10] overflow-hidden">
+                  <img
+                    src={item.coverUrl ?? 'https://picsum.photos/seed/startuphub/600/400'}
+                    alt={item.title}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <div className="space-y-2 p-4">
+                  <div className="flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.2em] text-white/50">
+                    <span>{item.type}</span>
+                    <span>- {formatDate(item.startAt ?? item.publishedAt)}</span>
+                    {item.location ? <span>- {item.location}</span> : null}
+                  </div>
+                  <h3 className="text-base font-semibold text-white">{item.title}</h3>
+                  {item.summary && <p className="text-sm text-white/60 line-clamp-2">{item.summary}</p>}
+                  <div className="flex flex-wrap gap-2">
+                    {item.tags?.slice(0, 3).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* Resource Library Highlights */}
+      <section className="space-y-6">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">Resource Library</p>
+            <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">
+              Latest founder resources
+            </h2>
+          </div>
+          <Link
+            to="/resources"
+            className="hidden rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 md:inline-flex"
+          >
+            View all
+          </Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {resourceHighlightsView.map((item) => {
+            const isFallback = item.id.startsWith('fallback-')
+            return (
+              <Link
+                key={item.id}
+                to={isFallback ? '/resources' : `/resources/${item.id}`}
+                className="card-neo rounded-3xl border border-white/10 p-5 transition-transform duration-200 hover:scale-[1.01]"
+              >
+                <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
+                  <span>{item.type}</span>
+                  <span>{item.tags?.[0] ?? 'Resource'}</span>
+                </div>
+                <h3 className="mt-3 text-lg font-semibold text-white">{item.title}</h3>
+                {item.description && <p className="mt-2 text-sm text-white/60 line-clamp-2">{item.description}</p>}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {item.tags?.slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </section>
 

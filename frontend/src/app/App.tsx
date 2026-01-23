@@ -1,8 +1,10 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
+import axios from 'axios'
 import { useEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MainLayout } from '../layouts/MainLayout'
 import { AuthLayout } from '../layouts/AuthLayout'
+import { AdminLayout } from '../layouts/AdminLayout'
 import { HomePage } from '../modules/home/HomePage'
 import { LoginPage } from '../modules/auth/pages/LoginPage'
 import { RegisterPage } from '../modules/auth/pages/RegisterPage'
@@ -27,10 +29,31 @@ import { ForumCategoryPage } from '../modules/forum/pages/ForumCategoryPage'
 import { ForumPostDetailPage } from '../modules/forum/pages/ForumPostDetailPage'
 import { ForumCreatePostPage } from '../modules/forum/pages/ForumCreatePostPage'
 import { AboutPage } from '../modules/about/AboutPage'
+import { StartupHubPage, ContentDetailPage } from '../modules/startupHub'
+import { ResourcesPage, ResourceDetailPage } from '../modules/resources'
+import { ContactAdminPage } from '../modules/contact/ContactAdminPage'
+import {
+  AiChatPage,
+  AiHistoryPage,
+  AiLandingPage,
+  AiMarketAnalyzerPage,
+  AiPitchdeckAssistantPage,
+  AiProjectEvaluatorPage,
+} from '../modules/ai'
+import {
+  AdminAiUsagePage,
+  AdminContentPage,
+  AdminKycPage,
+  AdminOverviewPage,
+  AdminProjectsPage,
+  AdminRevenuePage,
+  AdminUsersPage,
+} from '../modules/admin'
+import { BillingPage, PricingPage } from '../modules/payment'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
-import { updateUser } from '../modules/auth/store/authSlice'
+import { logout, setTokens, updateUser } from '../modules/auth/store/authSlice'
 
 const theme = createTheme({
   palette: {
@@ -61,8 +84,81 @@ const theme = createTheme({
 
 export function App() {
   const dispatch = useAppDispatch()
-  const { accessToken, user } = useAppSelector((state) => state.auth)
+  const { accessToken, refreshToken, user } = useAppSelector((state) => state.auth)
   const lastSyncedId = useRef<string | null>(null)
+  const logoutTimerRef = useRef<number | null>(null)
+  const refreshInFlightRef = useRef<Promise<void> | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    if (logoutTimerRef.current !== null) {
+      window.clearTimeout(logoutTimerRef.current)
+      logoutTimerRef.current = null
+    }
+
+    const refreshSession = async () => {
+      if (!refreshToken) {
+        dispatch(logout())
+        return
+      }
+      if (refreshInFlightRef.current) {
+        await refreshInFlightRef.current
+        return
+      }
+      const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8081'
+      refreshInFlightRef.current = (async () => {
+        try {
+          const response = await axios.post(`${baseUrl}/api/auth/refresh`, { refreshToken })
+          const data = (response.data as any).data
+          if (!cancelled) {
+            dispatch(setTokens({
+              accessToken: data.accessToken,
+              refreshToken: data.refreshToken,
+              user: data.user,
+            }))
+          }
+        } catch {
+          if (!cancelled) {
+            dispatch(logout())
+          }
+        } finally {
+          refreshInFlightRef.current = null
+        }
+      })()
+      await refreshInFlightRef.current
+    }
+
+    if (!accessToken) {
+      if (refreshToken) {
+        refreshSession()
+      }
+      return () => {
+        cancelled = true
+      }
+    }
+    if (tokenStorage.isTokenExpired(accessToken)) {
+      refreshSession()
+      return () => {
+        cancelled = true
+      }
+    }
+    const delay = tokenStorage.getLogoutDelayMs(accessToken)
+    if (delay === null) {
+      return () => {
+        cancelled = true
+      }
+    }
+    logoutTimerRef.current = window.setTimeout(() => {
+      refreshSession()
+    }, delay)
+    return () => {
+      cancelled = true
+      if (logoutTimerRef.current !== null) {
+        window.clearTimeout(logoutTimerRef.current)
+        logoutTimerRef.current = null
+      }
+    }
+  }, [accessToken, dispatch, refreshToken])
 
   useEffect(() => {
     if (!accessToken) {
@@ -97,9 +193,7 @@ export function App() {
             <Route
               index
               element={
-                <RequireAuth>
-                  <HomePage />
-                </RequireAuth>
+                <HomePage />
               }
             />
             <Route path="/projects" element={<ProjectListPage />} />
@@ -109,7 +203,13 @@ export function App() {
             <Route path="/forum" element={<ForumHomePage />} />
             <Route path="/forum/categories/:slug" element={<ForumCategoryPage />} />
             <Route path="/forum/posts/:id" element={<ForumPostDetailPage />} />
+            <Route path="/news" element={<StartupHubPage />} />
+            <Route path="/news/:id" element={<ContentDetailPage />} />
+            <Route path="/resources" element={<ResourcesPage />} />
+            <Route path="/resources/:id" element={<ResourceDetailPage />} />
+            <Route path="/contact-admin" element={<ContactAdminPage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
             <Route
               path="/forum/create"
               element={
@@ -159,6 +259,62 @@ export function App() {
               }
             />
             <Route
+              path="/ai"
+              element={
+                <RequireAuth>
+                  <AiLandingPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ai/chat"
+              element={
+                <RequireAuth>
+                  <AiChatPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ai/market"
+              element={
+                <RequireAuth>
+                  <AiMarketAnalyzerPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ai/pitchdeck"
+              element={
+                <RequireAuth>
+                  <AiPitchdeckAssistantPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ai/evaluate"
+              element={
+                <RequireAuth>
+                  <AiProjectEvaluatorPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ai/history"
+              element={
+                <RequireAuth>
+                  <AiHistoryPage />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <RequireAuth>
+                  <BillingPage />
+                </RequireAuth>
+              }
+            />
+            <Route
               path="/profile"
               element={
                 <RequireAuth>
@@ -190,6 +346,23 @@ export function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/oauth2/callback" element={<OAuthCallbackPage />} />
+          </Route>
+          <Route
+            path="/admin"
+            element={(
+              <RequireAuth roles={['ADMIN']}>
+                <AdminLayout />
+              </RequireAuth>
+            )}
+          >
+            <Route index element={<Navigate to="/admin/overview" replace />} />
+            <Route path="overview" element={<AdminOverviewPage />} />
+            <Route path="users" element={<AdminUsersPage />} />
+            <Route path="kyc" element={<AdminKycPage />} />
+            <Route path="projects" element={<AdminProjectsPage />} />
+            <Route path="content" element={<AdminContentPage />} />
+            <Route path="ai-usage" element={<AdminAiUsagePage />} />
+            <Route path="revenue" element={<AdminRevenuePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

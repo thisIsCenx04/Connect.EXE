@@ -60,11 +60,11 @@ export function ForumCreatePostPage() {
 
   const handleSubmit = async () => {
     if (!selectedCategoryId) {
-      setError('Vui lòng chọn danh mục.')
+      setError('Vui l?ng ch?n danh m?c.')
       return
     }
     if (!title.trim() || !content.trim()) {
-      setError('Vui lòng nhập tiêu đề và nội dung.')
+      setError('Vui l?ng nh?p ti?u ?? v? n?i dung.')
       return
     }
     setError(null)
@@ -82,8 +82,13 @@ export function ForumCreatePostPage() {
       } else {
         navigate('/forum')
       }
-    } catch {
-      setError('Không thể đăng bài viết. Vui lòng thử lại.')
+    } catch (error) {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      if (status === 429) {
+        setError('B?n ?ang ??ng b?i qu? nhanh. Vui l?ng th? l?i sau.')
+        return
+      }
+      setError('Kh?ng th? ??ng b?i vi?t. Vui l?ng th? l?i.')
     } finally {
       setLoading(false)
     }

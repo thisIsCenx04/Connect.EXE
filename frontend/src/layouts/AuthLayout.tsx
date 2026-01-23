@@ -1,4 +1,5 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
+import { Logo } from '../components/Logo'
 
 export function AuthLayout() {
   const location = useLocation()
@@ -37,6 +38,9 @@ export function AuthLayout() {
         <div className="grid lg:grid-cols-[1.3fr_0.7fr]">
           {/* Left side - Form */}
           <div className="space-y-6 px-12 py-12 sm:px-16 sm:py-14">
+            <Link to="/" aria-label="Go to home" className="inline-flex items-center">
+              <Logo size="sm" />
+            </Link>
             <div>
               <h1 className="text-5xl font-bold text-white">{copy.title}</h1>
               <p className="mt-3 text-sm font-medium text-white/60">{copy.subtitle}</p>

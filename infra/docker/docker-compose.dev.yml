@@ -55,6 +55,29 @@ services:
         -Dspring.main.lazy-initialization=true
         -Dspring.jmx.enabled=false
 
+  user-service:
+    env_file:
+      - ../../.env
+    build:
+      context: ../../backend
+      dockerfile: user-service/Dockerfile
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 750m
+    cpus: 1.0
+    environment:
+      USER_SERVER_PORT: "8084"
+      JAVA_TOOL_OPTIONS: >-
+        -Xms128m -Xmx512m
+        -XX:MaxMetaspaceSize=192m
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -Dspring.main.lazy-initialization=true
+        -Dspring.jmx.enabled=false
+
   project-service:
     env_file:
       - ../../.env
@@ -118,6 +141,75 @@ services:
       dockerfile: forum-service/Dockerfile
     ports:
       - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 750m
+    cpus: 1.0
+
+  ai-service:
+    env_file:
+      - ../../.env
+    environment:
+      AI_SERVER_PORT: "8086"
+      JAVA_TOOL_OPTIONS: >-
+        -Xms128m -Xmx512m
+        -XX:MaxMetaspaceSize=192m
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -Dspring.main.lazy-initialization=true
+        -Dspring.jmx.enabled=false
+    build:
+      context: ../../backend
+      dockerfile: ai-service/Dockerfile
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 750m
+    cpus: 1.0
+
+  payment-service:
+    env_file:
+      - ../../.env
+    environment:
+      PAYMENT_SERVER_PORT: "8087"
+      JAVA_TOOL_OPTIONS: >-
+        -Xms128m -Xmx512m
+        -XX:MaxMetaspaceSize=192m
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -Dspring.jmx.enabled=false
+        -Dspring.main.lazy-initialization=false
+    build:
+      context: ../../backend
+      dockerfile: payment-service/Dockerfile
+    ports:
+      - "8087:8087"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    mem_limit: 750m
+    cpus: 1.0
+
+  admin-service:
+    env_file:
+      - ../../.env
+    environment:
+      ADMIN_SERVER_PORT: "8088"
+      JAVA_TOOL_OPTIONS: >-
+        -Xms128m -Xmx512m
+        -XX:MaxMetaspaceSize=192m
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -Dspring.main.lazy-initialization=true
+        -Dspring.jmx.enabled=false
+    build:
+      context: ../../backend
+      dockerfile: admin-service/Dockerfile
+    ports:
+      - "8088:8088"
     depends_on:
       postgres:
         condition: service_healthy

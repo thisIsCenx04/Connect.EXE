@@ -21,6 +21,7 @@ export function ForumPostDetailPage() {
   const [commentInput, setCommentInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [commentLoading, setCommentLoading] = useState(false)
+  const [commentError, setCommentError] = useState<string | null>(null)
   const [voteLoading, setVoteLoading] = useState(false)
   const lastVoteAt = useRef(0)
   const voteCooldownMs = 600
@@ -98,6 +99,7 @@ export function ForumPostDetailPage() {
     if (!id || !commentInput.trim()) {
       return
     }
+    setCommentError(null)
     setCommentLoading(true)
     try {
       const newComment = await createForumComment(id, { content: commentInput.trim() })
@@ -109,6 +111,13 @@ export function ForumPostDetailPage() {
         return [...prev, newComment]
       })
       setCommentInput('')
+    } catch (error) {
+      const status = (error as { response?: { status?: number } })?.response?.status
+      if (status === 429) {
+        setCommentError('Bạn đang bình luận quá nhanh. Vui lòng thử lại sau.')
+      } else {
+        setCommentError('Không thể gửi bình luận. Vui lòng thử lại.')
+      }
     } finally {
       setCommentLoading(false)
     }
@@ -237,6 +246,12 @@ export function ForumPostDetailPage() {
               className="mt-3 w-full rounded-2xl border border-white/10 bg-black/40 p-3 text-sm text-white"
               placeholder="Chia sẻ ý kiến của bạn..."
             />
+            {commentError && (
+              <div className="mt-3 rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+                {commentError}
+              </div>
+            )}
+
             <div className="mt-3 flex justify-end">
               <button
                 type="button"

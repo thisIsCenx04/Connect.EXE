@@ -3,6 +3,30 @@
 // Hero Banner Image
 export const HERO_BANNER_IMAGE = 'https://picsum.photos/seed/vietnam/1200/500'
 
+export const HERO_BANNERS: { title: string; subtitle: string; image: string; cta: string; path: string }[] = [
+  {
+    title: 'Vietnam Startup Hub 2026',
+    subtitle: 'Tổng hợp tin tức, sự kiện và xu hướng cho founder.',
+    image: 'https://picsum.photos/seed/startuphub/1400/600',
+    cta: 'Xem Startup Hub',
+    path: '/news',
+  },
+  {
+    title: 'Resource Library',
+    subtitle: 'Kho học liệu, template và pitch deck sẵn sàng dùng.',
+    image: 'https://picsum.photos/seed/library/1400/600',
+    cta: 'Khám phá học liệu',
+    path: '/resources',
+  },
+  {
+    title: 'Connect Founders & Investors',
+    subtitle: 'Tìm đội ngũ, mentor và nhà đầu tư phù hợp.',
+    image: 'https://picsum.photos/seed/connectexe/1400/600',
+    cta: 'Khám phá dự án',
+    path: '/projects',
+  },
+]
+
 // Partner logos
 export const PARTNER_LOGOS: { name: string; logo: string }[] = [
   { name: 'FPT', logo: '🏢' },

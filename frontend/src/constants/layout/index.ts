@@ -13,6 +13,16 @@ export const SEARCH_DATA: SearchItem[] = [
   { title: 'Dự án', path: '/projects', keywords: ['project', 'du an', 'startup'] },
   { title: 'Diễn đàn', path: '/forum', keywords: ['forum', 'dien dan', 'thao luan', 'bài viết'] },
   { title: 'Sảnh danh vọng', path: '/hall-of-fame', keywords: ['hall of fame', 'sanh danh vong', 'vinh danh'] },
+  { title: 'AI Tools', path: '/ai', keywords: ['ai', 'tools', 'assistant', 'analysis'] },
+  { title: 'AI Chat', path: '/ai/chat', keywords: ['chat', 'assistant', 'analysis', 'openai'] },
+  { title: 'Market Analyzer', path: '/ai/market', keywords: ['market', 'analysis', 'research'] },
+  { title: 'Pitchdeck Assistant', path: '/ai/pitchdeck', keywords: ['pitch', 'deck', 'slides'] },
+  { title: 'Project Evaluator', path: '/ai/evaluate', keywords: ['evaluate', 'score', 'project'] },
+  { title: 'AI History', path: '/ai/history', keywords: ['history', 'ai runs', 'usage'] },
+  { title: 'Tin tuc', path: '/news', keywords: ['news', 'tin tuc', 'startup hub', 'su kien', 'cuoc thi', 'trend'] },
+  { title: 'Hoc lieu', path: '/resources', keywords: ['resource', 'hoc lieu', 'template', 'library'] },
+  { title: 'Bảng giá', path: '/pricing', keywords: ['pricing', 'bang gia', 'subscription', 'upgrade'] },
+  { title: 'Thanh toán', path: '/billing', keywords: ['billing', 'thanh toan', 'subscription'] },
   { title: 'Về chúng tôi', path: '/about', keywords: ['about', 've chung toi', 'gioi thieu'] },
   { title: 'Hồ sơ', path: '/profile', keywords: ['profile', 'ho so', 'tai khoan'] },
   { title: 'Tạo dự án mới', path: '/projects/new', keywords: ['tao du an', 'create project', 'moi'] },
@@ -32,6 +42,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: 'Trang chủ', path: '/' },
   { label: 'Dự án', path: '/projects' },
   { label: 'Diễn đàn', path: '/forum' },
+  { label: 'Bảng giá', path: '/pricing' },
   { label: 'Sảnh danh vọng', path: '/hall-of-fame' },
 ]
 
@@ -68,8 +79,11 @@ export const FOOTER_CONTENT = {
       title: 'Khám phá',
       items: [
         { label: 'Dự án', path: '/projects' },
+        { label: 'Bảng giá', path: '/pricing' },
+        { label: 'Thanh toán', path: '/billing' },
         { label: 'Sảnh danh vọng', path: '/hall-of-fame' },
         { label: 'Diễn đàn', path: '/forum' },
+        { label: 'AI Tools', path: '/ai' },
       ] as FooterLinkItem[],
     },
     menu: {
@@ -103,5 +117,6 @@ export interface UserMenuItem {
 export const USER_MENU_ITEMS: UserMenuItem[] = [
   { label: 'Hồ sơ', path: '/profile' },
   { label: 'Dự án', path: '/projects' },
+  { label: 'Thanh toán', path: '/billing' },
   { label: 'Đăng xuất', action: 'logout' },
 ]
