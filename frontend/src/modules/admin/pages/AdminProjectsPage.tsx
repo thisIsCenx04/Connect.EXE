@@ -79,7 +79,7 @@ export function AdminProjectsPage() {
         setProjects(data)
       } catch {
         if (!isMounted) return
-        setError('Unable to load projects.')
+        setError('Kh?ng th? t?i d? ?n.')
       }
     }
     loadProjects()
@@ -101,24 +101,24 @@ export function AdminProjectsPage() {
         featuredRank: Number.isFinite(parsedRank ?? NaN) ? parsedRank : null,
       })
       setProjects((prev) => prev.map((entry) => (entry.id === selectedProject.id ? updated : entry)))
-      setMessage('Project updated successfully.')
+      setMessage('C?p nh?t d? ?n th?nh c?ng.')
       setActiveModal(null)
     } catch {
-      setError('Unable to update project.')
+      setError('Kh?ng th? c?p nh?t d? ?n.')
     }
   }
 
-  const handleDeleteProject = async () => {
+  const handleX?aProject = async () => {
     if (!selectedProject) return
     setMessage(null)
     setError(null)
     try {
       await deleteProject(selectedProject.id)
       setProjects((prev) => prev.filter((entry) => entry.id !== selectedProject.id))
-      setMessage('Project deleted.')
+      setMessage('?? x?a d? ?n.')
       setActiveModal(null)
     } catch {
-      setError('Unable to delete project.')
+      setError('Kh?ng th? x?a d? ?n.')
     }
   }
 
@@ -139,13 +139,13 @@ export function AdminProjectsPage() {
         fundingTargetUsd: Number.isFinite(parsedFundingTarget ?? NaN) ? parsedFundingTarget : undefined,
         pitchDeckUrl: createProjectForm.pitchDeckUrl.trim() || undefined,
       })
-      setMessage('Project created successfully.')
+      setMessage('T?o d? ?n th?nh c?ng.')
       setCreateProjectForm(createProjectDefaults)
       const data = await listAdminProjects(projectStatusFilter === 'ALL' ? undefined : projectStatusFilter)
       setProjects(data)
       setActiveModal(null)
     } catch {
-      setError('Unable to create project.')
+      setError('Kh?ng th? t?o d? ?n.')
     }
   }
 
@@ -164,7 +164,7 @@ export function AdminProjectsPage() {
     setActiveModal('edit')
   }
 
-  const openDelete = (item: AdminProjectSummary) => {
+  const openX?a = (item: AdminProjectSummary) => {
     setSelectedProject(item)
     setActiveModal('delete')
   }
@@ -173,8 +173,8 @@ export function AdminProjectsPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Projects</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Moderation queue</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">D? ?n</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">H?ng ??i ki?m duy?t</h2>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -182,12 +182,12 @@ export function AdminProjectsPage() {
             onChange={(event) => setProjectStatusFilter(event.target.value)}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           >
-            <option value="PENDING">Pending</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
-            <option value="ALL">All</option>
+            <option value="PENDING">?ang ch?</option>
+            <option value="APPROVED">?? duy?t</option>
+            <option value="REJECTED">T? ch?i</option>
+            <option value="ALL">T?t c?</option>
           </select>
-          <AdminIconButton label="Create project" tone="primary" onClick={() => setActiveModal('create')}>
+          <AdminIconButton label="T?o d? ?n" tone="primary" onClick={() => setActiveModal('create')}>
             <PlusIcon />
           </AdminIconButton>
         </div>
@@ -206,11 +206,11 @@ export function AdminProjectsPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.4fr_0.8fr_0.6fr_0.8fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>Project</span>
-          <span>Stage</span>
-          <span>Status</span>
-          <span>Submitted</span>
-          <span>Action</span>
+          <span>D? ?n</span>
+          <span>Giai ?o?n</span>
+          <span>Tr?ng th?i</span>
+          <span>?? g?i</span>
+          <span>Thao t?c</span>
         </div>
         <div className="divide-y divide-slate-200">
           {projects.map((item) => (
@@ -233,61 +233,61 @@ export function AdminProjectsPage() {
                 {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : '--'}
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="View detail" onClick={() => openDetail(item)}>
+                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(item)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="Edit project" onClick={() => openEdit(item)}>
+                <AdminIconButton label="S?a d? ?n" onClick={() => openEdit(item)}>
                   <EditIcon />
                 </AdminIconButton>
-                <AdminIconButton label="Delete project" tone="danger" onClick={() => openDelete(item)}>
+                <AdminIconButton label="X?a d? ?n" tone="danger" onClick={() => openX?a(item)}>
                   <TrashIcon />
                 </AdminIconButton>
               </div>
             </div>
           ))}
           {projects.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">No projects found.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Kh?ng t?m th?y d? ?n.</div>
           )}
         </div>
       </div>
 
       <AdminModal
         open={activeModal === 'detail'}
-        title="Project detail"
+        title="Chi ti?t d? ?n"
         onClose={() => setActiveModal(null)}
         size="md"
       >
         {selectedProject ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Title</span>
+              <span className="text-slate-400">Ti?u ??</span>
               <span>{selectedProject.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Industry</span>
+              <span className="text-slate-400">L?nh v?c</span>
               <span>{selectedProject.industry}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Stage</span>
+              <span className="text-slate-400">Giai ?o?n</span>
               <span>{selectedProject.stage}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Visibility</span>
+              <span className="text-slate-400">Hi?n th?</span>
               <span>{selectedProject.visibility}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Status</span>
+              <span className="text-slate-400">Tr?ng th?i</span>
               <span>{selectedProject.status}</span>
             </div>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a project to view details.</div>
+          <div className="text-sm text-slate-500">Ch?n m?t d? ?n ?? xem chi ti?t.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'edit'}
-        title="Edit project"
+        title="S?a d? ?n"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
@@ -300,9 +300,9 @@ export function AdminProjectsPage() {
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, status: event.target.value }))}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               >
-                <option value="PENDING">PENDING</option>
-                <option value="APPROVED">APPROVED</option>
-                <option value="REJECTED">REJECTED</option>
+                <option value="PENDING">?ang ch?</option>
+                <option value="APPROVED">?? duy?t</option>
+                <option value="REJECTED">T? ch?i</option>
               </select>
             </label>
             <label className="flex items-center gap-3 text-xs text-slate-500">
@@ -312,14 +312,14 @@ export function AdminProjectsPage() {
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, featured: event.target.checked }))}
                 className="h-4 w-4"
               />
-              Mark as featured
+              ??nh d?u n?i b?t
             </label>
             <label className="text-xs text-slate-500">
-              Featured rank
+              Th? h?ng n?i b?t
               <input
                 value={projectEdit.featuredRank}
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, featuredRank: event.target.value }))}
-                placeholder="Optional"
+                placeholder="T?y ch?n"
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
@@ -328,17 +328,17 @@ export function AdminProjectsPage() {
               onClick={handleSaveProject}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              Save changes
+              L?u thay ??i
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a project to edit.</div>
+          <div className="text-sm text-slate-500">Ch?n m?t d? ?n ?? s?a.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'create'}
-        title="Create project"
+        title="T?o d? ?n"
         onClose={() => setActiveModal(null)}
         size="lg"
       >
@@ -348,7 +348,7 @@ export function AdminProjectsPage() {
             <input
               value={createProjectForm.title}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="Project name"
+              placeholder="T?n d? ?n"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -366,7 +366,7 @@ export function AdminProjectsPage() {
             <input
               value={createProjectForm.summary}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, summary: event.target.value }))}
-              placeholder="Short summary"
+              placeholder="T?m t?t ng?n"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -394,7 +394,7 @@ export function AdminProjectsPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500">
-            Deal type
+            Lo?i giao d?ch
             <select
               value={createProjectForm.dealType}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, dealType: event.target.value }))}
@@ -417,7 +417,7 @@ export function AdminProjectsPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            Funding target (USD)
+            M?c ti?u v?n (USD)
             <input
               value={createProjectForm.fundingTargetUsd}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, fundingTargetUsd: event.target.value }))}
@@ -426,7 +426,7 @@ export function AdminProjectsPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Pitch deck URL
+            URL pitch deck
             <input
               value={createProjectForm.pitchDeckUrl}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, pitchDeckUrl: event.target.value }))}
@@ -440,7 +440,7 @@ export function AdminProjectsPage() {
               onClick={handleCreateProject}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              Create project
+              T?o d? ?n
             </button>
           </div>
         </div>
@@ -448,26 +448,26 @@ export function AdminProjectsPage() {
 
       <AdminModal
         open={activeModal === 'delete'}
-        title="Delete project"
+        title="X?a d? ?n"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         <div className="space-y-4 text-sm text-slate-600">
-          <p>Are you sure you want to delete this project?</p>
+          <p>B?n c? ch?c mu?n x?a d? ?n n?y?</p>
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setActiveModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              Cancel
+              H?y
             </button>
             <button
               type="button"
-              onClick={handleDeleteProject}
+              onClick={handleX?aProject}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              Delete
+              X?a
             </button>
           </div>
         </div>

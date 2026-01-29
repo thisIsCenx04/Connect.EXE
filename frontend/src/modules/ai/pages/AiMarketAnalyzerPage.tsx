@@ -28,7 +28,7 @@ export function AiMarketAnalyzerPage() {
       const response = await marketAnalyze(form)
       setResult(response)
     } catch {
-      setError('Unable to generate market analysis. Please try again.')
+      setError('Không thể tạo phân tích thị trường. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -37,10 +37,10 @@ export function AiMarketAnalyzerPage() {
   return (
     <div className="space-y-8">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">AI Tool</p>
-        <h1 className="display-font text-2xl font-semibold text-white md:text-3xl">Market Analyzer</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Công cụ AI</p>
+        <h1 className="display-font text-2xl font-semibold text-white md:text-3xl">Phân tích thị trường</h1>
         <p className="max-w-2xl text-sm text-white/70">
-          Describe your startup and get a structured market snapshot with demand drivers and next steps.
+          Mô tả startup của bạn và nhận bản tóm tắt thị trường có cấu trúc với động lực nhu cầu và bước tiếp theo.
         </p>
       </header>
 
@@ -48,7 +48,7 @@ export function AiMarketAnalyzerPage() {
         <div className="card-surface rounded-3xl border border-white/10 p-6 space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Project name</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Tên dự án</label>
               <input
                 value={form.projectName}
                 onChange={handleChange('projectName')}
@@ -58,7 +58,7 @@ export function AiMarketAnalyzerPage() {
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Industry</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Lĩnh vực</label>
               <input
                 value={form.industry}
                 onChange={handleChange('industry')}
@@ -69,7 +69,7 @@ export function AiMarketAnalyzerPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Region</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Khu vực</label>
               <input
                 value={form.region}
                 onChange={handleChange('region')}
@@ -78,7 +78,7 @@ export function AiMarketAnalyzerPage() {
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Target customer</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Khách hàng mục tiêu</label>
               <input
                 value={form.targetCustomer}
                 onChange={handleChange('targetCustomer')}
@@ -88,43 +88,43 @@ export function AiMarketAnalyzerPage() {
             </div>
           </div>
           <div>
-            <label className="text-xs uppercase tracking-[0.2em] text-white/50">Description</label>
+            <label className="text-xs uppercase tracking-[0.2em] text-white/50">M? t?</label>
             <textarea
               value={form.description}
               onChange={handleChange('description')}
               required
               rows={5}
               className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white"
-              placeholder="What problem do you solve and why now?"
+              placeholder="Bạn giải quyết vấn đề gì và vì sao là bây giờ?"
             />
           </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Competitors</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">?i th?</label>
               <input
                 value={form.competitors}
                 onChange={handleChange('competitors')}
                 className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white"
-                placeholder="Top 3 alternatives"
+                placeholder="Top 3 lựa chọn thay thế"
               />
             </div>
             <div>
-              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Differentiator</label>
+              <label className="text-xs uppercase tracking-[0.2em] text-white/50">Điểm khác biệt</label>
               <input
                 value={form.differentiator}
                 onChange={handleChange('differentiator')}
                 className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white"
-                placeholder="Unique data, faster onboarding"
+                placeholder="Dữ liệu độc đáo, onboarding nhanh hơn"
               />
             </div>
           </div>
           <div>
-            <label className="text-xs uppercase tracking-[0.2em] text-white/50">Goals</label>
+            <label className="text-xs uppercase tracking-[0.2em] text-white/50">Mục tiêu</label>
             <input
               value={form.goals}
               onChange={handleChange('goals')}
               className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-2 text-sm text-white"
-              placeholder="Validate pricing, grow waitlist"
+              placeholder="Xác thực giả, tăng danh sách chờ"
             />
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -133,17 +133,17 @@ export function AiMarketAnalyzerPage() {
               disabled={loading}
               className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-6 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white disabled:opacity-60"
             >
-              {loading ? 'Generating...' : 'Generate analysis'}
+              {loading ? 'Đang tạo...' : 'Tạo phân tích'}
             </button>
             {error && <span className="text-sm text-rose-300">{error}</span>}
           </div>
         </div>
 
         <div className="card-neo rounded-3xl border border-white/10 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Output</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Kết quả</p>
           {!result && (
             <p className="mt-4 text-sm text-white/60">
-              Your analysis will appear here. Fill in the form and hit generate.
+              Kết quả phân tích sẽ hiển thị ở đây. Điền form và nhấn tạo.
             </p>
           )}
           {result && (
@@ -152,7 +152,7 @@ export function AiMarketAnalyzerPage() {
                 {result.outputText}
               </div>
               <div className="text-[11px] uppercase tracking-[0.2em] text-white/50">
-                Tokens: {result.promptTokens + result.completionTokens} · Cost: ${result.costUsd.toFixed(2)}
+                Token: {result.promptTokens + result.completionTokens} · Chi ph?: ${result.costUsd.toFixed(2)}
               </div>
             </div>
           )}

@@ -1,5 +1,4 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
-import axios from 'axios'
 import { useEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MainLayout } from '../layouts/MainLayout'
@@ -45,6 +44,7 @@ import {
   AdminContentPage,
   AdminKycPage,
   AdminOverviewPage,
+  AdminPaymentsPage,
   AdminProjectsPage,
   AdminRevenuePage,
   AdminUsersPage,
@@ -53,7 +53,7 @@ import { BillingPage, PricingPage } from '../modules/payment'
 import { getUserProfile } from '../services/user'
 import { tokenStorage } from '../services/tokenStorage'
 import { useAppDispatch, useAppSelector } from './hooks'
-import { logout, setTokens, updateUser } from '../modules/auth/store/authSlice'
+import { logout, updateUser } from '../modules/auth/store/authSlice'
 
 const theme = createTheme({
   palette: {
@@ -84,81 +84,8 @@ const theme = createTheme({
 
 export function App() {
   const dispatch = useAppDispatch()
-  const { accessToken, refreshToken, user } = useAppSelector((state) => state.auth)
+  const { accessToken, user } = useAppSelector((state) => state.auth)
   const lastSyncedId = useRef<string | null>(null)
-  const logoutTimerRef = useRef<number | null>(null)
-  const refreshInFlightRef = useRef<Promise<void> | null>(null)
-
-  useEffect(() => {
-    let cancelled = false
-    if (logoutTimerRef.current !== null) {
-      window.clearTimeout(logoutTimerRef.current)
-      logoutTimerRef.current = null
-    }
-
-    const refreshSession = async () => {
-      if (!refreshToken) {
-        dispatch(logout())
-        return
-      }
-      if (refreshInFlightRef.current) {
-        await refreshInFlightRef.current
-        return
-      }
-      const baseUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:8081'
-      refreshInFlightRef.current = (async () => {
-        try {
-          const response = await axios.post(`${baseUrl}/api/auth/refresh`, { refreshToken })
-          const data = (response.data as any).data
-          if (!cancelled) {
-            dispatch(setTokens({
-              accessToken: data.accessToken,
-              refreshToken: data.refreshToken,
-              user: data.user,
-            }))
-          }
-        } catch {
-          if (!cancelled) {
-            dispatch(logout())
-          }
-        } finally {
-          refreshInFlightRef.current = null
-        }
-      })()
-      await refreshInFlightRef.current
-    }
-
-    if (!accessToken) {
-      if (refreshToken) {
-        refreshSession()
-      }
-      return () => {
-        cancelled = true
-      }
-    }
-    if (tokenStorage.isTokenExpired(accessToken)) {
-      refreshSession()
-      return () => {
-        cancelled = true
-      }
-    }
-    const delay = tokenStorage.getLogoutDelayMs(accessToken)
-    if (delay === null) {
-      return () => {
-        cancelled = true
-      }
-    }
-    logoutTimerRef.current = window.setTimeout(() => {
-      refreshSession()
-    }, delay)
-    return () => {
-      cancelled = true
-      if (logoutTimerRef.current !== null) {
-        window.clearTimeout(logoutTimerRef.current)
-        logoutTimerRef.current = null
-      }
-    }
-  }, [accessToken, dispatch, refreshToken])
 
   useEffect(() => {
     if (!accessToken) {
@@ -183,6 +110,20 @@ export function App() {
       })
       .catch(() => null)
   }, [accessToken, dispatch, user?.id])
+
+  useEffect(() => {
+    if (!accessToken) {
+      return
+    }
+    const delay = tokenStorage.getLogoutDelayMs(accessToken)
+    if (delay === null) {
+      return
+    }
+    const timeoutId = window.setTimeout(() => {
+      dispatch(logout())
+    }, delay)
+    return () => window.clearTimeout(timeoutId)
+  }, [accessToken, dispatch])
 
   return (
     <ThemeProvider theme={theme}>
@@ -363,6 +304,7 @@ export function App() {
             <Route path="content" element={<AdminContentPage />} />
             <Route path="ai-usage" element={<AdminAiUsagePage />} />
             <Route path="revenue" element={<AdminRevenuePage />} />
+            <Route path="payments" element={<AdminPaymentsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

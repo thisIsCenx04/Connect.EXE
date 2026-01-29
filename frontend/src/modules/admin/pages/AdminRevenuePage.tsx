@@ -14,7 +14,7 @@ export function AdminRevenuePage() {
         setRevenue(data)
       } catch {
         if (!isMounted) return
-        setError('Unable to load revenue summary.')
+        setError('Kh?ng th? t?i t?ng quan doanh thu.')
       }
     }
     loadRevenue()
@@ -42,8 +42,8 @@ export function AdminRevenuePage() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Revenue</p>
-        <h2 className="display-font text-2xl font-semibold text-slate-900">Subscription snapshot</h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Doanh thu</p>
+        <h2 className="display-font text-2xl font-semibold text-slate-900">T?ng quan thu? bao</h2>
       </div>
 
       {error && (
@@ -54,23 +54,23 @@ export function AdminRevenuePage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Total active</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">T?ng ho?t ??ng</div>
           <div className="mt-2 text-2xl font-semibold text-slate-900">
             {revenue ? numberFormatter.format(revenue.activeSubscriptions) : '--'}
           </div>
-          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">Estimated monthly revenue</div>
+          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">Doanh thu ??c t?nh h?ng th?ng</div>
           <div className="mt-2 text-xl font-semibold text-slate-900">
             {revenue ? currencyFormatter.format(revenue.estimatedMonthlyRevenue) : '--'}
           </div>
         </div>
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Plan breakdown</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Ph?n b? theo g?i</div>
           <div className="mt-4 space-y-4">
             {revenue?.planBreakdown.map((plan) => (
               <div key={plan.planCode} className="space-y-2">
                 <div className="flex items-center justify-between text-sm text-slate-700">
                   <span>{plan.planCode}</span>
-                  <span>{numberFormatter.format(plan.activeSubscriptions)} subs</span>
+                  <span>{numberFormatter.format(plan.activeSubscriptions)} thu? bao</span>
                   <span className="text-slate-500">{currencyFormatter.format(plan.estimatedMonthlyRevenue)}</span>
                 </div>
                 <div className="h-2 rounded-full bg-slate-100">
@@ -84,7 +84,7 @@ export function AdminRevenuePage() {
               </div>
             ))}
             {!revenue?.planBreakdown.length && (
-              <div className="text-sm text-slate-500">No revenue data.</div>
+              <div className="text-sm text-slate-500">Ch?a c? d? li?u doanh thu.</div>
             )}
           </div>
         </div>

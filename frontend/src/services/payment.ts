@@ -41,9 +41,36 @@ export interface BillingSummary {
   entitlements: PlanEntitlement[]
 }
 
-export interface CheckoutResponse {
+export interface ManualPaymentInfo {
+  qrImageUrl: string | null
+  bankName: string | null
+  bankAccountName: string | null
+  bankAccountNumber: string | null
+  bankBranch: string | null
+  transferNotePrefix: string | null
+}
+
+export interface ManualCheckoutResponse {
   orderCode: string
-  payUrl: string
+  amountVnd: number
+  transferContent: string
+  qrImageUrl: string | null
+  bankName: string | null
+  bankAccountName: string | null
+  bankAccountNumber: string | null
+  bankBranch: string | null
+}
+
+export interface PaymentOrderAdmin {
+  userId: string
+  planCode: string
+  durationMonths: number
+  amountVnd: number
+  provider: string
+  status: string
+  orderCode: string
+  createdAt: string
+  updatedAt: string
 }
 
 export async function fetchPlans(): Promise<Plan[]> {
@@ -61,12 +88,32 @@ export async function subscribePlan(planCode: string, durationMonths?: number): 
   return response.data.data
 }
 
-export async function createCheckout(planCode: string, durationMonths: number, provider: 'VNPAY' | 'MOMO'): Promise<CheckoutResponse> {
-  const response = await paymentApi.post('/api/billing/checkout', { planCode, durationMonths, provider })
+export async function createCheckout(planCode: string, durationMonths: number): Promise<ManualCheckoutResponse> {
+  const response = await paymentApi.post('/api/billing/checkout', { planCode, durationMonths })
   return response.data.data
 }
 
 export async function cancelSubscription(): Promise<BillingSummary> {
   const response = await paymentApi.post('/api/billing/cancel')
+  return response.data.data
+}
+
+export async function fetchManualPaymentInfo(): Promise<ManualPaymentInfo> {
+  const response = await paymentApi.get('/api/billing/manual/info')
+  return response.data.data
+}
+
+export async function listPaymentOrders(status?: string): Promise<PaymentOrderAdmin[]> {
+  const response = await paymentApi.get('/api/admin/payments/orders', {
+    params: status ? { status } : undefined,
+  })
+  return response.data.data
+}
+
+export async function reviewPaymentOrder(orderCode: string, payload: {
+  action: 'APPROVE' | 'REJECT'
+  applyTo?: 'SUBSCRIPTION' | 'WALLET'
+}): Promise<PaymentOrderAdmin> {
+  const response = await paymentApi.patch(`/api/admin/payments/orders/${orderCode}`, payload)
   return response.data.data
 }

@@ -20,42 +20,42 @@ export function ResetPasswordPage() {
     const params = new URLSearchParams(window.location.search)
     const token = params.get('token')
     if (!token) {
-      setError('Reset token is missing.')
+      setError('Thiếu token đặt lại mật khẩu.')
       return
     }
     if (values.newPassword !== values.confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Mật khẩu không khớp.')
       return
     }
     try {
       await resetPassword(token, values.newPassword)
-      setSuccess('Password has been reset. You can now sign in.')
+      setSuccess('Mật khẩu đã được đặt lại. Bạn có thể đăng nhập ngay.')
       setTimeout(() => navigate('/login'), 1500)
     } catch {
-      setError('Reset failed. The link may be expired.')
+      setError('Đặt lại thất bại. Liên kết có thể đã hết hạn.')
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <label className="block space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-        New password
+        Mật khẩu mới
         <input
           type="password"
           {...register('newPassword')}
           required
           className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
-          placeholder="Create a strong password"
+          placeholder="Tạo mật khẩu mạnh"
         />
       </label>
       <label className="block space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-        Confirm password
+        Xác nhận mật khẩu
         <input
           type="password"
           {...register('confirmPassword')}
           required
           className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
-          placeholder="Re-enter password"
+          placeholder="Nhập lại mật khẩu"
         />
       </label>
       {error && (
@@ -73,12 +73,12 @@ export function ResetPasswordPage() {
         disabled={isSubmitting}
         className="w-full rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
       >
-        {isSubmitting ? 'Resetting...' : 'Reset password'}
+        {isSubmitting ? 'Đang đặt lại...' : 'Đặt lại mật khẩu'}
       </button>
       <div className="text-center text-xs uppercase tracking-[0.2em] text-white/40">
-        Back to{' '}
+        Quay lại{' '}
         <Link to="/login" className="text-white/80 hover:text-white">
-          Sign in
+          Đăng nhập
         </Link>
       </div>
     </form>

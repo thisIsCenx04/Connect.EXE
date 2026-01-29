@@ -5,7 +5,7 @@ export function ContactAdminPage() {
         <div className="absolute -right-10 top-6 h-40 w-40 rounded-full bg-rose-500/20 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-fuchsia-500/20 blur-3xl" />
         <div className="relative space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Contact Admin</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Liên hệ quản trị</p>
           <h1 className="display-font text-3xl font-semibold text-white md:text-4xl">
             Liên hệ đội ngũ quản trị
           </h1>
@@ -17,7 +17,7 @@ export function ContactAdminPage() {
 
       <section className="grid gap-4 md:grid-cols-2">
         <div className="card-neo rounded-3xl border border-white/10 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Facebook Page</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Trang Facebook</p>
           <h3 className="mt-2 text-xl font-semibold text-white">Connect.EXE</h3>
           <p className="mt-2 text-sm text-white/60">
             Theo dõi thông báo mới và gửi câu hỏi trực tiếp.

@@ -11,13 +11,13 @@ interface LoginFormValues {
 }
 
 const LOGIN_ERROR_MESSAGES: Record<string, string> = {
-  EMAIL_NOT_VERIFIED: 'Email not verified. Check your inbox for the verification link.',
-  INVALID_CREDENTIALS: 'Invalid email or password.',
-  UNAUTHORIZED: 'Invalid email or password.',
-  USER_NOT_FOUND: 'Account not found.',
-  VALIDATION_ERROR: 'Please enter both email and password.',
-  CONFIG_ERROR: 'Login is temporarily unavailable. Please try again later.',
-  INTERNAL_ERROR: 'Server error. Please try again later.',
+  EMAIL_NOT_VERIFIED: 'Email chưa được xác thực. Vui lòng kiểm tra hộp thư để lấy liên kết xác thực.',
+  INVALID_CREDENTIALS: 'Email hoặc mật khẩu không đúng.',
+  UNAUTHORIZED: 'Email hoặc mật khẩu không đúng.',
+  USER_NOT_FOUND: 'Không tìm thấy tài khoản.',
+  VALIDATION_ERROR: 'Vui lòng nhập email và mật khẩu.',
+  CONFIG_ERROR: 'Đăng nhập tạm thời không khả dụng. Vui lòng thử lại sau.',
+  INTERNAL_ERROR: 'Lỗi máy chủ. Vui lòng thử lại sau.',
 }
 
 export function LoginPage() {
@@ -41,7 +41,7 @@ export function LoginPage() {
     } catch (err) {
       const apiError = err as { response?: { status?: number; data?: { code?: string; message?: string } } }
       if (!apiError.response) {
-        setError('Unable to reach the server. Please check your connection.')
+        setError('Không thể kết nối máy chủ. Vui lòng kiểm tra kết nối mạng.')
         return
       }
       const code = apiError.response.data?.code
@@ -55,10 +55,10 @@ export function LoginPage() {
         return
       }
       if (apiError.response.status === 401) {
-        setError('Invalid email or password.')
+        setError('Email hoặc mật khẩu không đúng.')
         return
       }
-      setError('Login failed. Please try again.')
+      setError('Đăng nhập thất bại. Vui lòng thử lại.')
     }
   }
 
@@ -71,7 +71,7 @@ export function LoginPage() {
           {...register('email')}
           required
           className="w-full rounded-full border border-white/20 bg-[rgba(30,35,60,0.6)] px-5 py-4 text-sm text-white placeholder:text-white/50 focus:border-sky-400/60 focus:outline-none"
-          placeholder="User Name"
+          placeholder="Email"
         />
         <button
           type="button"
@@ -90,7 +90,7 @@ export function LoginPage() {
           {...register('password')}
           required
           className="w-full rounded-full border border-white/20 bg-[rgba(30,35,60,0.6)] px-5 py-4 text-sm text-white placeholder:text-white/50 focus:border-sky-400/60 focus:outline-none"
-          placeholder="Password"
+          placeholder="Mật khẩu"
         />
         <button
           type="button"
@@ -120,10 +120,10 @@ export function LoginPage() {
               )}
             </div>
           </div>
-          Remember me
+          Ghi nhớ đăng nhập
         </label>
         <Link to="/forgot-password" className="text-white/70 transition hover:text-white">
-          Forgot password?
+          Quên mật khẩu?
         </Link>
       </div>
 
@@ -139,7 +139,7 @@ export function LoginPage() {
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-[#3b82f6] to-[#1d4ed8] px-5 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:shadow-blue-500/50"
       >
-        {isSubmitting ? 'Signing in...' : 'Login'}
+        {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
       </button>
 
       {/* Google Login Button */}
@@ -149,14 +149,14 @@ export function LoginPage() {
         onClick={() => window.location.assign(getGoogleLoginUrl())}
         className="w-full rounded-full bg-[rgba(60,65,90,0.8)] px-5 py-4 text-sm font-semibold text-sky-400 transition hover:bg-[rgba(70,75,100,0.9)]"
       >
-        Log in with Google
+        Đăng nhập với Google
       </button>
 
       {/* Sign up link */}
       <div className="pt-4 text-center text-sm text-white/60">
-        Don&apos;t have an account?{' '}
+        Chưa có tài khoản?{' '}
         <Link to="/register" className="font-semibold text-white transition hover:text-sky-400">
-          Signup
+          Đăng ký
         </Link>
       </div>
     </form>

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { fetchContentDetail, type ContentItem } from '@/services/content'
 
 const formatDate = (value?: string | null) => {
-  if (!value) return 'N/A'
+  if (!value) return 'Kh?ng c?'
   return new Date(value).toLocaleDateString('vi-VN')
 }
 

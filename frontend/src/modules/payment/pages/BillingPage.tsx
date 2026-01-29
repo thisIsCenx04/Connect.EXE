@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   cancelSubscription,
   fetchBillingSummary,
@@ -7,7 +7,7 @@ import {
 } from '../../../services/payment'
 
 const formatDate = (value: string | null) => {
-  if (!value) return 'N/A'
+  if (!value) return 'Kh?ng c?'
   return new Date(value).toLocaleDateString()
 }
 
@@ -32,12 +32,10 @@ const getDurationMonths = (start: string | null, end: string | null) => {
 
 export function BillingPage() {
   const navigate = useNavigate()
-  const location = useLocation()
   const [summary, setSummary] = useState<BillingSummary | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
-  const [notice, setNotice] = useState<string | null>(null)
 
   useEffect(() => {
     let active = true
@@ -48,7 +46,7 @@ export function BillingPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Unable to load billing details.')
+        setError('Kh?ng th? t?i th?ng tin thanh to?n.')
       })
       .finally(() => {
         if (!active) return
@@ -58,17 +56,6 @@ export function BillingPage() {
       active = false
     }
   }, [])
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const paymentStatus = params.get('payment')
-    if (paymentStatus === 'success') {
-      setNotice('Thanh toán thành công.')
-    } else if (paymentStatus === 'failed') {
-      setNotice('Thanh toán thất bại. Vui lòng thử lại.')
-    }
-  }, [location.search])
-
   const durationMonths = useMemo(() => {
     if (!summary) return null
     return getDurationMonths(summary.subscription.currentPeriodStart, summary.subscription.currentPeriodEnd)
@@ -81,34 +68,33 @@ export function BillingPage() {
       const data = await cancelSubscription()
       setSummary(data)
     } catch {
-      setError('Unable to cancel subscription.')
+      setError('Kh?ng th? h?y g?i.')
     } finally {
       setActionLoading(false)
     }
   }
 
   if (loading) {
-    return <div className="text-sm text-white/60">Loading billing details...</div>
+    return <div className="text-sm text-white/60">?ang t?i th?ng tin thanh to?n...</div>
   }
 
   if (error || !summary) {
-    return <div className="text-sm text-rose-300">{error ?? 'No billing details found.'}</div>
+    return <div className="text-sm text-rose-300">{error ?? 'Kh?ng t?m th?y th?ng tin thanh to?n.'}</div>
   }
 
   const { plan, subscription, entitlements } = summary
   const isFree = plan.code === 'FREE'
   const premiumPrice = durationMonths ? PREMIUM_PRICING[durationMonths] : null
-  const planLabel = plan.code === 'PRO' ? 'Premium' : plan.name
+  const planLabel = plan.code === 'PRO' ? 'Cao c?p' : plan.name
 
   return (
     <div className="space-y-8">
       <section className="card-surface rounded-[28px] border border-white/10 p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Billing</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Thanh to?n</p>
         <h1 className="display-font mt-2 text-3xl font-semibold text-white">Gói hiện tại</h1>
         <p className="mt-2 max-w-2xl text-sm text-white/70">
           Quản lý gói, theo dõi quyền lợi và thời hạn thanh toán.
         </p>
-        {notice && <p className="mt-3 text-sm text-emerald-300">{notice}</p>}
         {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
       </section>
 
@@ -177,3 +163,9 @@ export function BillingPage() {
     </div>
   )
 }
+
+
+
+
+
+

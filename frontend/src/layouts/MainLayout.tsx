@@ -391,11 +391,11 @@ export function MainLayout() {
     return [
       { key: 'profile', label: 'Hồ sơ', onClick: () => handleNavClick('/profile'), className: mobileMenuBaseButtonClass },
       { key: 'mine', label: 'Dự án của tôi', onClick: () => handleNavClick('/projects/mine'), className: mobileMenuBaseButtonClass },
-      { key: 'ai-tools', label: 'AI Tools', onClick: () => handleNavClick('/ai'), className: mobileMenuBaseButtonClass },
+      { key: 'ai-tools', label: 'Công cụ AI', onClick: () => handleNavClick('/ai'), className: mobileMenuBaseButtonClass },
       { key: 'pricing', label: 'Nâng cấp gói', onClick: () => handleNavClick('/pricing'), className: mobileMenuBaseButtonClass },
       {
         key: 'admin',
-        label: 'Admin dashboard',
+        label: 'Bảng quản trị',
         onClick: () => handleNavClick('/admin/overview'),
         className: mobileMenuBaseButtonClass,
         show: user?.role === 'ADMIN',
@@ -422,7 +422,7 @@ export function MainLayout() {
   return (
     <div className="page-shell text-white">
       <div className="app-sheen" aria-hidden="true" />
-      <header className="glass-bar relative z-50">
+      <header className="glass-bar relative z-50 theme-fixed">
         <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-6 py-0.5">
           {/* Left side - Logo */}
           <div className="flex shrink-0 items-center">
@@ -561,7 +561,7 @@ export function MainLayout() {
               type="button"
               onClick={() => setIsLight((prev) => !prev)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:text-white"
-              aria-label="Toggle theme"
+              aria-label="Đổi giao diện"
             >
               {isLight ? (
                 <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -650,7 +650,7 @@ export function MainLayout() {
                       }}
                       className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
                     >
-                      AI Tools
+                      Công cụ AI
                     </button>
 
                     <button
@@ -673,7 +673,7 @@ export function MainLayout() {
                         }}
                         className="w-full rounded-lg px-3 py-2 text-left text-sm text-white/80 transition hover:bg-white/5 hover:text-white"
                       >
-                        Admin dashboard
+                        Bảng quản trị
                       </button>
                     )}
 
@@ -697,7 +697,7 @@ export function MainLayout() {
               ref={mobileButtonRef}
               onClick={() => setMobileMenuOpen((open) => !open)}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition hover:text-white md:hidden"
-              aria-label="Toggle menu"
+              aria-label="Mở/đóng menu"
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav-menu"
             >
@@ -717,7 +717,7 @@ export function MainLayout() {
           >
             <div className="mx-auto w-full max-w-[1400px] px-4 pb-4 pt-3">
               <div className="flex items-center justify-between">
-                <div className="text-xs uppercase tracking-[0.3em] text-white/50">Menu</div>
+                <div className="text-xs uppercase tracking-[0.3em] text-white/50">Trình đơn</div>
               </div>
 
               <div className="mt-3 grid gap-2">
@@ -738,7 +738,7 @@ export function MainLayout() {
         <Outlet />
       </main>
 
-      <footer className="relative z-10 mt-16 border-t border-white/10 bg-black/30 backdrop-blur-md">
+      <footer className="relative z-10 mt-16 border-t border-white/10 bg-black/30 backdrop-blur-md theme-fixed">
         <div className="mx-auto w-full max-w-6xl px-6 py-10">
           <div className="grid gap-8 md:grid-cols-4">
             <div className="space-y-3">
@@ -839,7 +839,7 @@ export function MainLayout() {
             type="button"
             onClick={() => setChatOpen(true)}
             className="fixed bottom-6 right-6 z-[60] flex h-12 w-12 items-center justify-center rounded-full border border-white/10 btn-primary text-white shadow-lg transition hover:scale-105"
-            aria-label="Chat"
+            aria-label="Trò chuyện"
           >
             <svg
               viewBox="0 0 24 24"
@@ -868,19 +868,19 @@ export function MainLayout() {
               >
                 <div className="flex w-1/3 flex-col border-r border-white/10 bg-white/5">
                   <div className="flex items-center justify-between px-4 py-3">
-                    <div className="text-xs uppercase tracking-[0.3em] text-white/50">Tro chuyen</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-white/50">Trò chuyện</div>
                     <button
                       type="button"
                       onClick={() => setChatOpen(false)}
                       className="rounded-full border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60"
                     >
-                      Dong
+                      Đóng
                     </button>
                   </div>
 
                   <div className="flex-1 overflow-y-auto px-2 pb-3">
                     {conversations.length === 0 && (
-                      <div className="px-3 py-4 text-xs text-white/50">Chua co cuoc hoi thoai.</div>
+                      <div className="px-3 py-4 text-xs text-white/50">Chưa có cuộc hội thoại.</div>
                     )}
                     {conversations.map((conversation) => (
                       <button
@@ -893,7 +893,7 @@ export function MainLayout() {
                             : 'border-white/10 bg-black/30 text-white/70 hover:border-white/30'
                         }`}
                       >
-                        <div className="text-xs uppercase tracking-[0.2em] text-white/50">Conversation</div>
+                        <div className="text-xs uppercase tracking-[0.2em] text-white/50">Cuộc hội thoại</div>
                         <div className="mt-1 font-semibold text-white">{conversation.id.slice(0, 8)}</div>
                         <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">
                           {new Date(conversation.created_at).toLocaleDateString()}
@@ -906,7 +906,7 @@ export function MainLayout() {
                 <div className="flex w-2/3 flex-col">
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <div>
-                      <div className="text-xs uppercase tracking-[0.3em] text-white/50">Hoi thoai</div>
+                    <div className="text-xs uppercase tracking-[0.3em] text-white/50">Hội thoại</div>
                       <div className="text-base font-semibold text-white">
                         {activeConversationId ? activeConversationId.slice(0, 8) : 'Chon cuoc hoi thoai'}
                       </div>
@@ -916,12 +916,12 @@ export function MainLayout() {
                       onClick={() => setChatOpen(false)}
                       className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/60"
                     >
-                      Dong
+                      Đóng
                     </button>
                   </div>
 
                   <div ref={messagesRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-                    {messages.length === 0 && <div className="text-sm text-white/50">Chua co tin nhan.</div>}
+                    {messages.length === 0 && <div className="text-sm text-white/50">Chưa có tin nhắn.</div>}
                     {messages.map((message) => {
                       const isOwn = message.senderId === user.id
                       return (
@@ -946,7 +946,7 @@ export function MainLayout() {
                         value={messageInput}
                         onChange={(event) => setMessageInput(event.target.value)}
                         className="flex-1 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm text-white"
-                        placeholder="Type your message"
+                        placeholder="Nhập tin nhắn"
                         onKeyDown={(event) => {
                           if (event.key === 'Enter') handleSendMessage()
                         }}
@@ -956,7 +956,7 @@ export function MainLayout() {
                         onClick={handleSendMessage}
                         className="rounded-full bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-white"
                       >
-                        Send
+                        Gửi
                       </button>
                     </div>
                   </div>

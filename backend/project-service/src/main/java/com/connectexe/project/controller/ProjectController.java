@@ -6,6 +6,7 @@ import com.connectexe.project.domain.enums.ProjectModerationStatus;
 import com.connectexe.project.domain.enums.ProjectStage;
 import com.connectexe.project.domain.enums.ProjectStatus;
 import com.connectexe.project.domain.enums.ProjectVisibility;
+import com.connectexe.project.dto.FileUploadResponse;
 import com.connectexe.project.dto.ProjectCreateRequest;
 import com.connectexe.project.dto.ProjectMemberAddRequest;
 import com.connectexe.project.dto.ProjectMemberResponse;
@@ -13,6 +14,7 @@ import com.connectexe.project.dto.ProjectMatchResponse;
 import com.connectexe.project.dto.ProjectResponse;
 import com.connectexe.project.dto.ProjectUpdateRequest;
 import com.connectexe.project.security.UserPrincipal;
+import com.connectexe.project.service.CloudinaryService;
 import com.connectexe.project.service.ProjectService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +27,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +39,11 @@ import java.util.UUID;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final CloudinaryService cloudinaryService;
 
-    public ProjectController(ProjectService projectService) {
+    public ProjectController(ProjectService projectService, CloudinaryService cloudinaryService) {
         this.projectService = projectService;
+        this.cloudinaryService = cloudinaryService;
     }
 
     @PostMapping
@@ -156,5 +162,15 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<List<String>>> listIndustries() {
         List<String> industries = projectService.listIndustries();
         return ResponseEntity.ok(ApiResponse.ok("Industries loaded", industries));
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<ApiResponse<FileUploadResponse>> uploadMedia(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "subfolder", defaultValue = "projects") String subfolder,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        CloudinaryService.UploadResult result = cloudinaryService.upload(file, subfolder);
+        FileUploadResponse response = new FileUploadResponse(result.getUrl(), result.getPublicId());
+        return ResponseEntity.ok(ApiResponse.ok("File uploaded", response));
     }
 }

@@ -176,10 +176,10 @@ export function ChatPage() {
   return (
     <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
       <section className="card-surface rounded-2xl p-5">
-        <div className="mb-4 text-xs uppercase tracking-[0.3em] text-white/50">Matching</div>
+        <div className="mb-4 text-xs uppercase tracking-[0.3em] text-white/50">Kết nối</div>
         {isFounder && (
           <>
-            <label className="text-xs text-white/60">Your project</label>
+            <label className="text-xs text-white/60">Dự án của bạn</label>
             <select
               className="mt-2 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
               value={selectedProjectId}
@@ -194,19 +194,19 @@ export function ChatPage() {
             <div className="mt-4 space-y-3">
               {investorMatches.map((match) => (
                 <div key={match.userId} className="rounded-xl border border-white/10 bg-black/30 p-3">
-                  <div className="text-sm font-semibold text-white">{match.fullName || 'Investor'}</div>
-                  <div className="text-xs text-white/50">Score {match.score}</div>
+                  <div className="text-sm font-semibold text-white">{match.fullName || 'Nh? ??u t?'}</div>
+                  <div className="text-xs text-white/50">Điểm {match.score}</div>
                   <button
                     type="button"
                     className="mt-3 w-full rounded-full btn-primary px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
-                    onClick={() => handleStartChat(match.userId, match.fullName || 'Investor')}
+                    onClick={() => handleStartChat(match.userId, match.fullName || 'Nh? ??u t?')}
                   >
                     Chat
                   </button>
                 </div>
               ))}
               {investorMatches.length === 0 && (
-                <div className="text-xs text-white/50">No investors matched yet.</div>
+                <div className="text-xs text-white/50">Chưa có nhà đầu tư phù hợp.</div>
               )}
             </div>
           </>
@@ -215,7 +215,7 @@ export function ChatPage() {
           <>
             <div className="space-y-3 text-xs text-white/60">
               <div>
-                <label>Industries</label>
+                <label>Lĩnh vực</label>
                 <input
                   value={preferenceForm.industries}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, industries: event.target.value }))}
@@ -224,7 +224,7 @@ export function ChatPage() {
                 />
               </div>
               <div>
-                <label>Stages</label>
+                <label>Giai đoạn</label>
                 <input
                   value={preferenceForm.stages}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, stages: event.target.value }))}
@@ -237,13 +237,13 @@ export function ChatPage() {
                   value={preferenceForm.minFundingUsd}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, minFundingUsd: event.target.value }))}
                   className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
-                  placeholder="Min USD"
+                  placeholder="Tối thiểu (USD)"
                 />
                 <input
                   value={preferenceForm.maxFundingUsd}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, maxFundingUsd: event.target.value }))}
                   className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
-                  placeholder="Max USD"
+                  placeholder="Tối đa (USD)"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -251,13 +251,13 @@ export function ChatPage() {
                   value={preferenceForm.country}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, country: event.target.value }))}
                   className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
-                  placeholder="Country"
+                  placeholder="Quốc gia"
                 />
                 <input
                   value={preferenceForm.city}
                   onChange={(event) => setPreferenceForm((prev) => ({ ...prev, city: event.target.value }))}
                   className="rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white"
-                  placeholder="City"
+                  placeholder="Thành phố"
                 />
               </div>
               <button
@@ -265,14 +265,14 @@ export function ChatPage() {
                 onClick={refreshProjectMatches}
                 className="w-full rounded-full btn-primary px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white"
               >
-                Refresh matches
+                Làm mới kết quả
               </button>
             </div>
             <div className="mt-4 space-y-3">
               {projectMatches.map((match) => (
                 <div key={match.project.id} className="rounded-xl border border-white/10 bg-black/30 p-3">
                   <div className="text-sm font-semibold text-white">{match.project.title}</div>
-                  <div className="text-xs text-white/50">Score {match.score}</div>
+                  <div className="text-xs text-white/50">Điểm {match.score}</div>
                   <button
                     type="button"
                     className="mt-3 w-full rounded-full btn-primary px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
@@ -283,7 +283,7 @@ export function ChatPage() {
                 </div>
               ))}
               {projectMatches.length === 0 && (
-                <div className="text-xs text-white/50">Set preferences to see projects.</div>
+                <div className="text-xs text-white/50">Hãy thiết lập tiêu chí để xem dự án.</div>
               )}
             </div>
           </>
@@ -292,14 +292,14 @@ export function ChatPage() {
       <section className="card-surface flex min-h-[480px] flex-col rounded-2xl">
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-white/50">Chat</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-white/50">Trò chuyện</div>
             <div className="text-lg font-semibold text-white">
-              {activePeer?.name ?? 'Select a match to start'}
+              {activePeer?.name ?? 'Chọn một kết nối để bắt đầu'}
             </div>
           </div>
           {conversationId && (
             <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.3em] text-white/50">
-              Live
+              Đang kết nối
             </span>
           )}
         </div>
@@ -323,7 +323,7 @@ export function ChatPage() {
             )
           })}
           {messages.length === 0 && (
-            <div className="text-sm text-white/50">No messages yet.</div>
+            <div className="text-sm text-white/50">Chưa có tin nhắn.</div>
           )}
         </div>
         <div className="border-t border-white/10 p-4">
@@ -333,7 +333,7 @@ export function ChatPage() {
               value={messageInput}
               onChange={(event) => setMessageInput(event.target.value)}
               className="flex-1 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm text-white"
-              placeholder="Type your message"
+              placeholder="Nhập tin nhắn"
               onKeyDown={(event) => {
                 if (event.key === 'Enter') {
                   handleSendMessage()

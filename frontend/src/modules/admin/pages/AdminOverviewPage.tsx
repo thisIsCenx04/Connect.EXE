@@ -17,7 +17,7 @@ export function AdminOverviewPage() {
         setOverview(data)
       } catch {
         if (!isMounted) return
-        setError('Unable to load overview.')
+        setError('Kh?ng th? t?i t?ng quan.')
       } finally {
         if (isMounted) {
           setLoading(false)
@@ -39,7 +39,7 @@ export function AdminOverviewPage() {
         setAiUsage(data)
       } catch {
         if (!active) return
-        setAiError('Unable to load AI usage trend.')
+        setAiError('Kh?ng th? t?i xu h??ng s? d?ng AI.')
       }
     }
     loadAiUsage()
@@ -51,12 +51,12 @@ export function AdminOverviewPage() {
   const overviewCards = useMemo(() => {
     if (!overview) return []
     return [
-      { label: 'Total users', value: overview.totalUsers },
-      { label: 'Active users', value: overview.activeUsers },
-      { label: 'Pending KYC', value: overview.pendingKyc },
-      { label: 'Pending projects', value: overview.pendingProjects },
-      { label: 'Active subscriptions', value: overview.activeSubscriptions },
-      { label: 'AI requests (30d)', value: overview.aiRequestsLast30Days },
+      { label: 'T?ng ng??i d?ng', value: overview.totalUsers },
+      { label: 'Ng??i d?ng ho?t ??ng', value: overview.activeUsers },
+      { label: 'KYC ?ang ch?', value: overview.pendingKyc },
+      { label: 'D? ?n ?ang ch?', value: overview.pendingProjects },
+      { label: 'G?i ?ang ho?t ??ng', value: overview.activeSubscriptions },
+      { label: 'Y?u c?u AI (30 ng?y)', value: overview.aiRequestsLast30Days },
     ]
   }, [overview])
 
@@ -107,7 +107,7 @@ export function AdminOverviewPage() {
   const pipelineItems = useMemo(() => {
     if (!overview) return []
     return [
-      { label: 'Pending KYC', value: overview.pendingKyc },
+      { label: 'KYC ?ang ch?', value: overview.pendingKyc },
       { label: 'Pending Projects', value: overview.pendingProjects },
       { label: 'Active Subscriptions', value: overview.activeSubscriptions },
     ]
@@ -121,12 +121,12 @@ export function AdminOverviewPage() {
     <section id="overview" className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Overview</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Operational snapshot</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">T?ng quan</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">T?m t?t v?n h?nh</h2>
         </div>
         {overview && (
           <div className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-600">
-            Monthly revenue: {currencyFormatter.format(overview.estimatedMonthlyRevenue)}
+            Doanh thu th?ng: {currencyFormatter.format(overview.estimatedMonthlyRevenue)}
           </div>
         )}
       </div>
@@ -135,7 +135,7 @@ export function AdminOverviewPage() {
           {error}
         </div>
       )}
-      {loading && <div className="text-sm text-slate-500">Loading summary...</div>}
+      {loading && <div className="text-sm text-slate-500">?ang t?i t?ng quan...</div>}
       {!loading && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {overviewCards.map((card) => (
@@ -149,7 +149,7 @@ export function AdminOverviewPage() {
           ))}
           {overview && (
             <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-              <div className="text-xs uppercase tracking-[0.3em] text-slate-400">AI spend (30d)</div>
+              <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Chi ph? AI (30 ng?y)</div>
               <div className="mt-2 text-2xl font-semibold text-slate-900">
                 {currencyFormatter.format(overview.aiSpendLast30Days)}
               </div>
@@ -162,8 +162,8 @@ export function AdminOverviewPage() {
         <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">AI requests</p>
-              <h3 className="text-lg font-semibold text-slate-900">14-day trend</h3>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Y?u c?u AI</p>
+              <h3 className="text-lg font-semibold text-slate-900">Xu h??ng 14 ng?y</h3>
             </div>
             {aiError && <span className="text-xs text-rose-500">{aiError}</span>}
           </div>
@@ -180,18 +180,18 @@ export function AdminOverviewPage() {
                 <path d={aiLine} fill="none" stroke="#fb7185" strokeWidth="2" />
               </svg>
             ) : (
-              <div className="text-sm text-slate-500">No AI usage trend yet.</div>
+              <div className="text-sm text-slate-500">Ch?a c? xu h??ng s? d?ng AI.</div>
             )}
           </div>
           <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-            <span>Most recent 14 days</span>
-            <span>{numberFormatter.format(aiMax)} max requests</span>
+            <span>14 ng?y g?n ??y</span>
+            <span>{numberFormatter.format(aiMax)} y?u c?u t?i ?a</span>
           </div>
         </div>
 
         <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">User mix</p>
-          <h3 className="mt-2 text-lg font-semibold text-slate-900">Active vs inactive</h3>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">T? l? ng??i d?ng</p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-900">Ho?t ??ng vs kh?ng ho?t ??ng</h3>
           <div className="mt-6 flex flex-wrap items-center gap-6">
             <div
               className="relative h-40 w-40 rounded-full"
@@ -207,13 +207,13 @@ export function AdminOverviewPage() {
             <div className="space-y-3 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-rose-400" />
-                <span>Active: {numberFormatter.format(activeUsers)}</span>
+                <span>Ho?t ??ng: {numberFormatter.format(activeUsers)}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full bg-slate-200" />
-                <span>Inactive: {numberFormatter.format(inactiveUsers)}</span>
+                <span>Kh?ng ho?t ??ng: {numberFormatter.format(inactiveUsers)}</span>
               </div>
-              <div className="text-xs text-slate-500">Total users: {numberFormatter.format(totalUsers)}</div>
+              <div className="text-xs text-slate-500">T?ng ng??i d?ng: {numberFormatter.format(totalUsers)}</div>
             </div>
           </div>
         </div>
@@ -221,8 +221,8 @@ export function AdminOverviewPage() {
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Pipeline load</p>
-          <h3 className="mt-2 text-lg font-semibold text-slate-900">Ops queue sizing</h3>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">T?i pipeline</p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-900">Quy m? h?ng ??i v?n h?nh</h3>
           <div className="mt-6 space-y-4">
             {pipelineItems.map((item) => (
               <div key={item.label} className="space-y-2">
@@ -240,35 +240,35 @@ export function AdminOverviewPage() {
                 </div>
               </div>
             ))}
-            {!pipelineItems.length && <div className="text-sm text-slate-500">No pipeline data.</div>}
+            {!pipelineItems.length && <div className="text-sm text-slate-500">Ch?a c? d? li?u pipeline.</div>}
           </div>
         </div>
 
         <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Revenue health</p>
-          <h3 className="mt-2 text-lg font-semibold text-slate-900">Monthly performance</h3>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-400">S?c kh?e doanh thu</p>
+          <h3 className="mt-2 text-lg font-semibold text-slate-900">Hi?u su?t h?ng th?ng</h3>
           <div className="mt-6 space-y-4 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span>Estimated monthly revenue</span>
+              <span>Doanh thu ??c t?nh h?ng th?ng</span>
               <span className="font-semibold text-slate-900">
                 {overview ? currencyFormatter.format(overview.estimatedMonthlyRevenue) : '--'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>AI spend (30d)</span>
+              <span>Chi ph? AI (30 ng?y)</span>
               <span className="font-semibold text-slate-900">
                 {overview ? currencyFormatter.format(overview.aiSpendLast30Days) : '--'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span>Total AI requests</span>
+              <span>Total Y?u c?u AI</span>
               <span className="font-semibold text-slate-900">
                 {overview ? numberFormatter.format(overview.totalAiRequests) : '--'}
               </span>
             </div>
           </div>
           <div className="mt-6 rounded-2xl bg-gradient-to-r from-orange-100 via-amber-50 to-rose-50 p-4 text-xs text-slate-600">
-            Keep burn rate below 10% of MRR to maintain healthy margins.
+            Gi? burn rate d??i 10% MRR ?? duy tr? bi?n l?i nhu?n l?nh m?nh.
           </div>
         </div>
       </div>

@@ -93,7 +93,7 @@ export function AiChatPage() {
         setAttachments((prev) => [...prev, uploaded])
       }
     } catch {
-      setUploadError('Upload failed. Please try again.')
+      setUploadError('Tải lên thất bại. Vui lòng thử lại.')
     } finally {
       setUploading(false)
       if (fileInputRef.current) {
@@ -106,7 +106,7 @@ export function AiChatPage() {
     setAttachments((prev) => prev.filter((_, idx) => idx !== index))
   }
 
-  const handleSend = async () => {
+  const handleGửi = async () => {
     const trimmed = input.trim()
     if (!trimmed || loading) {
       return
@@ -122,7 +122,7 @@ export function AiChatPage() {
       const response = await sendAiChat({ message: trimmed, history, attachments })
       setMessages((prev) => [...prev, { role: 'assistant', content: response.reply }])
     } catch {
-      setError('Unable to get a response. Please try again.')
+      setError('Không thể nhận phản hồi. Vui lòng thử lại.')
     } finally {
       setLoading(false)
       setAttachments([])
@@ -132,20 +132,15 @@ export function AiChatPage() {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">AI Chat</p>
-        <h1 className="display-font text-2xl font-semibold text-white md:text-3xl">Startup assistant chatbox</h1>
-        <p className="max-w-2xl text-sm text-white/70">
-          Ask anything about your startup, product, or market. The assistant analyzes each request and responds in a
-          structured way.
-        </p>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Trò chuyện AI</p>
+        <h1 className="display-font text-2xl font-semibold text-white md:text-3xl">Trò chuyện trợ lý startup</h1>
+        <p className="max-w-2xl text-sm text-white/70">Hỏi bất cứ điều gì về startup, sản phẩm hoặc thị trường của bạn. Trợ lý phân tích từng yêu cầu và phản hồi theo cấu trúc.</p>
       </header>
 
       <section className="card-surface flex h-[520px] flex-col rounded-3xl border border-white/10">
         <div ref={messagesRef} className="flex-1 space-y-4 overflow-y-auto px-6 py-6">
           {messages.length === 0 && !loading && (
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/60">
-              Start with a question like “Analyze my MVP idea for a campus delivery app.”
-            </div>
+            <div className="rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-white/60">Bắt đầu bằng câu hỏi như “Phân tích ý tưởng MVP cho ứng dụng giao hàng trong trường.”</div>
           )}
           {messages.map((message, index) => {
             const isUser = message.role === 'user'
@@ -169,13 +164,13 @@ export function AiChatPage() {
                               <a href={attachment.url} target="_blank" rel="noreferrer">
                                 <img
                                   src={attachment.url}
-                                  alt={attachment.name ?? 'attachment'}
+                                  alt={attachment.name ?? 'tệp đính kèm'}
                                   className="h-24 w-24 rounded-lg object-cover"
                                 />
                               </a>
                             ) : (
                               <a href={attachment.url} target="_blank" rel="noreferrer" className="text-xs underline">
-                                {attachment.name ?? 'Download file'}
+                                {attachment.name ?? 'Tải tệp'}
                               </a>
                             )}
                           </div>
@@ -190,7 +185,7 @@ export function AiChatPage() {
           {loading && (
             <div className="flex justify-start">
               <div className="rounded-2xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white/60">
-                Thinking...
+                Đang suy nghĩ...
               </div>
             </div>
           )}
@@ -208,8 +203,8 @@ export function AiChatPage() {
                     key={`${attachment.url}-${index}`}
                     className="flex items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 py-1 text-xs text-white/80"
                   >
-                    {isImage ? 'Image' : 'File'}
-                    <span className="max-w-[140px] truncate">{attachment.name ?? 'attachment'}</span>
+                    {isImage ? 'Ảnh' : 'Tệp'}
+                    <span className="max-w-[140px] truncate">{attachment.name ?? 'tệp đính kèm'}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveAttachment(index)}
@@ -230,7 +225,7 @@ export function AiChatPage() {
                 disabled={uploading}
                 className="rounded-full border border-white/10 bg-black/40 px-4 py-3 text-[11px] uppercase tracking-[0.2em] text-white/70 hover:text-white disabled:opacity-60"
               >
-                {uploading ? 'Uploading...' : 'Attach'}
+                {uploading ? 'Đang tải lên...' : 'Đính kèm'}
               </button>
               <input
                 ref={fileInputRef}
@@ -244,26 +239,24 @@ export function AiChatPage() {
               value={input}
               onChange={(event) => setInput(event.target.value)}
               className="min-h-[56px] flex-1 resize-none rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white"
-              placeholder="Type your request..."
+              placeholder="Nhập yêu cầu..."
               onKeyDown={(event) => {
                 if (event.key === 'Enter' && !event.shiftKey) {
                   event.preventDefault()
-                  handleSend()
+                  handleGửi()
                 }
               }}
             />
             <button
               type="button"
-              onClick={handleSend}
+              onClick={handleGửi}
               disabled={loading || uploading}
               className="rounded-full bg-gradient-to-r from-sky-500 to-indigo-500 px-6 py-3 text-xs font-semibold uppercase tracking-[0.25em] text-white disabled:opacity-60"
             >
-              Send
+              Gửi
             </button>
           </div>
-          <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-white/40">
-            Press Enter to send · Shift+Enter for new line
-          </div>
+          <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-white/40">Nhấn Enter để gửi · Shift+Enter để xuống dòng</div>
         </div>
       </section>
     </div>

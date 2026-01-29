@@ -28,6 +28,7 @@ import com.connectexe.project.security.UserPrincipal;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -56,6 +57,7 @@ public class ProjectService {
         this.projectTagRepository = projectTagRepository;
     }
 
+    @Transactional
     public ProjectResponse create(ProjectCreateRequest request, UserPrincipal principal) {
         requireAuthenticated(principal);
         Project project = new Project();
@@ -96,6 +98,7 @@ public class ProjectService {
         return toResponse(saved);
     }
 
+    @Transactional
     public ProjectResponse update(UUID id, ProjectUpdateRequest request, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));
@@ -197,6 +200,7 @@ public class ProjectService {
         return toResponse(saved);
     }
 
+    @Transactional
     public void delete(UUID id, UserPrincipal principal) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "PROJECT_NOT_FOUND", "Project not found"));

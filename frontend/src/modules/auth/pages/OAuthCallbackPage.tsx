@@ -21,7 +21,7 @@ export function OAuthCallbackPage() {
     const emailVerified = params.get('emailVerified') === 'true'
 
     if (!accessToken || !refreshToken || !userId || !email) {
-      setError('Google login failed. Missing data.')
+      setError('Đăng nhập Google thất bại. Thiếu dữ liệu.')
       return
     }
 
@@ -45,7 +45,7 @@ export function OAuthCallbackPage() {
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
-        Signing you in...
+        Đang đăng nhập...
       </div>
       {error && (
         <div className="rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">

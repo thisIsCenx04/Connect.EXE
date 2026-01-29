@@ -13,7 +13,7 @@ export const SEARCH_DATA: SearchItem[] = [
   { title: 'Dự án', path: '/projects', keywords: ['project', 'du an', 'startup'] },
   { title: 'Diễn đàn', path: '/forum', keywords: ['forum', 'dien dan', 'thao luan', 'bài viết'] },
   { title: 'Sảnh danh vọng', path: '/hall-of-fame', keywords: ['hall of fame', 'sanh danh vong', 'vinh danh'] },
-  { title: 'AI Tools', path: '/ai', keywords: ['ai', 'tools', 'assistant', 'analysis'] },
+  { title: 'Công cụ AI', path: '/ai', keywords: ['ai', 'tools', 'assistant', 'analysis'] },
   { title: 'AI Chat', path: '/ai/chat', keywords: ['chat', 'assistant', 'analysis', 'openai'] },
   { title: 'Market Analyzer', path: '/ai/market', keywords: ['market', 'analysis', 'research'] },
   { title: 'Pitchdeck Assistant', path: '/ai/pitchdeck', keywords: ['pitch', 'deck', 'slides'] },
@@ -83,7 +83,7 @@ export const FOOTER_CONTENT = {
         { label: 'Thanh toán', path: '/billing' },
         { label: 'Sảnh danh vọng', path: '/hall-of-fame' },
         { label: 'Diễn đàn', path: '/forum' },
-        { label: 'AI Tools', path: '/ai' },
+        { label: 'Công cụ AI', path: '/ai' },
       ] as FooterLinkItem[],
     },
     menu: {

@@ -19,7 +19,7 @@ export function HeroSection({ title, subtitle, primaryLabel, secondaryLabel, sta
       <div className="relative mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="space-y-6">
           <div className="flex flex-wrap gap-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Startup Platform</span>
+            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">Nền tảng Startup</span>
             <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1">2025</span>
           </div>
           <h1 className="display-font text-3xl font-semibold leading-tight sm:text-4xl lg:text-5xl">{title}</h1>
@@ -46,8 +46,8 @@ export function HeroSection({ title, subtitle, primaryLabel, secondaryLabel, sta
           <div className="aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_20%_20%,rgba(59,130,246,0.35),transparent_45%),linear-gradient(135deg,#0b1228,#111836)]">
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(15,23,42,0.1),rgba(56,189,248,0.25))]" />
             <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/10 bg-black/50 p-4">
-              <p className="text-xs uppercase tracking-[0.3em] text-white/60">Spotlight</p>
-              <p className="mt-2 text-sm text-white">Tu chien tren khong: Tu doi thuc den phim anh</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/60">Nổi bật</p>
+              <p className="mt-2 text-sm text-white">Tự chiến trên không: Từ đời thực đến phim ảnh</p>
             </div>
           </div>
         </div>

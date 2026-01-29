@@ -6,7 +6,7 @@ import { logout } from '../modules/auth/store/authSlice'
 const navItems = [
   {
     id: 'overview',
-    label: 'Dashboard',
+    label: 'Bảng điều khiển',
     path: '/admin/overview',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -16,7 +16,7 @@ const navItems = [
   },
   {
     id: 'users',
-    label: 'Users',
+    label: 'Người dùng',
     path: '/admin/users',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -26,7 +26,7 @@ const navItems = [
   },
   {
     id: 'kyc',
-    label: 'KYC Review',
+    label: 'Duyệt KYC',
     path: '/admin/kyc',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -36,7 +36,7 @@ const navItems = [
   },
   {
     id: 'projects',
-    label: 'Projects',
+    label: 'Dự án',
     path: '/admin/projects',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -46,7 +46,7 @@ const navItems = [
   },
   {
     id: 'content',
-    label: 'Content',
+    label: 'Nội dung',
     path: '/admin/content',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -56,7 +56,7 @@ const navItems = [
   },
   {
     id: 'ai',
-    label: 'AI Usage',
+    label: 'Sử dụng AI',
     path: '/admin/ai-usage',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -66,11 +66,22 @@ const navItems = [
   },
   {
     id: 'revenue',
-    label: 'Revenue',
+    label: 'Doanh thu',
     path: '/admin/revenue',
     icon: (
       <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 19h16M7 16V8m5 8V5m5 11v-6" />
+      </svg>
+    ),
+  },
+  {
+    id: 'payments',
+    label: 'Thanh toán',
+    path: '/admin/payments',
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 7h18M5 11h14M6 15h6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
       </svg>
     ),
   },
@@ -144,7 +155,7 @@ export function AdminLayout() {
               isDark ? 'border-slate-800 bg-slate-800/60 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-500'
             }`}
           >
-            Manage approvals and content updates from a single hub.
+            Quản lý phê duyệt và cập nhật nội dung tại một nơi.
           </div>
 
           <div className="mt-auto">
@@ -157,7 +168,7 @@ export function AdminLayout() {
                   : 'border-slate-200 text-slate-500 hover:border-slate-300'
               }`}
             >
-              Logout
+              Đăng xuất
             </button>
           </div>
         </aside>
@@ -170,8 +181,8 @@ export function AdminLayout() {
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Dashboard</p>
-                <h1 className={`text-2xl font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>Admin Console</h1>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Bảng điều khiển</p>
+                <h1 className={`text-2xl font-semibold ${isDark ? 'text-slate-100' : 'text-slate-900'}`}>Bảng quản trị</h1>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <div
@@ -183,7 +194,7 @@ export function AdminLayout() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
                   </svg>
                   <input
-                    placeholder="Search here..."
+                    placeholder="Tìm kiếm..."
                     className={`w-56 bg-transparent text-sm outline-none ${isDark ? 'text-slate-200' : 'text-slate-600'}`}
                   />
                 </div>
@@ -213,7 +224,7 @@ export function AdminLayout() {
                   className={`flex h-10 w-10 items-center justify-center rounded-full border ${
                     isDark ? 'border-slate-800 bg-slate-900 text-slate-300' : 'border-slate-200 bg-white text-slate-500'
                   }`}
-                  aria-label="Toggle theme"
+                  aria-label="Đổi giao diện"
                 >
                   {isDark ? (
                     <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6">
@@ -232,9 +243,9 @@ export function AdminLayout() {
                   }`}
                 >
                   <span className={`text-sm font-semibold ${isDark ? 'text-slate-100' : 'text-slate-700'}`}>
-                    {user?.fullName ?? 'Admin User'}
+                    {user?.fullName ?? 'Quản trị viên'}
                   </span>
-                  <span className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Admin</span>
+                  <span className="text-[10px] uppercase tracking-[0.3em] text-slate-400">Quản trị</span>
                   <span className={`h-9 w-9 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
                 </div>
               </div>
