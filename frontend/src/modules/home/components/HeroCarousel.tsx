@@ -5,7 +5,7 @@ import { HERO_BANNERS, HERO_BANNER_IMAGE } from '@/constants/home'
 export function HeroCarousel() {
   const navigate = useNavigate()
   const banners = HERO_BANNERS.length > 0 ? HERO_BANNERS : [
-    { title: 'Made in Vietnam', subtitle: 'Hệ sinh thái khởi nghiệp kết nối', image: HERO_BANNER_IMAGE, cta: 'Khám phá', path: '/projects' },
+    { title: 'Tạo tại Việt Nam', subtitle: 'Hệ sinh thái khởi nghiệp kết nối', image: HERO_BANNER_IMAGE, cta: 'Khám phá', path: '/projects' },
   ]
   const [index, setIndex] = useState(0)
 
@@ -29,7 +29,7 @@ export function HeroCarousel() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
         <div className="absolute inset-0 flex items-center px-8 md:px-16">
           <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Highlights</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Nổi bật</p>
             <h1 className="display-font text-4xl font-bold text-white md:text-6xl lg:text-7xl">
               {active.title}
             </h1>
@@ -54,7 +54,7 @@ export function HeroCarousel() {
               className={`h-2.5 w-2.5 rounded-full border transition ${
                 idx === index ? 'border-white bg-white' : 'border-white/40 bg-white/20'
               }`}
-              aria-label={`Slide ${idx + 1}`}
+              aria-label={`Trang ${idx + 1}`}
             />
           ))}
         </div>

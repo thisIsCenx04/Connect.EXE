@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../../app/hooks'
-import { createCheckout, fetchBillingSummary, fetchPlans, type BillingSummary, type Plan } from '../../../services/payment'
+import {
+  createCheckout,
+  fetchBillingSummary,
+  fetchManualPaymentInfo,
+  fetchPlans,
+  type BillingSummary,
+  type ManualCheckoutResponse,
+  type ManualPaymentInfo,
+  type Plan,
+} from '../../../services/payment'
 
 const PREMIUM_PACKAGES = [
   { months: 1, price: 29000, discount: 0, label: 'Tháng đơn lẻ' },
@@ -28,9 +37,10 @@ export function PricingPage() {
   const { accessToken } = useAppSelector((state) => state.auth)
   const [plans, setPlans] = useState<Plan[]>([])
   const [summary, setSummary] = useState<BillingSummary | null>(null)
+  const [manualInfo, setManualInfo] = useState<ManualPaymentInfo | null>(null)
+  const [checkout, setCheckout] = useState<ManualCheckoutResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const provider: 'VNPAY' = 'VNPAY'
 
   useEffect(() => {
     let active = true
@@ -41,8 +51,21 @@ export function PricingPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Unable to load pricing plans.')
+        setError('Kh?ng th? t?i c?c g?i gi?.')
       })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    let active = true
+    fetchManualPaymentInfo()
+      .then((data) => {
+        if (!active) return
+        setManualInfo(data)
+      })
+      .catch(() => null)
     return () => {
       active = false
     }
@@ -80,13 +103,10 @@ export function PricingPage() {
     }
     setError(null)
     setLoading(true)
+    setCheckout(null)
     try {
-      const checkout = await createCheckout('PRO', months, provider)
-      if (checkout.payUrl) {
-        window.location.assign(checkout.payUrl)
-        return
-      }
-      setError('Không thể tạo liên kết thanh toán.')
+      const result = await createCheckout('PRO', months)
+      setCheckout(result)
     } catch {
       setError('Không thể cập nhật gói. Vui lòng thử lại.')
     } finally {
@@ -100,7 +120,7 @@ export function PricingPage() {
         <div className="absolute -right-10 top-6 h-40 w-40 rounded-full bg-sky-500/20 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="relative space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Pricing</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">B?ng gi?</p>
           <h1 className="display-font text-3xl font-semibold text-white md:text-4xl">Chọn gói Premium phù hợp cho bạn</h1>
           <p className="max-w-2xl text-sm text-white/70 md:text-base">
             Mở khóa tính năng nâng cao, ưu tiên hiển thị và hỗ trợ chuyên sâu.
@@ -113,7 +133,7 @@ export function PricingPage() {
         <div className="card-surface rounded-3xl border border-white/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Premium</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Cao c?p</p>
               <h3 className="mt-2 text-2xl font-semibold text-white">Gói trả phí</h3>
               <p className="text-sm text-white/60">Chọn chu kỳ thanh toán phù hợp.</p>
             </div>
@@ -125,10 +145,10 @@ export function PricingPage() {
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-sky-400/60 bg-sky-500/20 px-4 py-2 text-[11px] uppercase tracking-[0.25em] text-sky-100">
-              VNPay Sandbox
+            <span className="rounded-full border border-emerald-400/60 bg-emerald-500/20 px-4 py-2 text-[11px] uppercase tracking-[0.25em] text-emerald-100">
+              Chuy?n kho?n ng?n h?ng
             </span>
-            <span className="text-xs text-white/50">Payment gateway</span>
+            <span className="text-xs text-white/50">Duy?t th? c?ng</span>
           </div>
 
           <div className="mt-6 grid gap-3 md:grid-cols-2">
@@ -155,10 +175,73 @@ export function PricingPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-8 rounded-3xl border border-white/10 bg-black/30 p-5">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center">
+              <div className="flex w-full flex-col items-center gap-3 md:w-[200px]">
+                <div className="text-[10px] uppercase tracking-[0.3em] text-white/50">QR n?p ti?n</div>
+                {manualInfo?.qrImageUrl || checkout?.qrImageUrl ? (
+                  <img
+                    src={checkout?.qrImageUrl ?? manualInfo?.qrImageUrl ?? ''}
+                    alt="QR"
+                    className="h-40 w-40 rounded-2xl border border-white/10 bg-white object-contain p-3"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="flex h-40 w-40 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-xs text-white/40">
+                    Ch?a c? QR
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 space-y-4 text-sm text-white/70">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">Ng?n h?ng</div>
+                    <div className="mt-1 text-white">
+                      {checkout?.bankName ?? manualInfo?.bankName ?? '--'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">S? t?i kho?n</div>
+                    <div className="mt-1 text-white">
+                      {checkout?.bankAccountNumber ?? manualInfo?.bankAccountNumber ?? '--'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">T?n t?i kho?n</div>
+                    <div className="mt-1 text-white">
+                      {checkout?.bankAccountName ?? manualInfo?.bankAccountName ?? '--'}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">Chi nh?nh</div>
+                    <div className="mt-1 text-white">
+                      {checkout?.bankChi nh?nh ?? manualInfo?.bankChi nh?nh ?? '--'}
+                    </div>
+                  </div>
+                </div>
+
+                {checkout ? (
+                  <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-4">
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-emerald-200">N?i dung chuy?n kho?n</div>
+                    <div className="mt-2 text-lg font-semibold text-emerald-100">{checkout.transferContent}</div>
+                    <div className="mt-2 text-xs text-emerald-200/80">S? ti?n: {formatVnd(checkout.amountVnd)}</div>
+                    <div className="mt-2 text-xs text-emerald-200/80">
+                      Vui l?ng ghi ??ng n?i dung tr?n ?? admin duy?t nhanh.
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-white/40">
+                    T?o ??n ?? nh?n n?i dung chuy?n kho?n.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="card-neo rounded-3xl border border-white/10 p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-white/50">Premium features</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-white/50">T?nh n?ng Premium</p>
           <h3 className="mt-2 text-xl font-semibold text-white">Tính năng Premium</h3>
           <div className="mt-4 space-y-3 text-sm text-white/70">
             {PREMIUM_FEATURES.map((feature) => (
@@ -175,7 +258,7 @@ export function PricingPage() {
         <section className="card-surface rounded-3xl border border-white/10 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Free</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white/50">Mi?n ph?</p>
               <h3 className="mt-2 text-2xl font-semibold text-white">{freePlan.name}</h3>
               <p className="text-sm text-white/60">Giữ miễn phí để trải nghiệm cơ bản.</p>
             </div>
@@ -190,3 +273,5 @@ export function PricingPage() {
     </div>
   )
 }
+
+

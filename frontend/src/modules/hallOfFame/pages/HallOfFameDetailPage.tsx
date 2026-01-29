@@ -12,14 +12,14 @@ export function HallOfFameDetailPage() {
   }, [id])
 
   if (!entry) {
-    return <div className="text-sm text-white/70">Dang tai...</div>
+    return <div className="text-sm text-white/70">Đang tải...</div>
   }
 
   return (
     <div className="space-y-8">
       <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Hall of Fame</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Sảnh danh vọng</p>
           <h1 className="display-font text-3xl font-semibold md:text-4xl">{entry.title}</h1>
           <p className="text-sm text-white/70">{entry.summary ?? ''}</p>
           <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.2em] text-white/50">
@@ -37,7 +37,7 @@ export function HallOfFameDetailPage() {
                 <img src={entry.coverUrl} alt={entry.title} className="h-full w-full object-cover" />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-xs uppercase tracking-[0.2em] text-white/40">
-                  Cover image
+                  Ảnh bìa
                 </div>
               )}
             </div>
@@ -60,7 +60,7 @@ export function HallOfFameDetailPage() {
         <aside className="space-y-4">
           {(entry.tags ?? []).length > 0 && (
             <div className="card-surface rounded-3xl p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Tags</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Th?</p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {entry.tags?.map((tag) => (
                   <span
@@ -76,7 +76,7 @@ export function HallOfFameDetailPage() {
 
           {(entry.links ?? []).length > 0 && (
             <div className="card-surface rounded-3xl p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Lien ket</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Liên kết</p>
               <div className="mt-4 space-y-2 text-sm text-white/70">
                 {entry.links?.map((link) => (
                   <a
@@ -87,7 +87,7 @@ export function HallOfFameDetailPage() {
                     className="flex items-center justify-between rounded-xl border border-white/10 px-3 py-2 transition hover:border-white/30"
                   >
                     <span>{link.label ?? link.type}</span>
-                    <span className="text-xs text-white/50">Mo</span>
+                    <span className="text-xs text-white/50">M?</span>
                   </a>
                 ))}
               </div>
@@ -98,7 +98,7 @@ export function HallOfFameDetailPage() {
             to="/hall-of-fame"
             className="inline-flex rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
-            Quay lai danh sach
+            Quay lại danh sách
           </Link>
         </aside>
       </section>

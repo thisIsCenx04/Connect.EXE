@@ -111,16 +111,16 @@ export function HomePage() {
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Startup Hub</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Trung tâm Startup</p>
             <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">
-              Upcoming events & competitions
+              Sự kiện & cuộc thi sắp tới
             </h2>
           </div>
           <Link
             to="/news"
             className="hidden rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 md:inline-flex"
           >
-            View all
+            Xem tất cả
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
@@ -168,16 +168,16 @@ export function HomePage() {
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">Resource Library</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-emerald-300">Thư viện tài nguyên</p>
             <h2 className="mt-2 text-2xl font-bold text-white md:text-3xl">
-              Latest founder resources
+              Tài nguyên mới nhất cho founder
             </h2>
           </div>
           <Link
             to="/resources"
             className="hidden rounded-full btn-ghost px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80 md:inline-flex"
           >
-            View all
+            Xem tất cả
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
@@ -191,7 +191,7 @@ export function HomePage() {
               >
                 <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
                   <span>{item.type}</span>
-                  <span>{item.tags?.[0] ?? 'Resource'}</span>
+                  <span>{item.tags?.[0] ?? 'Tài nguyên'}</span>
                 </div>
                 <h3 className="mt-3 text-lg font-semibold text-white">{item.title}</h3>
                 {item.description && <p className="mt-2 text-sm text-white/60 line-clamp-2">{item.description}</p>}

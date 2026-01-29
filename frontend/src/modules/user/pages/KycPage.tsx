@@ -72,9 +72,9 @@ export function KycPage() {
     try {
       const uploaded = await uploadKycDocument(user.id, file)
       setValue('docFileUrl', uploaded.url, { shouldDirty: true })
-      setSuccess('Document uploaded. Submit KYC to finish.')
+      setSuccess('Đã tải tài liệu. Gửi KYC để hoàn tất.')
     } catch {
-      setError('Document upload failed.')
+      setError('Tải tài liệu thất bại.')
     } finally {
       setDocUploading(false)
     }
@@ -97,9 +97,9 @@ export function KycPage() {
         requestedRole: values.requestedRole,
       })
       setStatus(kyc.status)
-      setSuccess('KYC submitted successfully.')
+      setSuccess('Gửi KYC thành công.')
     } catch {
-      setError('KYC submission failed.')
+      setError('Gửi KYC thất bại.')
     } finally {
       setSubmitting(false)
     }
@@ -145,9 +145,9 @@ export function KycPage() {
               disabled={submitting || isPending}
               className="w-full rounded-full border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white"
             >
-              <option value="INVESTOR">Investor</option>
-              <option value="FOUNDER">Founder</option>
-              <option value="MENTOR">Mentor</option>
+              <option value="INVESTOR">Nhà đầu tư</option>
+              <option value="FOUNDER">Nhà sáng lập</option>
+              <option value="MENTOR">Cố vấn</option>
             </select>
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
@@ -175,7 +175,7 @@ export function KycPage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            LinkedIn URL
+            URL LinkedIn
             <input
               {...register('linkedinUrl')}
               disabled={submitting || isPending}
@@ -190,7 +190,7 @@ export function KycPage() {
               className="w-full rounded-full border border-white/10 bg-[#111827] px-4 py-3 text-sm text-white"
             >
               <option value="ID_CARD">CCCD</option>
-              <option value="PASSPORT">Passport</option>
+              <option value="PASSPORT">Hộ chiếu</option>
               <option value="DRIVER_LICENSE">Giấy phép lái xe</option>
               <option value="BUSINESS_LICENSE">Giấy phép kinh doanh</option>
             </select>
@@ -204,7 +204,7 @@ export function KycPage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
-            
+            Tải tài liệu
             <input
               type="file"
               accept="image/*,application/pdf"
@@ -243,7 +243,7 @@ export function KycPage() {
             disabled={submitting || isPending}
             className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
           >
-            {isPending ? 'KYC pending' : submitting ? 'Submitting...' : 'Submit KYC'}
+            {isPending ? 'KYC đang chờ' : submitting ? 'Đang gửi...' : 'Gửi KYC'}
           </button>
           <button
             type="button"

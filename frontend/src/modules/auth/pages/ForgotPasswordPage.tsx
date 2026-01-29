@@ -17,9 +17,9 @@ export function ForgotPasswordPage() {
     setSuccess(null)
     try {
       await forgotPassword(values.email)
-      setSuccess('If the email exists, a reset link has been sent.')
+      setSuccess('Nếu email tồn tại, liên kết đặt lại đã được gửi.')
     } catch {
-      setError('Could not send reset email.')
+      setError('Không thể gửi email đặt lại.')
     }
   }
 
@@ -32,7 +32,7 @@ export function ForgotPasswordPage() {
           {...register('email')}
           required
           className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/60"
-          placeholder="you@email.com"
+          placeholder="ban@email.com"
         />
       </label>
       {error && (
@@ -50,12 +50,12 @@ export function ForgotPasswordPage() {
         disabled={isSubmitting}
         className="w-full rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
       >
-        {isSubmitting ? 'Sending...' : 'Send reset link'}
+        {isSubmitting ? 'Đang gửi...' : 'Gửi liên kết đặt lại'}
       </button>
       <div className="text-center text-xs uppercase tracking-[0.2em] text-white/40">
-        Back to{' '}
+        Quay lại{' '}
         <Link to="/login" className="text-white/80 hover:text-white">
-          Sign in
+          Đăng nhập
         </Link>
       </div>
     </form>

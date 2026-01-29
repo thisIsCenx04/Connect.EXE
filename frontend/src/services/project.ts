@@ -43,6 +43,7 @@ export interface Project {
   tags?: string[]
   links?: ProjectLink[]
   media?: ProjectMedia[]
+  createdAt?: string | null
   publishedAt?: string | null
   closedAt?: string | null
   submittedAt?: string | null
@@ -147,5 +148,22 @@ export async function hideProject(id: string): Promise<Project> {
 
 export async function listIndustries(): Promise<string[]> {
   const response = await projectApi.get('/api/projects/industries')
+  return response.data.data
+}
+
+export interface UploadResult {
+  url: string
+  publicId: string
+}
+
+export async function uploadProjectMedia(file: File, subfolder = 'projects'): Promise<UploadResult> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const response = await projectApi.post('/api/projects/upload', formData, {
+    params: { subfolder },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
   return response.data.data
 }

@@ -5,21 +5,21 @@ export const HERO_BANNER_IMAGE = 'https://picsum.photos/seed/vietnam/1200/500'
 
 export const HERO_BANNERS: { title: string; subtitle: string; image: string; cta: string; path: string }[] = [
   {
-    title: 'Vietnam Startup Hub 2026',
+    title: 'Trung tâm Startup Việt Nam 2026',
     subtitle: 'Tổng hợp tin tức, sự kiện và xu hướng cho founder.',
     image: 'https://picsum.photos/seed/startuphub/1400/600',
-    cta: 'Xem Startup Hub',
+    cta: 'Xem Trung tâm Startup',
     path: '/news',
   },
   {
-    title: 'Resource Library',
-    subtitle: 'Kho học liệu, template và pitch deck sẵn sàng dùng.',
+    title: 'Thư viện tài nguyên',
+    subtitle: 'Kho học liệu, mẫu và bộ thuyết trình sẵn sàng dùng.',
     image: 'https://picsum.photos/seed/library/1400/600',
     cta: 'Khám phá học liệu',
     path: '/resources',
   },
   {
-    title: 'Connect Founders & Investors',
+    title: 'Kết nối Founder & Nhà đầu tư',
     subtitle: 'Tìm đội ngũ, mentor và nhà đầu tư phù hợp.',
     image: 'https://picsum.photos/seed/connectexe/1400/600',
     cta: 'Khám phá dự án',
@@ -97,19 +97,19 @@ export interface OtherProject {
 export const OTHER_PROJECTS: OtherProject[] = [
   {
     id: '5',
-    title: 'Best Forex Trading Platform',
+    title: 'Nền tảng giao dịch Forex tốt nhất',
     category: 'Fintech',
     image: 'https://picsum.photos/seed/forex/400/300',
   },
   {
     id: '6',
-    title: 'Top 15 Innovation',
+    title: 'Top 15 đổi mới',
     category: 'Tech',
     image: 'https://picsum.photos/seed/innovation/400/300',
   },
   {
     id: '7',
-    title: 'Smart City Solution',
+    title: 'Giải pháp Thành phố Thông minh',
     category: 'IoT',
     image: 'https://picsum.photos/seed/smartcity/400/300',
   },
@@ -135,12 +135,12 @@ export const STARTUP_PRODUCTS: StartupProduct[] = [
   },
   {
     id: '10',
-    title: 'Top 12 Innovation Award',
+    title: 'Giải thưởng Top 12 đổi mới',
     image: 'https://picsum.photos/seed/award/400/400',
   },
   {
     id: '11',
-    title: 'AI Healthcare Solution',
+    title: 'Giải pháp AI cho y tế',
     image: 'https://picsum.photos/seed/healthcare/400/400',
   },
 ]
@@ -157,21 +157,21 @@ export interface HallOfFameStory {
 export const HALL_OF_FAME_STORIES: HallOfFameStory[] = [
   {
     id: '1',
-    title: 'From dorm room to demo day',
+    title: 'Từ ký túc xá đến demo day',
     author: 'Nguyễn Văn A',
     description: 'Câu chuyện từ ký túc xá đến ngày demo - hành trình của một startup sinh viên.',
     image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=80',
   },
   {
     id: '2',
-    title: 'How a pivot unlocked traction',
+    title: 'Pivot mở khóa traction',
     author: 'Trần Thị B',
     description: 'Bài học từ việc pivot sản phẩm và tìm ra product-market fit.',
     image: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600&auto=format&fit=crop&q=80',
   },
   {
     id: '3',
-    title: 'Building for impact',
+    title: 'Xây dựng vì tác động',
     author: 'Lê Văn C',
     description: 'Xây dựng startup với mục tiêu tạo ra giá trị xã hội.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&auto=format&fit=crop&q=80',

@@ -77,7 +77,7 @@ export function ProfilePage() {
           }
         }
       } catch {
-        setError('Unable to load profile.')
+        setError('Không thể tải hồ sơ.')
       }
     }
     loadProfile()
@@ -92,9 +92,9 @@ export function ProfilePage() {
     try {
       const uploaded = await uploadUserAvatar(user.id, file)
       setValue('avatarUrl', uploaded.url, { shouldDirty: true })
-      setSuccess('Avatar uploaded. Save changes to apply.')
+      setSuccess('Đã tải ảnh đại diện. Lưu thay đổi để áp dụng.')
     } catch {
-      setError('Avatar upload failed.')
+      setError('Tải ảnh đại diện thất bại.')
     } finally {
       setAvatarUploading(false)
     }
@@ -117,9 +117,9 @@ export function ProfilePage() {
         avatarUrl: updated.avatarUrl ?? null,
         emailVerified: updated.emailVerified,
       }))
-      setSuccess('Profile updated.')
+      setSuccess('Cập nhật hồ sơ thành công.')
     } catch {
-      setError('Profile update failed.')
+      setError('Cập nhật hồ sơ thất bại.')
     } finally {
       setSaving(false)
     }
@@ -130,13 +130,13 @@ export function ProfilePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Profile</p>
-          <h1 className="display-font text-2xl font-semibold text-white">Your profile</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Hồ sơ</p>
+          <h1 className="display-font text-2xl font-semibold text-white">Hồ sơ của bạn</h1>
           <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/50">
-            <span>Role: {currentRole}</span>
+            <span>Vai trò: {currentRole}</span>
             {isVerified && (
               <span className="rounded-full border border-emerald-400/40 bg-emerald-500/10 px-3 py-1 text-emerald-200">
-                Verified
+                Đã xác thực
               </span>
             )}
             {currentRole === 'USER' && (
@@ -150,7 +150,7 @@ export function ProfilePage() {
             onClick={() => navigate('/change-password')}
             className="rounded-full btn-ghost px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80"
           >
-            Change password
+            Đổi mật khẩu
           </button>
           {currentRole === 'USER' && (
             <button
@@ -158,7 +158,7 @@ export function ProfilePage() {
               onClick={() => navigate('/kyc')}
               className="rounded-full btn-ghost px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/80"
             >
-              G?i KYC n?ng c?p
+              Gửi KYC nâng cấp
             </button>
           )}
         </div>
@@ -167,7 +167,7 @@ export function ProfilePage() {
       <form onSubmit={handleSubmit(onSubmit)} className="card-surface max-w-3xl rounded-3xl p-6">
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
-            Full name
+            Họ và tên
             <input
               {...register('fullName')}
               className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
@@ -175,7 +175,7 @@ export function ProfilePage() {
           </label>
           <div className="grid gap-3 md:col-span-2 md:grid-cols-[1fr_auto] md:items-end">
             <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-              Upload avatar
+              Tải ảnh đại diện
               <input
                 type="file"
                 accept="image/*"
@@ -187,7 +187,7 @@ export function ProfilePage() {
             {avatarUrl ? (
               <img
                 src={avatarUrl}
-                alt="Avatar preview"
+                alt="Xem trước ảnh đại diện"
                 className="h-16 w-16 rounded-full border border-white/10 object-cover"
               />
             ) : (
@@ -195,21 +195,21 @@ export function ProfilePage() {
             )}
           </div>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
-            Avatar URL
+            URL ảnh đại diện
             <input
               {...register('avatarUrl')}
               className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
-            Headline
+            Tiêu đề
             <input
               {...register('headline')}
               className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60 md:col-span-2">
-            Bio
+            Giới thiệu
             <textarea
               {...register('bio')}
               rows={3}
@@ -217,7 +217,7 @@ export function ProfilePage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            Country code
+            Mã quốc gia
             <input
               {...register('country')}
               maxLength={2}
@@ -225,7 +225,7 @@ export function ProfilePage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            City
+            Thành phố
             <input
               {...register('city')}
               className="w-full rounded-full border border-white/10 bg-black/40 px-4 py-3 text-sm text-white"
@@ -248,7 +248,7 @@ export function ProfilePage() {
             disabled={saving}
             className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
           >
-            {saving ? 'Saving...' : 'Save changes'}
+            {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
           </button>
           <button
             type="button"
@@ -256,7 +256,7 @@ export function ProfilePage() {
             onClick={() => navigate('/')}
             className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
-            Back to home
+            Về trang chủ
           </button>
         </div>
       </form>

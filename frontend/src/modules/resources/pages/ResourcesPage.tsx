@@ -45,7 +45,7 @@ export function ResourcesPage() {
         <div className="absolute -right-10 top-6 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-teal-500/20 blur-3xl" />
         <div className="relative space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Resource Library</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Thư viện tài nguyên</p>
           <h1 className="display-font text-3xl font-semibold text-white md:text-4xl">
             Kho học liệu khởi nghiệp
           </h1>
@@ -79,7 +79,7 @@ export function ResourcesPage() {
             <div key={item.id} className="card-neo rounded-3xl border border-white/10 p-5">
               <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-white/50">
                 <span>{item.type}</span>
-                <span>{item.tags?.[0] ?? 'Resource'}</span>
+                <span>{item.tags?.[0] ?? 'Tài nguyên'}</span>
               </div>
               <h3 className="mt-3 text-lg font-semibold text-white">{item.title}</h3>
               {item.description && <p className="mt-2 text-sm text-white/60 line-clamp-2">{item.description}</p>}

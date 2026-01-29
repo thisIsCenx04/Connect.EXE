@@ -54,7 +54,7 @@ export const hofStories = [
 
 export const upcomingEvents = [
   {
-    title: 'Startup Hub',
+    title: 'Trung tâm Startup',
     body: 'Pitching workshop for fundraising stages.',
     description: 'Hands-on guidance on storytelling, metrics, and investor readiness.',
     date: '2/1/2024',
@@ -71,7 +71,7 @@ export const upcomingEvents = [
 
 export const resourceHighlights = [
   {
-    title: 'Resource Library',
+    title: 'Thư viện tài nguyên',
     body: 'Investor-ready pitch deck template.',
     description: 'Download slides tailored for early-stage founders and feedback rounds.',
     date: '1/9/2024',

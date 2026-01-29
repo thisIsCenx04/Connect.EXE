@@ -56,7 +56,7 @@ export function StartupHubPage() {
         <div className="absolute -right-10 top-6 h-40 w-40 rounded-full bg-sky-500/20 blur-3xl" />
         <div className="absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="relative space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Startup Hub</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Trung tâm Startup</p>
           <h1 className="display-font text-3xl font-semibold text-white md:text-4xl">
             Tin tức & xu hướng khởi nghiệp
           </h1>

@@ -43,7 +43,7 @@ export function HallOfFameApplyPage() {
       const result = await createHallOfFamePost(payload)
       navigate(`/hall-of-fame/${result.id}`)
     } catch {
-      setError('Khong the tao bai viet Hall of Fame.')
+      setError('Không thể tạo bài viết Hall of Fame. Vui lòng thử lại.')
     } finally {
       setLoading(false)
     }
@@ -53,9 +53,9 @@ export function HallOfFameApplyPage() {
     <div className="space-y-8">
       <section className="card-neo rounded-[28px] p-6 md:p-10">
         <div className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Admin CMS</p>
-          <h1 className="display-font text-3xl font-semibold md:text-4xl">Tao bai viet Hall of Fame</h1>
-          <p className="text-sm text-white/70">Bai viet se o trang thai DRAFT cho den khi publish.</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-sky-300">Quản trị nội dung</p>
+          <h1 className="display-font text-3xl font-semibold md:text-4xl">Tạo bài viết Hall of Fame</h1>
+          <p className="text-sm text-white/70">Bài viết sẽ ở trạng thái DRAFT cho đến khi publish.</p>
         </div>
       </section>
 
@@ -63,7 +63,7 @@ export function HallOfFameApplyPage() {
         <div className="card-surface rounded-3xl p-6">
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Type</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Loại</span>
               <select
                 value={type}
                 onChange={(event) => setType(event.target.value)}
@@ -77,7 +77,7 @@ export function HallOfFameApplyPage() {
               </select>
             </label>
             <label className="space-y-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Cover URL</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">URL Ảnh bìa</span>
               <input
                 value={coverUrl}
                 onChange={(event) => setCoverUrl(event.target.value)}
@@ -85,7 +85,7 @@ export function HallOfFameApplyPage() {
               />
             </label>
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Tieu de</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Tiêu đề</span>
               <input
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
@@ -94,7 +94,7 @@ export function HallOfFameApplyPage() {
               />
             </label>
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Tom tat</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Tóm tắt</span>
               <textarea
                 value={summary}
                 onChange={(event) => setSummary(event.target.value)}
@@ -103,7 +103,7 @@ export function HallOfFameApplyPage() {
               />
             </label>
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Noi dung</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Nội dung</span>
               <textarea
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
@@ -113,11 +113,11 @@ export function HallOfFameApplyPage() {
               />
             </label>
             <label className="space-y-2 md:col-span-2">
-              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Tags</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-white/50">Th?</span>
               <input
                 value={tagsInput}
                 onChange={(event) => setTagsInput(event.target.value)}
-                placeholder="story, founder, award"
+                placeholder="câu chuyện, founder, giải thưởng"
                 className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white"
               />
             </label>
@@ -126,13 +126,13 @@ export function HallOfFameApplyPage() {
 
         <div className="card-surface rounded-3xl p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Lien ket</h2>
+            <h2 className="text-lg font-semibold text-white">Liên kết</h2>
             <button
               type="button"
               onClick={() => setLinks((prev) => [...prev, { type: 'WEBSITE', url: '' }])}
               className="rounded-full btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
             >
-              Them lien ket
+              Thêm liên kết
             </button>
           </div>
           <div className="mt-4 space-y-3">
@@ -160,7 +160,7 @@ export function HallOfFameApplyPage() {
                       prev.map((item, idx) => (idx === index ? { ...item, label: event.target.value } : item))
                     )
                   }
-                  placeholder="Label"
+                  placeholder="Nhãn"
                   className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white md:col-span-2"
                 />
                 <input
@@ -180,13 +180,13 @@ export function HallOfFameApplyPage() {
 
         <div className="card-surface rounded-3xl p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white">Media</h2>
+            <h2 className="text-lg font-semibold text-white">Phương tiện</h2>
             <button
               type="button"
               onClick={() => setMedia((prev) => [...prev, { fileUrl: '', role: 'GALLERY' }])}
               className="rounded-full btn-ghost px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-white/70"
             >
-              Them media
+              Thêm media
             </button>
           </div>
           <div className="mt-4 space-y-3">
@@ -221,14 +221,14 @@ export function HallOfFameApplyPage() {
             disabled={loading}
             className="rounded-full btn-primary px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white shadow-glow"
           >
-            {loading ? 'Dang luu...' : 'Luu bai viet'}
+            {loading ? 'Đang lưu...' : 'Lưu bài viết'}
           </button>
           <button
             type="button"
             onClick={() => navigate('/hall-of-fame')}
             className="rounded-full btn-ghost px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
           >
-            Huy
+            Hủy
           </button>
         </div>
       </form>

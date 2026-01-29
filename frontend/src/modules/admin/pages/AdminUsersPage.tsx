@@ -59,7 +59,7 @@ export function AdminUsersPage() {
         setUsers(data)
       } catch {
         if (!isMounted) return
-        setError('Unable to load users.')
+        setError('Kh?ng th? t?i danh s?ch ng??i d?ng.')
       }
     }
     loadUsers()
@@ -78,9 +78,9 @@ export function AdminUsersPage() {
     try {
       const updated = await updateAdminUserStatus(user.id, !user.active)
       setUsers((prev) => prev.map((item) => (item.id === user.id ? updated : item)))
-      setMessage(`User ${updated.active ? 'reactivated' : 'banned'}.`)
+      setMessage(`Ng??i d?ng ?? ${updated.active ? 'k?ch ho?t l?i' : 'b? kh?a'}.`)
     } catch {
-      setError('Unable to update user status.')
+      setError('Kh?ng th? c?p nh?t tr?ng th?i ng??i d?ng.')
     }
   }
 
@@ -99,10 +99,10 @@ export function AdminUsersPage() {
             : item
         )
       )
-      setMessage('User profile updated.')
+      setMessage('C?p nh?t h? s? ng??i d?ng th?nh c?ng.')
       setActiveModal(null)
     } catch {
-      setError('Unable to update user profile.')
+      setError('Kh?ng th? c?p nh?t h? s? ng??i d?ng.')
     }
   }
 
@@ -115,14 +115,14 @@ export function AdminUsersPage() {
         password: createUserForm.password,
         fullName: createUserForm.fullName.trim(),
       })
-      setMessage('User created successfully.')
+      setMessage('T?o ng??i d?ng th?nh c?ng.')
       setCreateUserForm(createUserDefaults)
       const active = userActiveFilter === 'all' ? undefined : userActiveFilter === 'active'
       const data = await listAdminUsers({ query: userQuery || undefined, active })
       setUsers(data)
       setActiveModal(null)
     } catch {
-      setError('Unable to create user.')
+      setError('Kh?ng th? t?o ng??i d?ng.')
     }
   }
 
@@ -141,14 +141,14 @@ export function AdminUsersPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Users</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Manage accounts</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Ng??i d?ng</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Qu?n l? t?i kho?n</h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <input
             value={userQueryInput}
             onChange={(event) => setUserQueryInput(event.target.value)}
-            placeholder="Search by email or name"
+            placeholder="T?m theo email ho?c t?n"
             className="w-52 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           />
           <select
@@ -156,9 +156,9 @@ export function AdminUsersPage() {
             onChange={(event) => setUserActiveFilter(event.target.value as 'all' | 'active' | 'inactive')}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           >
-            <option value="all">All</option>
-            <option value="active">Active</option>
-            <option value="inactive">Banned</option>
+            <option value="all">T?t c?</option>
+            <option value="active">Ho?t ??ng</option>
+            <option value="inactive">B? kh?a</option>
           </select>
           <button
             type="button"
@@ -168,7 +168,7 @@ export function AdminUsersPage() {
             Apply
           </button>
           <AdminIconButton
-            label="Create user"
+            label="T?o ng??i d?ng"
             tone="primary"
             onClick={() => setActiveModal('create')}
           >
@@ -190,11 +190,11 @@ export function AdminUsersPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.2fr_1fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>User</span>
+          <span>Ng??i d?ng</span>
           <span>Email</span>
-          <span>Role</span>
-          <span>Status</span>
-          <span>Action</span>
+          <span>Vai tr?</span>
+          <span>Tr?ng th?i</span>
+          <span>Thao t?c</span>
         </div>
         <div className="divide-y divide-slate-200">
           {users.map((user) => (
@@ -203,8 +203,8 @@ export function AdminUsersPage() {
               className="grid grid-cols-[1.2fr_1fr_0.6fr_0.6fr_0.8fr] items-center gap-3 px-6 py-4 text-sm"
             >
               <div>
-                <div className="font-semibold text-slate-900">{user.fullName || 'No name'}</div>
-                <div className="text-xs text-slate-400">Joined {new Date(user.createdAt).toLocaleDateString()}</div>
+                <div className="font-semibold text-slate-900">{user.fullName || 'Ch?a c? t?n'}</div>
+                <div className="text-xs text-slate-400">Tham gia {new Date(user.createdAt).toLocaleDateString()}</div>
               </div>
               <span className="truncate text-slate-600">{user.email}</span>
               <span className="text-slate-600">{user.role}</span>
@@ -216,19 +216,19 @@ export function AdminUsersPage() {
                       : 'border-rose-200 bg-rose-50 text-rose-600'
                   }`}
                 >
-                  {user.active ? 'Active' : 'Banned'}
+                  {user.active ? 'Ho?t ??ng' : 'B? kh?a'}
                 </span>
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="View detail" onClick={() => openDetail(user)}>
+                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(user)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="Edit user" onClick={() => openEdit(user)}>
+                <AdminIconButton label="S?a ng??i d?ng" onClick={() => openEdit(user)}>
                   <EditIcon />
                 </AdminIconButton>
                 <button
                   type="button"
-                  aria-label="Ban user"
+                  aria-label="Kh?a ng??i d?ng"
                   onClick={() => handleToggleUser(user)}
                   className={`relative h-6 w-11 rounded-full ${
                     user.active ? 'bg-emerald-200' : 'bg-rose-200'
@@ -244,38 +244,38 @@ export function AdminUsersPage() {
             </div>
           ))}
           {users.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">No users found.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Kh?ng t?m th?y ng??i d?ng.</div>
           )}
         </div>
       </div>
 
       <AdminModal
         open={activeModal === 'detail'}
-        title="User detail"
+        title="Chi ti?t ng??i d?ng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         {selectedUser ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Name</span>
-              <span>{selectedUser.fullName || '—'}</span>
+              <span className="text-slate-400">T?n</span>
+              <span>{selectedUser.fullName || 'â€”'}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Email</span>
               <span>{selectedUser.email}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Role</span>
+              <span className="text-slate-400">Vai tr?</span>
               <span>{selectedUser.role}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Verified</span>
+              <span className="text-slate-400">?? x?c th?c</span>
               <span>{selectedUser.verifiedStatus}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Email verified</span>
-              <span>{selectedUser.emailVerified ? 'Yes' : 'No'}</span>
+              <span className="text-slate-400">Email ?? x?c th?c</span>
+              <span>{selectedUser.emailVerified ? 'C?' : 'Kh?ng'}</span>
             </div>
             <button
               type="button"
@@ -286,28 +286,28 @@ export function AdminUsersPage() {
                   : 'border-emerald-200 bg-emerald-50 text-emerald-700'
               }`}
             >
-              {selectedUser.active ? 'Ban user' : 'Re-activate'}
+              {selectedUser.active ? 'Kh?a ng??i d?ng' : 'Re-activate'}
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a user to see details.</div>
+          <div className="text-sm text-slate-500">Ch?n ng??i d?ng ?? xem chi ti?t.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'edit'}
-        title="Edit user"
+        title="S?a ng??i d?ng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         {selectedUser ? (
           <div className="space-y-4">
             <label className="text-xs text-slate-500">
-              Full name
+              H? v? t?n
               <input
                 value={editUserName}
                 onChange={(event) => setEditUserName(event.target.value)}
-                placeholder="User name"
+                placeholder="T?n ng??i d?ng"
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
@@ -324,27 +324,27 @@ export function AdminUsersPage() {
               onClick={handleUpdateUser}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              Save changes
+              L?u thay ??i
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a user to edit.</div>
+          <div className="text-sm text-slate-500">Ch?n ng??i d?ng ?? s?a.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'create'}
-        title="Create user"
+        title="T?o ng??i d?ng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         <div className="space-y-4">
           <label className="text-xs text-slate-500">
-            Full name
+            H? v? t?n
             <input
               value={createUserForm.fullName}
               onChange={(event) => setCreateUserForm((prev) => ({ ...prev, fullName: event.target.value }))}
-              placeholder="Full name"
+              placeholder="H? v? t?n"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -353,17 +353,17 @@ export function AdminUsersPage() {
             <input
               value={createUserForm.email}
               onChange={(event) => setCreateUserForm((prev) => ({ ...prev, email: event.target.value }))}
-              placeholder="name@email.com"
+              placeholder="ten@email.com"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
           <label className="text-xs text-slate-500">
-            Temporary password
+            M?t kh?u t?m th?i
             <input
               type="password"
               value={createUserForm.password}
               onChange={(event) => setCreateUserForm((prev) => ({ ...prev, password: event.target.value }))}
-              placeholder="Set password"
+              placeholder="??t m?t kh?u"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -372,7 +372,7 @@ export function AdminUsersPage() {
             onClick={handleCreateUser}
             className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
           >
-            Create user
+            T?o ng??i d?ng
           </button>
         </div>
       </AdminModal>

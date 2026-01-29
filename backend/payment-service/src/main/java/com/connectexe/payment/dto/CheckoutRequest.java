@@ -1,6 +1,5 @@
 package com.connectexe.payment.dto;
 
-import com.connectexe.payment.domain.enums.PaymentProvider;
 import com.connectexe.payment.domain.enums.PlanCode;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,9 +8,6 @@ public class CheckoutRequest {
     private PlanCode planCode;
 
     private Integer durationMonths;
-
-    @NotNull(message = "Provider is required")
-    private PaymentProvider provider;
 
     public PlanCode getPlanCode() {
         return planCode;
@@ -27,13 +23,5 @@ public class CheckoutRequest {
 
     public void setDurationMonths(Integer durationMonths) {
         this.durationMonths = durationMonths;
-    }
-
-    public PaymentProvider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(PaymentProvider provider) {
-        this.provider = provider;
     }
 }

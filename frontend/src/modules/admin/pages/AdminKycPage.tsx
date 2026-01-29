@@ -30,7 +30,7 @@ export function AdminKycPage() {
   const [kycList, setKycList] = useState<AdminKycSummary[]>([])
   const [kycStatusFilter, setKycStatusFilter] = useState('PENDING')
   const [selectedKyc, setSelectedKyc] = useState<AdminKycSummary | null>(null)
-  const [reviewForm, setReviewForm] = useState({ status: 'PENDING', reviewNote: '' })
+  const [reviewForm, setDuy?tForm] = useState({ status: 'PENDING', reviewNote: '' })
   const [activeModal, setActiveModal] = useState<null | 'detail' | 'review'>(null)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
@@ -44,7 +44,7 @@ export function AdminKycPage() {
         setKycList(data)
       } catch {
         if (!isMounted) return
-        setError('Unable to load KYC requests.')
+        setError('Kh?ng th? t?i y?u c?u KYC.')
       }
     }
     loadKyc()
@@ -53,7 +53,7 @@ export function AdminKycPage() {
     }
   }, [kycStatusFilter])
 
-  const handleReviewKyc = async () => {
+  const handleDuy?tKyc = async () => {
     if (!selectedKyc) return
     setMessage(null)
     setError(null)
@@ -63,10 +63,10 @@ export function AdminKycPage() {
         reviewNote: reviewForm.reviewNote || undefined,
       })
       setKycList((prev) => prev.map((entry) => (entry.id === selectedKyc.id ? updated : entry)))
-      setMessage('Review saved successfully.')
+      setMessage('L?u ??nh gi? th?nh c?ng.')
       setActiveModal(null)
     } catch {
-      setError('Unable to review KYC request.')
+      setError('Kh?ng th? duy?t y?u c?u KYC.')
     }
   }
 
@@ -75,9 +75,9 @@ export function AdminKycPage() {
     setActiveModal('detail')
   }
 
-  const openReview = (item: AdminKycSummary) => {
+  const openDuy?t = (item: AdminKycSummary) => {
     setSelectedKyc(item)
-    setReviewForm({
+    setDuy?tForm({
       status: item.status ?? 'PENDING',
       reviewNote: item.reviewNote ?? '',
     })
@@ -88,18 +88,18 @@ export function AdminKycPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">KYC Review</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Approve role upgrades</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Duy?t KYC</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Duy?t n?ng c?p vai tr?</h2>
         </div>
         <select
           value={kycStatusFilter}
           onChange={(event) => setKycStatusFilter(event.target.value)}
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
         >
-          <option value="PENDING">Pending</option>
-          <option value="APPROVED">Approved</option>
-          <option value="REJECTED">Rejected</option>
-          <option value="ALL">All</option>
+          <option value="PENDING">?ang ch?</option>
+          <option value="APPROVED">?? duy?t</option>
+          <option value="REJECTED">T? ch?i</option>
+          <option value="ALL">T?t c?</option>
         </select>
       </div>
 
@@ -116,18 +116,18 @@ export function AdminKycPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr_0.8fr_0.6fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>User</span>
-          <span>Requested role</span>
-          <span>Status</span>
-          <span>Submitted</span>
-          <span>Action</span>
+          <span>Ng??i d?ng</span>
+          <span>Vai tr? y?u c?u</span>
+          <span>Tr?ng th?i</span>
+          <span>?? g?i</span>
+          <span>Thao t?c</span>
         </div>
         <div className="divide-y divide-slate-200">
           {kycList.map((item) => (
             <div key={item.id} className="grid grid-cols-[1.2fr_0.8fr_0.6fr_0.8fr_0.6fr] items-center gap-3 px-6 py-4 text-sm">
               <div>
-                <div className="font-semibold text-slate-900">{item.fullName || 'Unknown'}</div>
-                <div className="text-xs text-slate-400">{item.email || 'No email'}</div>
+                <div className="font-semibold text-slate-900">{item.fullName || 'Kh?ng r?'}</div>
+                <div className="text-xs text-slate-400">{item.email || 'Kh?ng c? email'}</div>
               </div>
               <span className="text-slate-600">{item.requestedRole || 'N/A'}</span>
               <span>
@@ -143,24 +143,24 @@ export function AdminKycPage() {
                 {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : '--'}
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="View detail" onClick={() => openDetail(item)}>
+                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(item)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="Review" onClick={() => openReview(item)}>
+                <AdminIconButton label="Duy?t" onClick={() => openDuy?t(item)}>
                   <EditIcon />
                 </AdminIconButton>
               </div>
             </div>
           ))}
           {kycList.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">No KYC submissions.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Ch?a c? y?u c?u KYC.</div>
           )}
         </div>
       </div>
 
       <AdminModal
         open={activeModal === 'detail'}
-        title="KYC detail"
+        title="Chi ti?t KYC"
         onClose={() => setActiveModal(null)}
         size="md"
       >
@@ -168,19 +168,19 @@ export function AdminKycPage() {
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
               <span className="text-slate-400">Email</span>
-              <span>{selectedKyc.email || '—'}</span>
+              <span>{selectedKyc.email || 'â€”'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Organization</span>
-              <span>{selectedKyc.organization || '—'}</span>
+              <span className="text-slate-400">T? ch?c</span>
+              <span>{selectedKyc.organization || 'â€”'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Document</span>
-              <span>{selectedKyc.docType || '—'}</span>
+              <span className="text-slate-400">T?i li?u</span>
+              <span>{selectedKyc.docType || 'â€”'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Doc number</span>
-              <span>{selectedKyc.docNumber || '—'}</span>
+              <span className="text-slate-400">S? t?i li?u</span>
+              <span>{selectedKyc.docNumber || 'â€”'}</span>
             </div>
             {selectedKyc.docFileUrl && (
               <a
@@ -189,18 +189,18 @@ export function AdminKycPage() {
                 rel="noreferrer"
                 className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
               >
-                View document
+                Xem t?i li?u
               </a>
             )}
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a KYC request to view details.</div>
+          <div className="text-sm text-slate-500">Ch?n m?t y?u c?u KYC ?? xem chi ti?t.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'review'}
-        title="Review KYC"
+        title="Duy?t KYC"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
@@ -210,33 +210,33 @@ export function AdminKycPage() {
               Status
               <select
                 value={reviewForm.status}
-                onChange={(event) => setReviewForm((prev) => ({ ...prev, status: event.target.value }))}
+                onChange={(event) => setDuy?tForm((prev) => ({ ...prev, status: event.target.value }))}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               >
-                <option value="PENDING">PENDING</option>
-                <option value="APPROVED">APPROVED</option>
-                <option value="REJECTED">REJECTED</option>
+                <option value="PENDING">?ang ch?</option>
+                <option value="APPROVED">?? duy?t</option>
+                <option value="REJECTED">T? ch?i</option>
               </select>
             </label>
             <label className="text-xs text-slate-500">
-              Review note
+              Duy?t note
               <textarea
                 value={reviewForm.reviewNote}
-                onChange={(event) => setReviewForm((prev) => ({ ...prev, reviewNote: event.target.value }))}
+                onChange={(event) => setDuy?tForm((prev) => ({ ...prev, reviewNote: event.target.value }))}
                 rows={3}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
             <button
               type="button"
-              onClick={handleReviewKyc}
+              onClick={handleDuy?tKyc}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              Save review
+              L?u ??nh gi?
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select a KYC request to review.</div>
+          <div className="text-sm text-slate-500">Ch?n m?t y?u c?u KYC ?? duy?t.</div>
         )}
       </AdminModal>
     </section>

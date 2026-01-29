@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   adminCreateContent,
   adminCreateResource,
-  adminDeleteContent,
-  adminDeleteResource,
+  adminX?aContent,
+  adminX?aResource,
   adminFetchContentList,
   adminFetchResourceList,
   adminUpdateContent,
@@ -131,7 +131,7 @@ export function AdminContentPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Unable to load content list.')
+        setError('Kh?ng th? t?i danh s?ch n?i dung.')
       })
     return () => {
       active = false
@@ -147,7 +147,7 @@ export function AdminContentPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Unable to load resources.')
+        setError('Kh?ng th? t?i t?i nguy?n.')
       })
     return () => {
       active = false
@@ -178,16 +178,16 @@ export function AdminContentPage() {
       if (contentForm.id) {
         const updated = await adminUpdateContent(contentForm.id, payload)
         setContentItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
-        setMessage('Content updated successfully.')
+        setMessage('C?p nh?t n?i dung th?nh c?ng.')
       } else {
         const created = await adminCreateContent(payload)
         setContentItems((prev) => [created, ...prev])
-        setMessage('Content created successfully.')
+        setMessage('T?o n?i dung th?nh c?ng.')
       }
       resetContentForm()
       setContentModal(null)
     } catch {
-      setError('Unable to save content.')
+      setError('Kh?ng th? l?u n?i dung.')
     }
   }
 
@@ -207,44 +207,44 @@ export function AdminContentPage() {
       if (resourceForm.id) {
         const updated = await adminUpdateResource(resourceForm.id, payload)
         setResourceItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
-        setMessage('Resource updated successfully.')
+        setMessage('C?p nh?t t?i nguy?n th?nh c?ng.')
       } else {
         const created = await adminCreateResource(payload)
         setResourceItems((prev) => [created, ...prev])
-        setMessage('Resource created successfully.')
+        setMessage('T?o t?i nguy?n th?nh c?ng.')
       }
       resetResourceForm()
       setResourceModal(null)
     } catch {
-      setError('Unable to save resource.')
+      setError('Kh?ng th? l?u t?i nguy?n.')
     }
   }
 
-  const handleDeleteContent = async () => {
+  const handleX?aContent = async () => {
     if (!selectedContent) return
     setError(null)
     setMessage(null)
     try {
-      await adminDeleteContent(selectedContent.id)
+      await adminX?aContent(selectedContent.id)
       setContentItems((prev) => prev.filter((entry) => entry.id !== selectedContent.id))
-      setMessage('Content deleted.')
+      setMessage('?? x?a n?i dung.')
       setContentModal(null)
     } catch {
-      setError('Unable to delete content.')
+      setError('Kh?ng th? x?a n?i dung.')
     }
   }
 
-  const handleDeleteResource = async () => {
+  const handleX?aResource = async () => {
     if (!selectedResource) return
     setError(null)
     setMessage(null)
     try {
-      await adminDeleteResource(selectedResource.id)
+      await adminX?aResource(selectedResource.id)
       setResourceItems((prev) => prev.filter((entry) => entry.id !== selectedResource.id))
-      setMessage('Resource deleted.')
+      setMessage('?? x?a t?i nguy?n.')
       setResourceModal(null)
     } catch {
-      setError('Unable to delete resource.')
+      setError('Kh?ng th? x?a t?i nguy?n.')
     }
   }
 
@@ -259,7 +259,7 @@ export function AdminContentPage() {
     setContentModal('edit')
   }
 
-  const openContentDelete = (item: ContentItem) => {
+  const openContentX?a = (item: ContentItem) => {
     setSelectedContent(item)
     setContentModal('delete')
   }
@@ -280,7 +280,7 @@ export function AdminContentPage() {
     setResourceModal('edit')
   }
 
-  const openResourceDelete = (item: ResourceItem) => {
+  const openResourceX?a = (item: ResourceItem) => {
     setSelectedResource(item)
     setResourceModal('delete')
   }
@@ -294,8 +294,8 @@ export function AdminContentPage() {
     <section className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Content hub</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Manage Startup Hub & Resources</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung t?m n?i dung</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Qu?n l? Startup Hub & T?i nguy?n</h2>
         </div>
       </div>
 
@@ -312,8 +312,8 @@ export function AdminContentPage() {
       <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Startup hub</p>
-            <h3 className="text-lg font-semibold text-slate-900">News, events, competitions</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung t?m Startup</p>
+            <h3 className="text-lg font-semibold text-slate-900">Tin t?c, s? ki?n, cu?c thi</h3>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -321,7 +321,7 @@ export function AdminContentPage() {
               onChange={(event) => setContentTypeFilter(event.target.value as ContentType | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">All types</option>
+              <option value="ALL">T?t c? lo?i</option>
               {CONTENT_TYPES.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -333,14 +333,14 @@ export function AdminContentPage() {
               onChange={(event) => setContentStatusFilter(event.target.value as ContentStatus | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">All statuses</option>
+              <option value="ALL">T?t c? tr?ng th?i</option>
               {CONTENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
               ))}
             </select>
-            <AdminIconButton label="Create content" tone="primary" onClick={openContentCreate}>
+            <AdminIconButton label="T?o n?i dung" tone="primary" onClick={openContentCreate}>
               <PlusIcon />
             </AdminIconButton>
           </div>
@@ -348,17 +348,17 @@ export function AdminContentPage() {
 
         <div className="mt-6">
           <div className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-            <span>Title</span>
-            <span>Type</span>
-            <span>Status</span>
-            <span>Action</span>
+            <span>Ti?u ??</span>
+            <span>Lo?i</span>
+            <span>Tr?ng th?i</span>
+            <span>Thao t?c</span>
           </div>
           <div className="divide-y divide-slate-200">
             {contentItems.map((item) => (
               <div key={item.id} className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] items-center gap-3 px-6 py-4 text-sm">
                 <div>
                   <div className="font-semibold text-slate-900">{item.title}</div>
-                  <div className="text-xs text-slate-400">{item.summary || 'No summary'}</div>
+                  <div className="text-xs text-slate-400">{item.summary || 'Ch?a c? t?m t?t'}</div>
                 </div>
                 <span className="text-slate-600">{item.type}</span>
                 <span>
@@ -367,20 +367,20 @@ export function AdminContentPage() {
                   </span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <AdminIconButton label="View detail" onClick={() => openContentDetail(item)}>
+                  <AdminIconButton label="Xem chi ti?t" onClick={() => openContentDetail(item)}>
                     <EyeIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="Edit content" onClick={() => openContentEdit(item)}>
+                  <AdminIconButton label="S?a n?i dung" onClick={() => openContentEdit(item)}>
                     <EditIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="Delete content" tone="danger" onClick={() => openContentDelete(item)}>
+                  <AdminIconButton label="X?a n?i dung" tone="danger" onClick={() => openContentX?a(item)}>
                     <TrashIcon />
                   </AdminIconButton>
                 </div>
               </div>
             ))}
             {contentItems.length === 0 && (
-              <div className="px-6 py-6 text-sm text-slate-500">No content found.</div>
+              <div className="px-6 py-6 text-sm text-slate-500">Kh?ng c? n?i dung.</div>
             )}
           </div>
         </div>
@@ -388,8 +388,8 @@ export function AdminContentPage() {
       <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Resource library</p>
-            <h3 className="text-lg font-semibold text-slate-900">Templates, guides, references</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Th? vi?n t?i nguy?n</p>
+            <h3 className="text-lg font-semibold text-slate-900">M?u, h??ng d?n, t?i li?u tham kh?o</h3>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -397,14 +397,14 @@ export function AdminContentPage() {
               onChange={(event) => setResourceStatusFilter(event.target.value as ContentStatus | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">All statuses</option>
+              <option value="ALL">T?t c? tr?ng th?i</option>
               {CONTENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
               ))}
             </select>
-            <AdminIconButton label="Create resource" tone="primary" onClick={openResourceCreate}>
+            <AdminIconButton label="T?o t?i nguy?n" tone="primary" onClick={openResourceCreate}>
               <PlusIcon />
             </AdminIconButton>
           </div>
@@ -412,10 +412,10 @@ export function AdminContentPage() {
 
         <div className="mt-6">
           <div className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-            <span>Title</span>
-            <span>Type</span>
-            <span>Status</span>
-            <span>Action</span>
+            <span>Ti?u ??</span>
+            <span>Lo?i</span>
+            <span>Tr?ng th?i</span>
+            <span>Thao t?c</span>
           </div>
           <div className="divide-y divide-slate-200">
             {resourceItems.map((item) => (
@@ -431,56 +431,56 @@ export function AdminContentPage() {
                   </span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <AdminIconButton label="View detail" onClick={() => openResourceDetail(item)}>
+                  <AdminIconButton label="Xem chi ti?t" onClick={() => openResourceDetail(item)}>
                     <EyeIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="Edit resource" onClick={() => openResourceEdit(item)}>
+                  <AdminIconButton label="S?a t?i nguy?n" onClick={() => openResourceEdit(item)}>
                     <EditIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="Delete resource" tone="danger" onClick={() => openResourceDelete(item)}>
+                  <AdminIconButton label="X?a t?i nguy?n" tone="danger" onClick={() => openResourceX?a(item)}>
                     <TrashIcon />
                   </AdminIconButton>
                 </div>
               </div>
             ))}
             {resourceItems.length === 0 && (
-              <div className="px-6 py-6 text-sm text-slate-500">No resources found.</div>
+              <div className="px-6 py-6 text-sm text-slate-500">Kh?ng c? t?i nguy?n.</div>
             )}
           </div>
         </div>
       </div>
       <AdminModal
         open={contentModal === 'detail'}
-        title="Content detail"
+        title="Chi ti?t n?i dung"
         onClose={() => setContentModal(null)}
         size="md"
       >
         {selectedContent ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Title</span>
+              <span className="text-slate-400">Ti?u ??</span>
               <span>{selectedContent.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Type</span>
+              <span className="text-slate-400">Lo?i</span>
               <span>{selectedContent.type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Status</span>
+              <span className="text-slate-400">Tr?ng th?i</span>
               <span>{selectedContent.status}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tags</span>
+              <span className="text-slate-400">Th?</span>
               <span>{selectedContent.tags?.join(', ') || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Schedule</span>
+              <span className="text-slate-400">L?ch</span>
               <span>
                 {selectedContent.startAt ? new Date(selectedContent.startAt).toLocaleDateString() : '—'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Location</span>
+              <span className="text-slate-400">??a ?i?m</span>
               <span>{selectedContent.location || '—'}</span>
             </div>
             {selectedContent.externalUrl && (
@@ -490,18 +490,18 @@ export function AdminContentPage() {
                 rel="noreferrer"
                 className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
               >
-                Open external link
+                M? li?n k?t ngo?i
               </a>
             )}
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select content to view details.</div>
+          <div className="text-sm text-slate-500">Ch?n n?i dung ?? xem chi ti?t.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={contentModal === 'edit' || contentModal === 'create'}
-        title={contentModal === 'edit' ? 'Edit content' : 'Create content'}
+        title={contentModal === 'edit' ? 'S?a n?i dung' : 'T?o n?i dung'}
         onClose={() => setContentModal(null)}
         size="lg"
       >
@@ -535,16 +535,16 @@ export function AdminContentPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Title
+            Ti?u ??
             <input
               value={contentForm.title}
               onChange={(event) => setContentForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="Title"
+              placeholder="Ti?u ??"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Summary
+            T?m t?t
             <textarea
               value={contentForm.summary}
               onChange={(event) => setContentForm((prev) => ({ ...prev, summary: event.target.value }))}
@@ -553,7 +553,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Body
+            N?i dung
             <textarea
               value={contentForm.body}
               onChange={(event) => setContentForm((prev) => ({ ...prev, body: event.target.value }))}
@@ -562,7 +562,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            Start at
+            B?t ??u l?c
             <input
               type="datetime-local"
               value={contentForm.startAt}
@@ -571,7 +571,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            End at
+            K?t th?c l?c
             <input
               type="datetime-local"
               value={contentForm.endAt}
@@ -580,16 +580,16 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            Location
+            ??a ?i?m
             <input
               value={contentForm.location}
               onChange={(event) => setContentForm((prev) => ({ ...prev, location: event.target.value }))}
-              placeholder="Ho Chi Minh"
+              placeholder="TP.HCM"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             />
           </label>
           <label className="text-xs text-slate-500">
-            External URL
+            URL ngo?i
             <input
               value={contentForm.externalUrl}
               onChange={(event) => setContentForm((prev) => ({ ...prev, externalUrl: event.target.value }))}
@@ -598,16 +598,16 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Tags (comma separated)
+            Th? (ng?n c?ch b?ng d?u ph?y)
             <input
               value={contentForm.tags}
               onChange={(event) => setContentForm((prev) => ({ ...prev, tags: event.target.value }))}
-              placeholder="startup, pitch, accelerator"
+              placeholder="startup, pitch, t?ng t?c"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Cover URL
+            URL ?nh b?a
             <input
               value={contentForm.coverUrl}
               onChange={(event) => setContentForm((prev) => ({ ...prev, coverUrl: event.target.value }))}
@@ -621,7 +621,7 @@ export function AdminContentPage() {
               onClick={handleSaveContent}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              {contentForm.id ? 'Update content' : 'Create content'}
+              {contentForm.id ? 'Update content' : 'T?o n?i dung'}
             </button>
           </div>
         </div>
@@ -629,52 +629,52 @@ export function AdminContentPage() {
 
       <AdminModal
         open={contentModal === 'delete'}
-        title="Delete content"
+        title="X?a n?i dung"
         onClose={() => setContentModal(null)}
         size="sm"
       >
         <div className="space-y-4 text-sm text-slate-600">
-          <p>Are you sure you want to delete this content?</p>
+          <p>B?n c? ch?c mu?n x?a n?i dung n?y?</p>
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setContentModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              Cancel
+              H?y
             </button>
             <button
               type="button"
-              onClick={handleDeleteContent}
+              onClick={handleX?aContent}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              Delete
+              X?a
             </button>
           </div>
         </div>
       </AdminModal>
       <AdminModal
         open={resourceModal === 'detail'}
-        title="Resource detail"
+        title="Chi ti?t t?i nguy?n"
         onClose={() => setResourceModal(null)}
         size="md"
       >
         {selectedResource ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Title</span>
+              <span className="text-slate-400">Ti?u ??</span>
               <span>{selectedResource.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Type</span>
+              <span className="text-slate-400">Lo?i</span>
               <span>{selectedResource.type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Status</span>
+              <span className="text-slate-400">Tr?ng th?i</span>
               <span>{selectedResource.status}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tags</span>
+              <span className="text-slate-400">Th?</span>
               <span>{selectedResource.tags?.join(', ') || '—'}</span>
             </div>
             <a
@@ -683,17 +683,17 @@ export function AdminContentPage() {
               rel="noreferrer"
               className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              Open resource
+              M? t?i nguy?n
             </a>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Select resource to view details.</div>
+          <div className="text-sm text-slate-500">Ch?n t?i nguy?n ?? xem chi ti?t.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={resourceModal === 'edit' || resourceModal === 'create'}
-        title={resourceModal === 'edit' ? 'Edit resource' : 'Create resource'}
+        title={resourceModal === 'edit' ? 'S?a t?i nguy?n' : 'T?o t?i nguy?n'}
         onClose={() => setResourceModal(null)}
         size="lg"
       >
@@ -727,16 +727,16 @@ export function AdminContentPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Title
+            Ti?u ??
             <input
               value={resourceForm.title}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="Title"
+              placeholder="Ti?u ??"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Description
+            M? t?
             <textarea
               value={resourceForm.description}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, description: event.target.value }))}
@@ -754,11 +754,11 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Tags (comma separated)
+            Th? (ng?n c?ch b?ng d?u ph?y)
             <input
               value={resourceForm.tags}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, tags: event.target.value }))}
-              placeholder="pitch, template, checklist"
+              placeholder="pitch, m?u, checklist"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             />
           </label>
@@ -768,7 +768,7 @@ export function AdminContentPage() {
               onClick={handleSaveResource}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              {resourceForm.id ? 'Update resource' : 'Create resource'}
+              {resourceForm.id ? 'Update resource' : 'T?o t?i nguy?n'}
             </button>
           </div>
         </div>
@@ -776,26 +776,26 @@ export function AdminContentPage() {
 
       <AdminModal
         open={resourceModal === 'delete'}
-        title="Delete resource"
+        title="X?a t?i nguy?n"
         onClose={() => setResourceModal(null)}
         size="sm"
       >
         <div className="space-y-4 text-sm text-slate-600">
-          <p>Are you sure you want to delete this resource?</p>
+          <p>B?n c? ch?c mu?n x?a t?i nguy?n n?y?</p>
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setResourceModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              Cancel
+              H?y
             </button>
             <button
               type="button"
-              onClick={handleDeleteResource}
+              onClick={handleX?aResource}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              Delete
+              X?a
             </button>
           </div>
         </div>

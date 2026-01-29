@@ -16,10 +16,13 @@ interface AuthState {
   } | null
 }
 
+const accessToken = tokenStorage.getAccessToken()
+const refreshToken = tokenStorage.getRefreshToken()
+
 const initialState: AuthState = {
-  accessToken: tokenStorage.getAccessToken(),
-  refreshToken: tokenStorage.getRefreshToken(),
-  user: tokenStorage.getUser<AuthState['user']>(),
+  accessToken,
+  refreshToken,
+  user: accessToken ? tokenStorage.getUser<AuthState['user']>() : null,
 }
 
 const authSlice = createSlice({

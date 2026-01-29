@@ -25,9 +25,9 @@ export function RegisterPage() {
     setError(null)
     try {
       await registerUser(values)
-      setSuccess('Registration successful. Please check your email to activate your account.')
+      setSuccess('Đăng ký thành công. Vui lòng kiểm tra email để kích hoạt tài khoản.')
     } catch (err) {
-      setError('Registration failed. Please try again.')
+      setError('Đăng ký thất bại. Vui lòng thử lại.')
     }
   }
 
@@ -39,7 +39,7 @@ export function RegisterPage() {
           {...register('fullName')}
           required
           className="w-full rounded-full border border-white/20 bg-[rgba(30,35,60,0.6)] px-5 py-4 text-sm text-white placeholder:text-white/50 focus:border-sky-400/60 focus:outline-none"
-          placeholder="Full Name"
+          placeholder="Họ và tên"
         />
         <button
           type="button"
@@ -77,7 +77,7 @@ export function RegisterPage() {
           {...register('password')}
           required
           className="w-full rounded-full border border-white/20 bg-[rgba(30,35,60,0.6)] px-5 py-4 text-sm text-white placeholder:text-white/50 focus:border-sky-400/60 focus:outline-none"
-          placeholder="Password"
+          placeholder="Mật khẩu"
         />
         <button
           type="button"
@@ -106,14 +106,14 @@ export function RegisterPage() {
         disabled={isSubmitting}
         className="w-full rounded-full bg-gradient-to-r from-[#3b82f6] to-[#1d4ed8] px-5 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:shadow-blue-500/50"
       >
-        {isSubmitting ? 'Creating...' : 'Create account'}
+        {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản'}
       </button>
 
       {/* Sign in link */}
       <div className="pt-4 text-center text-sm text-white/60">
-        Already have an account?{' '}
+        Đã có tài khoản?{' '}
         <Link to="/login" className="font-semibold text-white transition hover:text-sky-400">
-          Sign in
+          Đăng nhập
         </Link>
       </div>
 
@@ -123,7 +123,7 @@ export function RegisterPage() {
           onClick={() => navigate('/login')}
           className="w-full rounded-full bg-[rgba(60,65,90,0.8)] px-5 py-4 text-sm font-semibold text-sky-400 transition hover:bg-[rgba(70,75,100,0.9)]"
         >
-          Go to login
+          Tới trang đăng nhập
         </button>
       )}
     </form>

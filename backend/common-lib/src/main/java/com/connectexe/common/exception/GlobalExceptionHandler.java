@@ -24,10 +24,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ErrorResponse> handleApi(ApiException ex, HttpServletRequest request) {
+        String logMessage = String.format("[%s] [%d] %s %s - %s: %s", 
+            ex.getCode(),
+            ex.getStatus().value(),
+            request.getMethod(), 
+            request.getRequestURI(),
+            ex.getClass().getSimpleName(),
+            ex.getMessage());
+        
         if (ex.getStatus().is5xxServerError()) {
-            logger.error("API error {} {} {}", ex.getCode(), request.getMethod(), request.getRequestURI(), ex);
+            logger.error(logMessage);
         } else {
-            logger.warn("API error {} {} {}", ex.getCode(), request.getMethod(), request.getRequestURI(), ex);
+            logger.warn(logMessage);
         }
         ErrorResponse body = new ErrorResponse(ex.getCode(), ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(ex.getStatus()).body(body);
@@ -36,12 +44,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex,
                                                          HttpServletRequest request) {
-        logger.warn("Validation error {} {}", request.getMethod(), request.getRequestURI(), ex);
         String message = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining(", "));
+        logger.warn("[VALIDATION_ERROR] [400] {} {} - {}", request.getMethod(), request.getRequestURI(), message);
         ErrorResponse body = new ErrorResponse("VALIDATION_ERROR", message, request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -49,7 +57,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraint(ConstraintViolationException ex,
                                                           HttpServletRequest request) {
-        logger.warn("Constraint violation {} {}", request.getMethod(), request.getRequestURI(), ex);
+        logger.warn("[VALIDATION_ERROR] [400] {} {} - {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         ErrorResponse body = new ErrorResponse("VALIDATION_ERROR", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -57,7 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex,
                                                                   HttpServletRequest request) {
-        logger.warn("Method not allowed {} {}", request.getMethod(), request.getRequestURI(), ex);
+        logger.warn("[METHOD_NOT_ALLOWED] [405] {} {} - {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         ErrorResponse body = new ErrorResponse("METHOD_NOT_ALLOWED", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(body);
     }
@@ -65,7 +73,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorResponse> handleMissingParam(MissingServletRequestParameterException ex,
                                                             HttpServletRequest request) {
-        logger.warn("Missing parameter {} {}", request.getMethod(), request.getRequestURI(), ex);
+        logger.warn("[MISSING_PARAMETER] [400] {} {} - {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
         ErrorResponse body = new ErrorResponse("MISSING_PARAMETER", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -73,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleBadRequest(HttpMessageNotReadableException ex,
                                                           HttpServletRequest request) {
-        logger.warn("Bad request {} {}", request.getMethod(), request.getRequestURI(), ex);
+        logger.warn("[BAD_REQUEST] [400] {} {} - Malformed request body", request.getMethod(), request.getRequestURI());
         ErrorResponse body = new ErrorResponse("BAD_REQUEST", "Malformed request body", request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
@@ -87,7 +95,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnknown(Exception ex, HttpServletRequest request) {
-        logger.error("Unhandled error {} {}", request.getMethod(), request.getRequestURI(), ex);
+        logger.error("[INTERNAL_ERROR] [500] {} {} - {}: {}", 
+            request.getMethod(), 
+            request.getRequestURI(), 
+            ex.getClass().getSimpleName(),
+            ex.getMessage());
         ErrorResponse body = new ErrorResponse("INTERNAL_ERROR", ex.getMessage(), request.getRequestURI());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }

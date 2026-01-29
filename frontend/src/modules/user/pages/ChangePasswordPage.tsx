@@ -29,7 +29,7 @@ export function ChangePasswordPage() {
     setError(null)
     setSuccess(null)
     if (values.newPassword !== values.confirmPassword) {
-      setError('Passwords do not match.')
+      setError('Mật khẩu không khớp.')
       return
     }
     setSaving(true)
@@ -38,16 +38,16 @@ export function ChangePasswordPage() {
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       })
-      setSuccess('Password updated.')
+      setSuccess('Đã cập nhật mật khẩu.')
       reset()
     } catch (err) {
       const apiError = err as { response?: { data?: { code?: string } } }
       if (apiError.response?.data?.code === 'PASSWORD_NOT_SET') {
-        setError('This account does not have a local password set.')
+        setError('Tài khoản này chưa đặt mật khẩu nội bộ.')
       } else if (apiError.response?.data?.code === 'INVALID_PASSWORD') {
-        setError('Current password is incorrect.')
+        setError('Mật khẩu hiện tại không đúng.')
       } else {
-        setError('Password update failed.')
+        setError('Cập nhật mật khẩu thất bại.')
       }
     } finally {
       setSaving(false)
@@ -57,13 +57,13 @@ export function ChangePasswordPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Settings</p>
-        <h1 className="display-font text-2xl font-semibold text-white">Change password</h1>
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">Cài đặt</p>
+        <h1 className="display-font text-2xl font-semibold text-white">Đổi mật khẩu</h1>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="card-surface max-w-xl rounded-3xl p-6">
         <div className="grid gap-4">
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            Current password
+            Mật khẩu hiện tại
             <input
               type="password"
               {...register('currentPassword')}
@@ -72,7 +72,7 @@ export function ChangePasswordPage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            New password
+            Mật khẩu mới
             <input
               type="password"
               {...register('newPassword')}
@@ -81,7 +81,7 @@ export function ChangePasswordPage() {
             />
           </label>
           <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
-            Confirm new password
+            Xác nhận mật khẩu mới
             <input
               type="password"
               {...register('confirmPassword')}
@@ -105,7 +105,7 @@ export function ChangePasswordPage() {
               disabled={saving}
               className="rounded-full btn-primary px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white"
             >
-              {saving ? 'Updating...' : 'Update password'}
+              {saving ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
             </button>
             <button
               type="button"
@@ -113,7 +113,7 @@ export function ChangePasswordPage() {
               onClick={() => navigate('/profile')}
               className="rounded-full btn-ghost px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-white/80"
             >
-              Cancel
+              Hủy
             </button>
           </div>
         </div>
