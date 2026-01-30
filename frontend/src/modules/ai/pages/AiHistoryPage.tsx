@@ -50,7 +50,7 @@ export function AiHistoryPage() {
         >
           {FILTER_OPTIONS.map((option) => (
             <option key={option} value={option}>
-              {option === 'ALL' ? 'Tất cả công cụ' : AI_TOOL_LABELS[option] ? option}
+              {option === 'ALL' ? 'Tất cả công cụ' : AI_TOOL_LABELS[option] || option}
             </option>
           ))}
         </select>
@@ -80,7 +80,7 @@ export function AiHistoryPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-white/50">
-                  {AI_TOOL_LABELS[item.agentType] ? item.agentType}
+                  {AI_TOOL_LABELS[item.agentType] || item.agentType}
                 </p>
                 <h3 className="mt-2 text-lg font-semibold text-white">{item.status}</h3>
               </div>
@@ -94,14 +94,14 @@ export function AiHistoryPage() {
                 <p className="mt-2 text-sm text-white/70 whitespace-pre-wrap">{item.inputText}</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                <p className="text-[11px] uppercase tracking-[0.2em] text-white/50">?u ra</p>
+                <p className="text-[11px] uppercase tracking-[0.2em] text-white/50">Đầu ra</p>
                 <p className="mt-2 text-sm text-white/70 whitespace-pre-wrap">
-                  {item.outputText ? item.errorMessage ? 'Chưa có kết quả.'}
+                  {item.outputText || item.errorMessage || 'Chưa có kết quả.'}
                 </p>
               </div>
             </div>
             <div className="mt-4 text-[11px] uppercase tracking-[0.2em] text-white/40">
-              Token: {item.promptTokens + item.completionTokens} · Chi ph?: ${item.costUsd.toFixed(2)}
+              Token: {item.promptTokens + item.completionTokens} · Chi phí: ${item.costUsd.toFixed(2)}
             </div>
           </div>
         ))}

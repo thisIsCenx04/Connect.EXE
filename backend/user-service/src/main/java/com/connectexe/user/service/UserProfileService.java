@@ -14,9 +14,12 @@ import com.connectexe.user.dto.UserProfileUpdateRequest;
 import com.connectexe.user.repository.InvestorKycRepository;
 import com.connectexe.user.repository.UserRepository;
 import com.connectexe.common.exception.ApiException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -27,6 +30,9 @@ public class UserProfileService {
     private final UserRepository userRepository;
     private final InvestorKycRepository investorKycRepository;
     private final PasswordEncoder passwordEncoder;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public UserProfileService(UserRepository userRepository,
                               InvestorKycRepository investorKycRepository,
@@ -36,17 +42,50 @@ public class UserProfileService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Transactional
     public UserProfileResponse getProfile(UUID userId, User requester) {
         assertSelfOrAdmin(userId, requester);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            // If user doesn't exist in user_db but authenticated via JWT, create from requester info
+            if (requester != null && requester.getId().equals(userId)) {
+                user = createUserFromJwt(userId, requester);
+            } else {
+                throw new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found");
+            }
+        }
         return toProfileResponse(user);
     }
+    
+    private User createUserFromJwt(UUID userId, User requester) {
+        // Use native SQL to insert user with preset ID (bypasses Hibernate's @GeneratedValue)
+        String roleName = requester.getRole() != null ? requester.getRole().name() : "USER";
+        entityManager.createNativeQuery(
+            "INSERT INTO users (id, email, full_name, role, is_active, verified_status, email_verified, created_at, updated_at) " +
+            "VALUES (:id, :email, :fullName, :role, true, 'NONE', false, NOW(), NOW())"
+        )
+        .setParameter("id", userId)
+        .setParameter("email", requester.getEmail())
+        .setParameter("fullName", requester.getFullName())
+        .setParameter("role", roleName)
+        .executeUpdate();
+        entityManager.flush();
+        entityManager.clear(); // Clear persistence context to fetch fresh entity
+        return userRepository.findById(userId).orElseThrow();
+    }
 
+    @Transactional
     public UserProfileResponse updateProfile(UUID userId, UserProfileUpdateRequest request, User requester) {
         assertSelfOrAdmin(userId, requester);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
+            // If user doesn't exist in user_db but authenticated via JWT, create from requester info
+            if (requester != null && requester.getId().equals(userId)) {
+                user = createUserFromJwt(userId, requester);
+            } else {
+                throw new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found");
+            }
+        }
 
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());

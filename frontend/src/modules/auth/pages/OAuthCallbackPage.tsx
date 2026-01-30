@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../../app/hooks'
+import { useAppDispatch, useAppSelector } from '../../../app/hooks'
 import { setTokens } from '../store/authSlice'
 
 export function OAuthCallbackPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
+  const [processed, setProcessed] = useState(false)
+  const { accessToken, user } = useAppSelector((state) => state.auth)
 
   useEffect(() => {
+    if (processed) return
+
     const params = new URLSearchParams(window.location.search)
-    const accessToken = params.get('accessToken') ?? ''
+    console.log('[OAuth] URL:', window.location.href)
+    console.log('[OAuth] Params:', Object.fromEntries(params.entries()))
+    
+    const token = params.get('accessToken') ?? ''
     const refreshToken = params.get('refreshToken') ?? ''
     const userId = params.get('userId') ?? ''
     const email = params.get('email') ?? ''
@@ -20,13 +27,17 @@ export function OAuthCallbackPage() {
     const avatarUrl = params.get('avatarUrl') ?? ''
     const emailVerified = params.get('emailVerified') === 'true'
 
-    if (!accessToken || !refreshToken || !userId || !email) {
+    console.log('[OAuth] Extracted:', { token: !!token, refreshToken: !!refreshToken, userId, email, role })
+
+    if (!token || !refreshToken || !userId || !email) {
+      console.error('[OAuth] Missing required data')
       setError('Đăng nhập Google thất bại. Thiếu dữ liệu.')
       return
     }
 
+    console.log('[OAuth] Dispatching setTokens...')
     dispatch(setTokens({
-      accessToken,
+      accessToken: token,
       refreshToken,
       user: {
         id: userId,
@@ -38,9 +49,20 @@ export function OAuthCallbackPage() {
         emailVerified,
       },
     }))
-    const destination = role === 'ADMIN' ? '/admin' : '/'
-    navigate(destination)
-  }, [dispatch, navigate])
+    setProcessed(true)
+    console.log('[OAuth] Processed set to true')
+  }, [dispatch, processed])
+
+  // Navigate after state is updated
+  useEffect(() => {
+    console.log('[OAuth] State check:', { processed, accessToken: !!accessToken, user: !!user, role: user?.role })
+    if (processed && accessToken && user) {
+      const destination = user.role === 'ADMIN' ? '/admin' : '/'
+      console.log('[OAuth] Navigating to:', destination)
+      // Use window.location to force full page reload and ensure fresh state
+      window.location.href = destination
+    }
+  }, [processed, accessToken, user])
 
   return (
     <div className="space-y-4">

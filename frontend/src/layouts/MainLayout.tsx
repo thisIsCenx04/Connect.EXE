@@ -543,7 +543,7 @@ export function MainLayout() {
                 isActivePath('/projects') ? 'bg-white/10 text-white' : ''
               }`}
             >
-              Sản phẩm
+              Dự án
             </button>
             <button
               onClick={() => handleNavClick('/forum')}

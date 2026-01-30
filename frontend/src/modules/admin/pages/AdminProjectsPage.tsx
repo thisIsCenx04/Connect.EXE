@@ -101,24 +101,24 @@ export function AdminProjectsPage() {
         featuredRank: Number.isFinite(parsedRank ?? NaN) ? parsedRank : null,
       })
       setProjects((prev) => prev.map((entry) => (entry.id === selectedProject.id ? updated : entry)))
-      setMessage('C?p nh?t d? ?n th?nh c?ng.')
+      setMessage('Cập nhật dự án thành công.')
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? c?p nh?t d? ?n.')
+      setError('Không thể cập nhật dự án.')
     }
   }
 
-  const handleX?aProject = async () => {
+  const handleDeleteProject = async () => {
     if (!selectedProject) return
     setMessage(null)
     setError(null)
     try {
       await deleteProject(selectedProject.id)
       setProjects((prev) => prev.filter((entry) => entry.id !== selectedProject.id))
-      setMessage('?? x?a d? ?n.')
+      setMessage('Đã xóa dự án.')
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? x?a d? ?n.')
+      setError('Không thể xóa dự án.')
     }
   }
 
@@ -139,13 +139,13 @@ export function AdminProjectsPage() {
         fundingTargetUsd: Number.isFinite(parsedFundingTarget ?? NaN) ? parsedFundingTarget : undefined,
         pitchDeckUrl: createProjectForm.pitchDeckUrl.trim() || undefined,
       })
-      setMessage('T?o d? ?n th?nh c?ng.')
+      setMessage('Tạo dự án thành công.')
       setCreateProjectForm(createProjectDefaults)
       const data = await listAdminProjects(projectStatusFilter === 'ALL' ? undefined : projectStatusFilter)
       setProjects(data)
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? t?o d? ?n.')
+      setError('Không thể tạo dự án.')
     }
   }
 
@@ -164,7 +164,7 @@ export function AdminProjectsPage() {
     setActiveModal('edit')
   }
 
-  const openX?a = (item: AdminProjectSummary) => {
+  const openDelete = (item: AdminProjectSummary) => {
     setSelectedProject(item)
     setActiveModal('delete')
   }
@@ -173,8 +173,8 @@ export function AdminProjectsPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">D? ?n</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">H?ng ??i ki?m duy?t</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Dự án</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Hàng đợi kiểm duyệt</h2>
         </div>
         <div className="flex items-center gap-3">
           <select
@@ -182,12 +182,12 @@ export function AdminProjectsPage() {
             onChange={(event) => setProjectStatusFilter(event.target.value)}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           >
-            <option value="PENDING">?ang ch?</option>
-            <option value="APPROVED">?? duy?t</option>
-            <option value="REJECTED">T? ch?i</option>
-            <option value="ALL">T?t c?</option>
+            <option value="PENDING">Đang chờ</option>
+            <option value="APPROVED">Đã duyệt</option>
+            <option value="REJECTED">Từ chối</option>
+            <option value="ALL">Tất cả</option>
           </select>
-          <AdminIconButton label="T?o d? ?n" tone="primary" onClick={() => setActiveModal('create')}>
+          <AdminIconButton label="Tạo dự án" tone="primary" onClick={() => setActiveModal('create')}>
             <PlusIcon />
           </AdminIconButton>
         </div>
@@ -206,11 +206,11 @@ export function AdminProjectsPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.4fr_0.8fr_0.6fr_0.8fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>D? ?n</span>
-          <span>Giai ?o?n</span>
-          <span>Tr?ng th?i</span>
-          <span>?? g?i</span>
-          <span>Thao t?c</span>
+          <span>Dự án</span>
+          <span>Giai đoạn</span>
+          <span>Trạng thái</span>
+          <span>Đã gửi</span>
+          <span>Thao tác</span>
         </div>
         <div className="divide-y divide-slate-200">
           {projects.map((item) => (
@@ -233,20 +233,20 @@ export function AdminProjectsPage() {
                 {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : '--'}
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(item)}>
+                <AdminIconButton label="Xem chi tiết" onClick={() => openDetail(item)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="S?a d? ?n" onClick={() => openEdit(item)}>
+                <AdminIconButton label="Sửa dự án" onClick={() => openEdit(item)}>
                   <EditIcon />
                 </AdminIconButton>
-                <AdminIconButton label="X?a d? ?n" tone="danger" onClick={() => openX?a(item)}>
+                <AdminIconButton label="Xóa dự án" tone="danger" onClick={() => openDelete(item)}>
                   <TrashIcon />
                 </AdminIconButton>
               </div>
             </div>
           ))}
           {projects.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">Kh?ng t?m th?y d? ?n.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Không tìm thấy dự án.</div>
           )}
         </div>
       </div>
@@ -260,34 +260,34 @@ export function AdminProjectsPage() {
         {selectedProject ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Ti?u ??</span>
+              <span className="text-slate-400">Tiêu đề</span>
               <span>{selectedProject.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">L?nh v?c</span>
+              <span className="text-slate-400">Lĩnh vực</span>
               <span>{selectedProject.industry}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Giai ?o?n</span>
+              <span className="text-slate-400">Giai đoạn</span>
               <span>{selectedProject.stage}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Hi?n th?</span>
+              <span className="text-slate-400">Hiển thị</span>
               <span>{selectedProject.visibility}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tr?ng th?i</span>
+              <span className="text-slate-400">Trạng thái</span>
               <span>{selectedProject.status}</span>
             </div>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n m?t d? ?n ?? xem chi ti?t.</div>
+          <div className="text-sm text-slate-500">Chọn một dự án để xem chi tiết.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'edit'}
-        title="S?a d? ?n"
+        title="Sửa dự án"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
@@ -300,9 +300,9 @@ export function AdminProjectsPage() {
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, status: event.target.value }))}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               >
-                <option value="PENDING">?ang ch?</option>
-                <option value="APPROVED">?? duy?t</option>
-                <option value="REJECTED">T? ch?i</option>
+                <option value="PENDING">Đang chờ</option>
+                <option value="APPROVED">Đã duyệt</option>
+                <option value="REJECTED">Từ chối</option>
               </select>
             </label>
             <label className="flex items-center gap-3 text-xs text-slate-500">
@@ -312,14 +312,14 @@ export function AdminProjectsPage() {
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, featured: event.target.checked }))}
                 className="h-4 w-4"
               />
-              ??nh d?u n?i b?t
+              Đánh dấu nổi bật
             </label>
             <label className="text-xs text-slate-500">
-              Th? h?ng n?i b?t
+              Thứ hạng nổi bật
               <input
                 value={projectEdit.featuredRank}
                 onChange={(event) => setProjectEdit((prev) => ({ ...prev, featuredRank: event.target.value }))}
-                placeholder="T?y ch?n"
+                placeholder="Tùy chọn"
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
@@ -328,17 +328,17 @@ export function AdminProjectsPage() {
               onClick={handleSaveProject}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              L?u thay ??i
+              Lưu thay đổi
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n m?t d? ?n ?? s?a.</div>
+          <div className="text-sm text-slate-500">Chọn một dự án để sửa.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'create'}
-        title="T?o d? ?n"
+        title="Tạo dự án"
         onClose={() => setActiveModal(null)}
         size="lg"
       >
@@ -348,7 +348,7 @@ export function AdminProjectsPage() {
             <input
               value={createProjectForm.title}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="T?n d? ?n"
+              placeholder="Tên dự án"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -366,7 +366,7 @@ export function AdminProjectsPage() {
             <input
               value={createProjectForm.summary}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, summary: event.target.value }))}
-              placeholder="T?m t?t ng?n"
+              placeholder="Tóm tắt ngắn"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -394,7 +394,7 @@ export function AdminProjectsPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500">
-            Lo?i giao d?ch
+            Loại giao dịch
             <select
               value={createProjectForm.dealType}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, dealType: event.target.value }))}
@@ -417,7 +417,7 @@ export function AdminProjectsPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            M?c ti?u v?n (USD)
+            Mục tiêu vốn (USD)
             <input
               value={createProjectForm.fundingTargetUsd}
               onChange={(event) => setCreateProjectForm((prev) => ({ ...prev, fundingTargetUsd: event.target.value }))}
@@ -440,7 +440,7 @@ export function AdminProjectsPage() {
               onClick={handleCreateProject}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              T?o d? ?n
+              Tạo dự án
             </button>
           </div>
         </div>
@@ -460,14 +460,14 @@ export function AdminProjectsPage() {
               onClick={() => setActiveModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              H?y
+              Hủy
             </button>
             <button
               type="button"
-              onClick={handleX?aProject}
+              onClick={handleDeleteProject}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              X?a
+              Xóa
             </button>
           </div>
         </div>

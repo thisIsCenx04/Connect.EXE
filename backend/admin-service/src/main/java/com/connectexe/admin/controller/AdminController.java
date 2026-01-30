@@ -14,6 +14,7 @@ import com.connectexe.admin.dto.AiUsageSummary;
 import com.connectexe.admin.dto.RevenueSummary;
 import com.connectexe.admin.service.AdminService;
 import com.connectexe.common.dto.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,25 +40,38 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    private String extractToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return null;
+    }
+
     @GetMapping("/overview")
-    public ResponseEntity<ApiResponse<AdminOverviewResponse>> getOverview() {
-        AdminOverviewResponse response = adminService.getOverview();
+    public ResponseEntity<ApiResponse<AdminOverviewResponse>> getOverview(
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        AdminOverviewResponse response = adminService.getOverview(token);
         return ResponseEntity.ok(ApiResponse.ok("Overview loaded", response));
     }
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<AdminUserSummary>>> listUsers(
             @RequestParam(value = "query", required = false) String query,
-            @RequestParam(value = "active", required = false) Boolean active) {
-        List<AdminUserSummary> users = adminService.listUsers(query, active);
+            @RequestParam(value = "active", required = false) Boolean active,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        List<AdminUserSummary> users = adminService.listUsers(query, active, token);
         return ResponseEntity.ok(ApiResponse.ok("Users loaded", users));
     }
 
     @PatchMapping("/users/{id}")
     public ResponseEntity<ApiResponse<AdminUserSummary>> updateUserStatus(
             @PathVariable("id") UUID id,
-            @Valid @RequestBody AdminUserStatusRequest request) {
-        AdminUserSummary user = adminService.updateUserStatus(id, request);
+            @Valid @RequestBody AdminUserStatusRequest request,
+            @RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        AdminUserSummary user = adminService.updateUserStatus(id, request, token);
         return ResponseEntity.ok(ApiResponse.ok("User updated", user));
     }
 

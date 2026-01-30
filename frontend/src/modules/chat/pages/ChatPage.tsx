@@ -13,15 +13,6 @@ import {
 } from '../../../services/matching'
 import { chatSocketUrl, createConversation, listMessages, type ChatMessage } from '../../../services/chat'
 
-const emptyPreference: InvestorPreference = {
-  industries: [],
-  stages: [],
-  minFundingUsd: null,
-  maxFundingUsd: null,
-  country: '',
-  city: '',
-}
-
 export function ChatPage() {
   const user = useAppSelector((state) => state.auth.user)
   const socketRef = useRef<Socket | null>(null)

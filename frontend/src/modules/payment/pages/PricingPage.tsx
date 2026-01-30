@@ -214,9 +214,9 @@ export function PricingPage() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">Chi nh?nh</div>
+                    <div className="text-[10px] uppercase tracking-[0.3em] text-white/40">Chi nhánh</div>
                     <div className="mt-1 text-white">
-                      {checkout?.bankChi nh?nh ?? manualInfo?.bankChi nh?nh ?? '--'}
+                      {checkout?.bankBranch ?? manualInfo?.bankBranch ?? '--'}
                     </div>
                   </div>
                 </div>

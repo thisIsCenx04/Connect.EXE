@@ -30,7 +30,7 @@ export function AdminKycPage() {
   const [kycList, setKycList] = useState<AdminKycSummary[]>([])
   const [kycStatusFilter, setKycStatusFilter] = useState('PENDING')
   const [selectedKyc, setSelectedKyc] = useState<AdminKycSummary | null>(null)
-  const [reviewForm, setDuy?tForm] = useState({ status: 'PENDING', reviewNote: '' })
+  const [reviewForm, setReviewForm] = useState({ status: 'PENDING', reviewNote: '' })
   const [activeModal, setActiveModal] = useState<null | 'detail' | 'review'>(null)
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
@@ -44,7 +44,7 @@ export function AdminKycPage() {
         setKycList(data)
       } catch {
         if (!isMounted) return
-        setError('Kh?ng th? t?i y?u c?u KYC.')
+        setError('Không thể tải yêu cầu KYC.')
       }
     }
     loadKyc()
@@ -53,7 +53,7 @@ export function AdminKycPage() {
     }
   }, [kycStatusFilter])
 
-  const handleDuy?tKyc = async () => {
+  const handleReviewKyc = async () => {
     if (!selectedKyc) return
     setMessage(null)
     setError(null)
@@ -63,10 +63,10 @@ export function AdminKycPage() {
         reviewNote: reviewForm.reviewNote || undefined,
       })
       setKycList((prev) => prev.map((entry) => (entry.id === selectedKyc.id ? updated : entry)))
-      setMessage('L?u ??nh gi? th?nh c?ng.')
+      setMessage('Lưu đánh giá thành công.')
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? duy?t y?u c?u KYC.')
+      setError('Không thể duyệt yêu cầu KYC.')
     }
   }
 
@@ -75,9 +75,9 @@ export function AdminKycPage() {
     setActiveModal('detail')
   }
 
-  const openDuy?t = (item: AdminKycSummary) => {
+  const openReview = (item: AdminKycSummary) => {
     setSelectedKyc(item)
-    setDuy?tForm({
+    setReviewForm({
       status: item.status ?? 'PENDING',
       reviewNote: item.reviewNote ?? '',
     })
@@ -88,18 +88,18 @@ export function AdminKycPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Duy?t KYC</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Duy?t n?ng c?p vai tr?</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Duyệt KYC</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Duyệt nâng cấp vai trò</h2>
         </div>
         <select
           value={kycStatusFilter}
           onChange={(event) => setKycStatusFilter(event.target.value)}
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
         >
-          <option value="PENDING">?ang ch?</option>
-          <option value="APPROVED">?? duy?t</option>
-          <option value="REJECTED">T? ch?i</option>
-          <option value="ALL">T?t c?</option>
+          <option value="PENDING">Đang chờ</option>
+          <option value="APPROVED">Đã duyệt</option>
+          <option value="REJECTED">Từ chối</option>
+          <option value="ALL">Tất cả</option>
         </select>
       </div>
 
@@ -116,18 +116,18 @@ export function AdminKycPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr_0.8fr_0.6fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>Ng??i d?ng</span>
-          <span>Vai tr? y?u c?u</span>
-          <span>Tr?ng th?i</span>
-          <span>?? g?i</span>
-          <span>Thao t?c</span>
+          <span>Người dùng</span>
+          <span>Vai trò yêu cầu</span>
+          <span>Trạng thái</span>
+          <span>Đã gửi</span>
+          <span>Thao tác</span>
         </div>
         <div className="divide-y divide-slate-200">
           {kycList.map((item) => (
             <div key={item.id} className="grid grid-cols-[1.2fr_0.8fr_0.6fr_0.8fr_0.6fr] items-center gap-3 px-6 py-4 text-sm">
               <div>
-                <div className="font-semibold text-slate-900">{item.fullName || 'Kh?ng r?'}</div>
-                <div className="text-xs text-slate-400">{item.email || 'Kh?ng c? email'}</div>
+                <div className="font-semibold text-slate-900">{item.fullName || 'Không rõ'}</div>
+                <div className="text-xs text-slate-400">{item.email || 'Không có email'}</div>
               </div>
               <span className="text-slate-600">{item.requestedRole || 'N/A'}</span>
               <span>
@@ -143,17 +143,17 @@ export function AdminKycPage() {
                 {item.submittedAt ? new Date(item.submittedAt).toLocaleDateString() : '--'}
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(item)}>
+                <AdminIconButton label="Xem chi tiết" onClick={() => openDetail(item)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="Duy?t" onClick={() => openDuy?t(item)}>
+                <AdminIconButton label="Duyệt" onClick={() => openReview(item)}>
                   <EditIcon />
                 </AdminIconButton>
               </div>
             </div>
           ))}
           {kycList.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">Ch?a c? y?u c?u KYC.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Chưa có yêu cầu KYC.</div>
           )}
         </div>
       </div>
@@ -171,15 +171,15 @@ export function AdminKycPage() {
               <span>{selectedKyc.email || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">T? ch?c</span>
+              <span className="text-slate-400">Tổ chức</span>
               <span>{selectedKyc.organization || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">T?i li?u</span>
+              <span className="text-slate-400">Tài liệu</span>
               <span>{selectedKyc.docType || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">S? t?i li?u</span>
+              <span className="text-slate-400">Số tài liệu</span>
               <span>{selectedKyc.docNumber || '—'}</span>
             </div>
             {selectedKyc.docFileUrl && (
@@ -189,18 +189,18 @@ export function AdminKycPage() {
                 rel="noreferrer"
                 className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
               >
-                Xem t?i li?u
+                Xem tài liệu
               </a>
             )}
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n m?t y?u c?u KYC ?? xem chi ti?t.</div>
+          <div className="text-sm text-slate-500">Chọn một yêu cầu KYC để xem chi tiết.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'review'}
-        title="Duy?t KYC"
+        title="Duyệt KYC"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
@@ -210,33 +210,33 @@ export function AdminKycPage() {
               Status
               <select
                 value={reviewForm.status}
-                onChange={(event) => setDuy?tForm((prev) => ({ ...prev, status: event.target.value }))}
+                onChange={(event) => setReviewForm((prev) => ({ ...prev, status: event.target.value }))}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               >
-                <option value="PENDING">?ang ch?</option>
-                <option value="APPROVED">?? duy?t</option>
-                <option value="REJECTED">T? ch?i</option>
+                <option value="PENDING">Đang chờ</option>
+                <option value="APPROVED">Đã duyệt</option>
+                <option value="REJECTED">Từ chối</option>
               </select>
             </label>
             <label className="text-xs text-slate-500">
-              Duy?t note
+              Ghi chú duyệt
               <textarea
                 value={reviewForm.reviewNote}
-                onChange={(event) => setDuy?tForm((prev) => ({ ...prev, reviewNote: event.target.value }))}
+                onChange={(event) => setReviewForm((prev) => ({ ...prev, reviewNote: event.target.value }))}
                 rows={3}
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
             <button
               type="button"
-              onClick={handleDuy?tKyc}
+              onClick={handleReviewKyc}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              L?u ??nh gi?
+              Lưu đánh giá
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n m?t y?u c?u KYC ?? duy?t.</div>
+          <div className="text-sm text-slate-500">Chọn một yêu cầu KYC để duyệt.</div>
         )}
       </AdminModal>
     </section>

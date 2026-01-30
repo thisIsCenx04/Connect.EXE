@@ -7,7 +7,16 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../../backend/auth-service/src/main/resources/db/migration/V1__init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      - ./init-databases.sh:/docker-entrypoint-initdb.d/001_init_databases.sh:ro
+      - ../../backend/auth-service/src/main/resources/db/migration/V1__auth_schema.sql:/docker-entrypoint-initdb.d/migrations/auth_db.sql:ro
+      - ../../backend/user-service/src/main/resources/db/migration/V1__user_schema.sql:/docker-entrypoint-initdb.d/migrations/user_db.sql:ro
+      - ../../backend/project-service/src/main/resources/db/migration/V1__project_schema.sql:/docker-entrypoint-initdb.d/migrations/project_db.sql:ro
+      - ../../backend/forum-service/src/main/resources/db/migration/V1__forum_schema.sql:/docker-entrypoint-initdb.d/migrations/forum_db.sql:ro
+      - ../../backend/halloffame-service/src/main/resources/db/migration/V1__halloffame_schema.sql:/docker-entrypoint-initdb.d/migrations/halloffame_db.sql:ro
+      - ../../backend/ai-service/src/main/resources/db/migration/V1__ai_schema.sql:/docker-entrypoint-initdb.d/migrations/ai_db.sql:ro
+      - ../../backend/payment-service/src/main/resources/db/migration/V1__payment_schema.sql:/docker-entrypoint-initdb.d/migrations/payment_db.sql:ro
+      - ../../backend/admin-service/src/main/resources/db/migration/V1__admin_schema.sql:/docker-entrypoint-initdb.d/migrations/admin_db.sql:ro
+      - ../../backend/chat-service/src/main/resources/db/migration/V1__chat_schema.sql:/docker-entrypoint-initdb.d/migrations/chat_db.sql:ro
     mem_limit: 512m
     cpus: 1.0
     healthcheck:
@@ -47,6 +56,7 @@ services:
     cpus: 1.0
     environment:
       SERVER_PORT: "8081"
+      AUTH_DB_NAME: auth_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -70,6 +80,7 @@ services:
     cpus: 1.0
     environment:
       USER_SERVER_PORT: "8084"
+      USER_DB_NAME: user_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -83,6 +94,7 @@ services:
       - ../../.env
     environment:
       PROJECT_SERVER_PORT: "8082"
+      PROJECT_DB_NAME: project_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -106,6 +118,7 @@ services:
       - ../../.env
     environment:
       HALL_OF_FAME_SERVER_PORT: "8085"
+      HALLOFFAME_DB_NAME: halloffame_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -129,6 +142,7 @@ services:
       - ../../.env
     environment:
       FORUM_SERVER_PORT: "8083"
+      FORUM_DB_NAME: forum_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -152,6 +166,7 @@ services:
       - ../../.env
     environment:
       AI_SERVER_PORT: "8086"
+      AI_DB_NAME: ai_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -175,6 +190,7 @@ services:
       - ../../.env
     environment:
       PAYMENT_SERVER_PORT: "8087"
+      PAYMENT_DB_NAME: payment_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -198,6 +214,7 @@ services:
       - ../../.env
     environment:
       ADMIN_SERVER_PORT: "8088"
+      ADMIN_DB_NAME: admin_db
       JAVA_TOOL_OPTIONS: >-
         -Xms128m -Xmx512m
         -XX:MaxMetaspaceSize=192m
@@ -224,6 +241,8 @@ services:
       dockerfile: chat-service/Dockerfile
     ports:
       - "8090:8090"
+    environment:
+      CHAT_DB_NAME: chat_db
     depends_on:
       postgres:
         condition: service_healthy

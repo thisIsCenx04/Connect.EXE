@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   adminCreateContent,
   adminCreateResource,
-  adminX?aContent,
-  adminX?aResource,
+  adminDeleteContent,
+  adminDeleteResource,
   adminFetchContentList,
   adminFetchResourceList,
   adminUpdateContent,
@@ -131,7 +131,7 @@ export function AdminContentPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Kh?ng th? t?i danh s?ch n?i dung.')
+        setError('Không thể tải danh sách nội dung.')
       })
     return () => {
       active = false
@@ -147,7 +147,7 @@ export function AdminContentPage() {
       })
       .catch(() => {
         if (!active) return
-        setError('Kh?ng th? t?i t?i nguy?n.')
+        setError('Không thể tải tài nguyên.')
       })
     return () => {
       active = false
@@ -178,16 +178,16 @@ export function AdminContentPage() {
       if (contentForm.id) {
         const updated = await adminUpdateContent(contentForm.id, payload)
         setContentItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
-        setMessage('C?p nh?t n?i dung th?nh c?ng.')
+        setMessage('Cập nhật nội dung thành công.')
       } else {
         const created = await adminCreateContent(payload)
         setContentItems((prev) => [created, ...prev])
-        setMessage('T?o n?i dung th?nh c?ng.')
+        setMessage('Tạo nội dung thành công.')
       }
       resetContentForm()
       setContentModal(null)
     } catch {
-      setError('Kh?ng th? l?u n?i dung.')
+      setError('Không thể lưu nội dung.')
     }
   }
 
@@ -207,44 +207,44 @@ export function AdminContentPage() {
       if (resourceForm.id) {
         const updated = await adminUpdateResource(resourceForm.id, payload)
         setResourceItems((prev) => prev.map((item) => (item.id === updated.id ? updated : item)))
-        setMessage('C?p nh?t t?i nguy?n th?nh c?ng.')
+        setMessage('Cập nhật tài nguyên thành công.')
       } else {
         const created = await adminCreateResource(payload)
         setResourceItems((prev) => [created, ...prev])
-        setMessage('T?o t?i nguy?n th?nh c?ng.')
+        setMessage('Tạo tài nguyên thành công.')
       }
       resetResourceForm()
       setResourceModal(null)
     } catch {
-      setError('Kh?ng th? l?u t?i nguy?n.')
+      setError('Không thể lưu tài nguyên.')
     }
   }
 
-  const handleX?aContent = async () => {
+  const handleDeleteContent = async () => {
     if (!selectedContent) return
     setError(null)
     setMessage(null)
     try {
-      await adminX?aContent(selectedContent.id)
+      await adminDeleteContent(selectedContent.id)
       setContentItems((prev) => prev.filter((entry) => entry.id !== selectedContent.id))
-      setMessage('?? x?a n?i dung.')
+      setMessage('Đã xóa nội dung.')
       setContentModal(null)
     } catch {
-      setError('Kh?ng th? x?a n?i dung.')
+      setError('Không thể xóa nội dung.')
     }
   }
 
-  const handleX?aResource = async () => {
+  const handleDeleteResource = async () => {
     if (!selectedResource) return
     setError(null)
     setMessage(null)
     try {
-      await adminX?aResource(selectedResource.id)
+      await adminDeleteResource(selectedResource.id)
       setResourceItems((prev) => prev.filter((entry) => entry.id !== selectedResource.id))
-      setMessage('?? x?a t?i nguy?n.')
+      setMessage('Đã xóa tài nguyên.')
       setResourceModal(null)
     } catch {
-      setError('Kh?ng th? x?a t?i nguy?n.')
+      setError('Không thể xóa tài nguyên.')
     }
   }
 
@@ -259,7 +259,7 @@ export function AdminContentPage() {
     setContentModal('edit')
   }
 
-  const openContentX?a = (item: ContentItem) => {
+  const openContentDelete = (item: ContentItem) => {
     setSelectedContent(item)
     setContentModal('delete')
   }
@@ -280,7 +280,7 @@ export function AdminContentPage() {
     setResourceModal('edit')
   }
 
-  const openResourceX?a = (item: ResourceItem) => {
+  const openResourceDelete = (item: ResourceItem) => {
     setSelectedResource(item)
     setResourceModal('delete')
   }
@@ -294,8 +294,8 @@ export function AdminContentPage() {
     <section className="space-y-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung t?m n?i dung</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Qu?n l? Startup Hub & T?i nguy?n</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung tâm nội dung</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Quản lý Startup Hub & Tài nguyên</h2>
         </div>
       </div>
 
@@ -312,8 +312,8 @@ export function AdminContentPage() {
       <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung t?m Startup</p>
-            <h3 className="text-lg font-semibold text-slate-900">Tin t?c, s? ki?n, cu?c thi</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Trung tâm Startup</p>
+            <h3 className="text-lg font-semibold text-slate-900">Tin tức, sự kiện, cuộc thi</h3>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -321,7 +321,7 @@ export function AdminContentPage() {
               onChange={(event) => setContentTypeFilter(event.target.value as ContentType | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">T?t c? lo?i</option>
+              <option value="ALL">Tất cả loại</option>
               {CONTENT_TYPES.map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -333,14 +333,14 @@ export function AdminContentPage() {
               onChange={(event) => setContentStatusFilter(event.target.value as ContentStatus | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">T?t c? tr?ng th?i</option>
+              <option value="ALL">Tất cả trạng thái</option>
               {CONTENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
               ))}
             </select>
-            <AdminIconButton label="T?o n?i dung" tone="primary" onClick={openContentCreate}>
+            <AdminIconButton label="Tạo nội dung" tone="primary" onClick={openContentCreate}>
               <PlusIcon />
             </AdminIconButton>
           </div>
@@ -348,17 +348,17 @@ export function AdminContentPage() {
 
         <div className="mt-6">
           <div className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-            <span>Ti?u ??</span>
-            <span>Lo?i</span>
-            <span>Tr?ng th?i</span>
-            <span>Thao t?c</span>
+            <span>Tiêu đề</span>
+            <span>Loại</span>
+            <span>Trạng thái</span>
+            <span>Thao tác</span>
           </div>
           <div className="divide-y divide-slate-200">
             {contentItems.map((item) => (
               <div key={item.id} className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] items-center gap-3 px-6 py-4 text-sm">
                 <div>
                   <div className="font-semibold text-slate-900">{item.title}</div>
-                  <div className="text-xs text-slate-400">{item.summary || 'Ch?a c? t?m t?t'}</div>
+                  <div className="text-xs text-slate-400">{item.summary || 'Chưa có tóm tắt'}</div>
                 </div>
                 <span className="text-slate-600">{item.type}</span>
                 <span>
@@ -367,20 +367,20 @@ export function AdminContentPage() {
                   </span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <AdminIconButton label="Xem chi ti?t" onClick={() => openContentDetail(item)}>
+                  <AdminIconButton label="Xem chi tiết" onClick={() => openContentDetail(item)}>
                     <EyeIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="S?a n?i dung" onClick={() => openContentEdit(item)}>
+                  <AdminIconButton label="Sửa nội dung" onClick={() => openContentEdit(item)}>
                     <EditIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="X?a n?i dung" tone="danger" onClick={() => openContentX?a(item)}>
+                  <AdminIconButton label="Xóa nội dung" tone="danger" onClick={() => openContentDelete(item)}>
                     <TrashIcon />
                   </AdminIconButton>
                 </div>
               </div>
             ))}
             {contentItems.length === 0 && (
-              <div className="px-6 py-6 text-sm text-slate-500">Kh?ng c? n?i dung.</div>
+              <div className="px-6 py-6 text-sm text-slate-500">Không có nội dung.</div>
             )}
           </div>
         </div>
@@ -388,8 +388,8 @@ export function AdminContentPage() {
       <div className="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Th? vi?n t?i nguy?n</p>
-            <h3 className="text-lg font-semibold text-slate-900">M?u, h??ng d?n, t?i li?u tham kh?o</h3>
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Thư viện tài nguyên</p>
+            <h3 className="text-lg font-semibold text-slate-900">Mẫu, hướng dẫn, tài liệu tham khảo</h3>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -397,14 +397,14 @@ export function AdminContentPage() {
               onChange={(event) => setResourceStatusFilter(event.target.value as ContentStatus | 'ALL')}
               className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             >
-              <option value="ALL">T?t c? tr?ng th?i</option>
+              <option value="ALL">Tất cả trạng thái</option>
               {CONTENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {status}
                 </option>
               ))}
             </select>
-            <AdminIconButton label="T?o t?i nguy?n" tone="primary" onClick={openResourceCreate}>
+            <AdminIconButton label="Tạo tài nguyên" tone="primary" onClick={openResourceCreate}>
               <PlusIcon />
             </AdminIconButton>
           </div>
@@ -412,10 +412,10 @@ export function AdminContentPage() {
 
         <div className="mt-6">
           <div className="grid grid-cols-[1.6fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-            <span>Ti?u ??</span>
-            <span>Lo?i</span>
-            <span>Tr?ng th?i</span>
-            <span>Thao t?c</span>
+            <span>Tiêu đề</span>
+            <span>Loại</span>
+            <span>Trạng thái</span>
+            <span>Thao tác</span>
           </div>
           <div className="divide-y divide-slate-200">
             {resourceItems.map((item) => (
@@ -431,20 +431,20 @@ export function AdminContentPage() {
                   </span>
                 </span>
                 <div className="flex items-center gap-2">
-                  <AdminIconButton label="Xem chi ti?t" onClick={() => openResourceDetail(item)}>
+                  <AdminIconButton label="Xem chi tiết" onClick={() => openResourceDetail(item)}>
                     <EyeIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="S?a t?i nguy?n" onClick={() => openResourceEdit(item)}>
+                  <AdminIconButton label="Sửa tài nguyên" onClick={() => openResourceEdit(item)}>
                     <EditIcon />
                   </AdminIconButton>
-                  <AdminIconButton label="X?a t?i nguy?n" tone="danger" onClick={() => openResourceX?a(item)}>
+                  <AdminIconButton label="Xóa tài nguyên" tone="danger" onClick={() => openResourceDelete(item)}>
                     <TrashIcon />
                   </AdminIconButton>
                 </div>
               </div>
             ))}
             {resourceItems.length === 0 && (
-              <div className="px-6 py-6 text-sm text-slate-500">Kh?ng c? t?i nguy?n.</div>
+              <div className="px-6 py-6 text-sm text-slate-500">Không có tài nguyên.</div>
             )}
           </div>
         </div>
@@ -458,29 +458,29 @@ export function AdminContentPage() {
         {selectedContent ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Ti?u ??</span>
+              <span className="text-slate-400">Tiêu đề</span>
               <span>{selectedContent.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Lo?i</span>
+              <span className="text-slate-400">Loại</span>
               <span>{selectedContent.type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tr?ng th?i</span>
+              <span className="text-slate-400">Trạng thái</span>
               <span>{selectedContent.status}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Th?</span>
+              <span className="text-slate-400">Thẻ</span>
               <span>{selectedContent.tags?.join(', ') || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">L?ch</span>
+              <span className="text-slate-400">Lịch</span>
               <span>
                 {selectedContent.startAt ? new Date(selectedContent.startAt).toLocaleDateString() : '—'}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">??a ?i?m</span>
+              <span className="text-slate-400">Địa điểm</span>
               <span>{selectedContent.location || '—'}</span>
             </div>
             {selectedContent.externalUrl && (
@@ -490,18 +490,18 @@ export function AdminContentPage() {
                 rel="noreferrer"
                 className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
               >
-                M? li?n k?t ngo?i
+                Mở liên kết ngoài
               </a>
             )}
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n n?i dung ?? xem chi ti?t.</div>
+          <div className="text-sm text-slate-500">Chọn nội dung để xem chi tiết.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={contentModal === 'edit' || contentModal === 'create'}
-        title={contentModal === 'edit' ? 'S?a n?i dung' : 'T?o n?i dung'}
+        title={contentModal === 'edit' ? 'Sửa nội dung' : 'Tạo nội dung'}
         onClose={() => setContentModal(null)}
         size="lg"
       >
@@ -535,16 +535,16 @@ export function AdminContentPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Ti?u ??
+            Tiêu đề
             <input
               value={contentForm.title}
               onChange={(event) => setContentForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="Ti?u ??"
+              placeholder="Tiêu đề"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            T?m t?t
+            Tóm tắt
             <textarea
               value={contentForm.summary}
               onChange={(event) => setContentForm((prev) => ({ ...prev, summary: event.target.value }))}
@@ -553,7 +553,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            N?i dung
+            Nội dung
             <textarea
               value={contentForm.body}
               onChange={(event) => setContentForm((prev) => ({ ...prev, body: event.target.value }))}
@@ -562,7 +562,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            B?t ??u l?c
+            Bắt đầu lúc
             <input
               type="datetime-local"
               value={contentForm.startAt}
@@ -571,7 +571,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            K?t th?c l?c
+            Kết thúc lúc
             <input
               type="datetime-local"
               value={contentForm.endAt}
@@ -580,7 +580,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            ??a ?i?m
+            Địa điểm
             <input
               value={contentForm.location}
               onChange={(event) => setContentForm((prev) => ({ ...prev, location: event.target.value }))}
@@ -589,7 +589,7 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            URL ngo?i
+            URL ngoài
             <input
               value={contentForm.externalUrl}
               onChange={(event) => setContentForm((prev) => ({ ...prev, externalUrl: event.target.value }))}
@@ -598,16 +598,16 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Th? (ng?n c?ch b?ng d?u ph?y)
+            Thẻ (ngăn cách bằng dấu phẩy)
             <input
               value={contentForm.tags}
               onChange={(event) => setContentForm((prev) => ({ ...prev, tags: event.target.value }))}
-              placeholder="startup, pitch, t?ng t?c"
+              placeholder="startup, pitch, tương tác"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            URL ?nh b?a
+            URL ảnh bìa
             <input
               value={contentForm.coverUrl}
               onChange={(event) => setContentForm((prev) => ({ ...prev, coverUrl: event.target.value }))}
@@ -621,7 +621,7 @@ export function AdminContentPage() {
               onClick={handleSaveContent}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              {contentForm.id ? 'Update content' : 'T?o n?i dung'}
+              {contentForm.id ? 'Cập nhật nội dung' : 'Tạo nội dung'}
             </button>
           </div>
         </div>
@@ -629,52 +629,52 @@ export function AdminContentPage() {
 
       <AdminModal
         open={contentModal === 'delete'}
-        title="X?a n?i dung"
+        title="Xóa nội dung"
         onClose={() => setContentModal(null)}
         size="sm"
       >
         <div className="space-y-4 text-sm text-slate-600">
-          <p>B?n c? ch?c mu?n x?a n?i dung n?y?</p>
+          <p>Bạn có chắc muốn xóa nội dung này?</p>
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setContentModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              H?y
+              Hủy
             </button>
             <button
               type="button"
-              onClick={handleX?aContent}
+              onClick={handleDeleteContent}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              X?a
+              Xóa
             </button>
           </div>
         </div>
       </AdminModal>
       <AdminModal
         open={resourceModal === 'detail'}
-        title="Chi ti?t t?i nguy?n"
+        title="Chi tiết tài nguyên"
         onClose={() => setResourceModal(null)}
         size="md"
       >
         {selectedResource ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Ti?u ??</span>
+              <span className="text-slate-400">Tiêu đề</span>
               <span>{selectedResource.title}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Lo?i</span>
+              <span className="text-slate-400">Loại</span>
               <span>{selectedResource.type}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Tr?ng th?i</span>
+              <span className="text-slate-400">Trạng thái</span>
               <span>{selectedResource.status}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Th?</span>
+              <span className="text-slate-400">Thẻ</span>
               <span>{selectedResource.tags?.join(', ') || '—'}</span>
             </div>
             <a
@@ -683,17 +683,17 @@ export function AdminContentPage() {
               rel="noreferrer"
               className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              M? t?i nguy?n
+              Mở tài nguyên
             </a>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n t?i nguy?n ?? xem chi ti?t.</div>
+          <div className="text-sm text-slate-500">Chọn tài nguyên để xem chi tiết.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={resourceModal === 'edit' || resourceModal === 'create'}
-        title={resourceModal === 'edit' ? 'S?a t?i nguy?n' : 'T?o t?i nguy?n'}
+        title={resourceModal === 'edit' ? 'Sửa tài nguyên' : 'Tạo tài nguyên'}
         onClose={() => setResourceModal(null)}
         size="lg"
       >
@@ -727,16 +727,16 @@ export function AdminContentPage() {
             </select>
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Ti?u ??
+            Tiêu đề
             <input
               value={resourceForm.title}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, title: event.target.value }))}
-              placeholder="Ti?u ??"
+              placeholder="Tiêu đề"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            M? t?
+            Mô tả
             <textarea
               value={resourceForm.description}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, description: event.target.value }))}
@@ -754,11 +754,11 @@ export function AdminContentPage() {
             />
           </label>
           <label className="text-xs text-slate-500 md:col-span-2">
-            Th? (ng?n c?ch b?ng d?u ph?y)
+            Thẻ (ngăn cách bằng dấu phẩy)
             <input
               value={resourceForm.tags}
               onChange={(event) => setResourceForm((prev) => ({ ...prev, tags: event.target.value }))}
-              placeholder="pitch, m?u, checklist"
+              placeholder="pitch, mẫu, checklist"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
             />
           </label>
@@ -768,7 +768,7 @@ export function AdminContentPage() {
               onClick={handleSaveResource}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              {resourceForm.id ? 'Update resource' : 'T?o t?i nguy?n'}
+              {resourceForm.id ? 'Update resource' : 'Tạo tài nguyên'}
             </button>
           </div>
         </div>
@@ -776,26 +776,26 @@ export function AdminContentPage() {
 
       <AdminModal
         open={resourceModal === 'delete'}
-        title="X?a t?i nguy?n"
+        title="Xóa tài nguyên"
         onClose={() => setResourceModal(null)}
         size="sm"
       >
         <div className="space-y-4 text-sm text-slate-600">
-          <p>B?n c? ch?c mu?n x?a t?i nguy?n n?y?</p>
+          <p>Bạn có chắc muốn xóa tài nguyên này?</p>
           <div className="flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => setResourceModal(null)}
               className="rounded-full border border-slate-200 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-500"
             >
-              H?y
+              Hủy
             </button>
             <button
               type="button"
-              onClick={handleX?aResource}
+              onClick={handleDeleteResource}
               className="rounded-full border border-rose-200 bg-rose-50 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-rose-600"
             >
-              X?a
+              Xóa
             </button>
           </div>
         </div>

@@ -42,6 +42,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.connectexe.admin.client.AuthServiceClient;
+
 @Service
 public class AdminService {
 
@@ -50,22 +52,28 @@ public class AdminService {
     private final ProjectRepository projectRepository;
     private final AiRequestRepository aiRequestRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final AuthServiceClient authServiceClient;
 
     public AdminService(UserRepository userRepository,
                         InvestorKycRepository investorKycRepository,
                         ProjectRepository projectRepository,
                         AiRequestRepository aiRequestRepository,
-                        SubscriptionRepository subscriptionRepository) {
+                        SubscriptionRepository subscriptionRepository,
+                        AuthServiceClient authServiceClient) {
         this.userRepository = userRepository;
         this.investorKycRepository = investorKycRepository;
         this.projectRepository = projectRepository;
         this.aiRequestRepository = aiRequestRepository;
         this.subscriptionRepository = subscriptionRepository;
+        this.authServiceClient = authServiceClient;
     }
 
-    public AdminOverviewResponse getOverview() {
-        long totalUsers = userRepository.count();
-        long activeUsers = userRepository.countByActiveTrue();
+    public AdminOverviewResponse getOverview(String token) {
+        // Get user stats from auth-service
+        Map<String, Long> userStats = authServiceClient.getUserStats(token);
+        long totalUsers = userStats.getOrDefault("totalUsers", 0L);
+        long activeUsers = userStats.getOrDefault("activeUsers", 0L);
+        
         long pendingKyc = investorKycRepository.countByStatus(VerificationStatus.PENDING);
         long pendingProjects = projectRepository.countByModerationStatus(ProjectModerationStatus.PENDING);
         long totalProjects = projectRepository.count();
@@ -95,41 +103,18 @@ public class AdminService {
         );
     }
 
-    public List<AdminUserSummary> listUsers(String query, Boolean active) {
-        String normalizedQuery = query == null || query.isBlank() ? null : query.trim();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-        List<User> users;
-        if (normalizedQuery == null) {
-            if (active == null) {
-                users = userRepository.findAll(sort);
-            } else {
-                users = userRepository.findByActive(active, sort);
-            }
-        } else if (active == null) {
-            users = userRepository.findByEmailContainingIgnoreCaseOrFullNameContainingIgnoreCase(
-                normalizedQuery,
-                normalizedQuery,
-                sort
-            );
-        } else {
-            users = userRepository.findByEmailContainingIgnoreCaseOrFullNameContainingIgnoreCaseAndActive(
-                normalizedQuery,
-                normalizedQuery,
-                active,
-                sort
-            );
-        }
-        return users.stream()
-            .map(this::toUserSummary)
-            .toList();
+    /**
+     * List users via auth-service API
+     */
+    public List<AdminUserSummary> listUsers(String query, Boolean active, String token) {
+        return authServiceClient.listUsers(query, active, token);
     }
 
-    public AdminUserSummary updateUserStatus(UUID userId, AdminUserStatusRequest request) {
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "USER_NOT_FOUND", "User not found"));
-        user.setActive(Boolean.TRUE.equals(request.getActive()));
-        User saved = userRepository.save(user);
-        return toUserSummary(saved);
+    /**
+     * Update user status via auth-service API
+     */
+    public AdminUserSummary updateUserStatus(UUID userId, AdminUserStatusRequest request, String token) {
+        return authServiceClient.updateUserStatus(userId, request, token);
     }
 
     public List<AdminKycSummary> listKyc(VerificationStatus status) {

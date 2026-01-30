@@ -149,15 +149,6 @@ export function AdminLayout() {
               )
             })}
           </nav>
-
-          <div
-            className={`rounded-2xl border p-4 text-xs ${
-              isDark ? 'border-slate-800 bg-slate-800/60 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-500'
-            }`}
-          >
-            Quản lý phê duyệt và cập nhật nội dung tại một nơi.
-          </div>
-
           <div className="mt-auto">
             <button
               type="button"

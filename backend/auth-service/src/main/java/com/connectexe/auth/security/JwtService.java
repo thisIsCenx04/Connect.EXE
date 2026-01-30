@@ -22,13 +22,15 @@ public class JwtService {
         this.secretKey = Keys.hmacShaKeyFor(properties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateAccessToken(String userId, String email, List<String> roles) {
+    public String generateAccessToken(String userId, String email, String fullName, String role, List<String> roles) {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(properties.getAccessTokenTtlMinutes() * 60);
         return Jwts.builder()
             .subject(userId)
             .issuer(properties.getIssuer())
             .claim("email", email)
+            .claim("fullName", fullName)
+            .claim("role", role)
             .claim("roles", roles)
             .issuedAt(Date.from(now))
             .expiration(Date.from(expiry))

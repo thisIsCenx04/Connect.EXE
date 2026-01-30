@@ -130,6 +130,8 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(
             user.getId().toString(),
             user.getEmail(),
+            user.getFullName(),
+            user.getRole().name(),
             List.of("ROLE_" + user.getRole().name())
         );
         String refreshToken = jwtService.generateRefreshToken(user.getId().toString());

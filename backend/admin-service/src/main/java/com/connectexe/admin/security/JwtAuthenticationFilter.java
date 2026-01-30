@@ -1,6 +1,7 @@
 package com.connectexe.admin.security;
 
 import com.connectexe.admin.domain.entity.User;
+import com.connectexe.admin.domain.enums.UserRole;
 import com.connectexe.admin.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -15,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -36,7 +38,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(token) && jwtService.isTokenValid(token)) {
             Claims claims = jwtService.parseClaims(token);
             UUID userId = UUID.fromString(claims.getSubject());
-            userRepository.findById(userId).ifPresent(user -> setAuthentication(user, request));
+            
+            // Try to find user in admin_db, if not found create transient user from JWT claims
+            User user = userRepository.findById(userId).orElseGet(() -> {
+                User transientUser = new User();
+                transientUser.setId(userId);
+                transientUser.setEmail(claims.get("email", String.class));
+                transientUser.setFullName(claims.get("fullName", String.class));
+                
+                // Get role from JWT claims
+                String roleStr = claims.get("role", String.class);
+                if (roleStr == null) {
+                    // Try to get from roles list
+                    List<String> roles = claims.get("roles", List.class);
+                    if (roles != null && !roles.isEmpty()) {
+                        roleStr = roles.get(0).replace("ROLE_", "");
+                    }
+                }
+                try {
+                    transientUser.setRole(roleStr != null ? UserRole.valueOf(roleStr) : UserRole.USER);
+                } catch (IllegalArgumentException e) {
+                    transientUser.setRole(UserRole.USER);
+                }
+                transientUser.setActive(true);
+                return transientUser;
+            });
+            
+            setAuthentication(user, request);
         }
 
         filterChain.doFilter(request, response);

@@ -17,7 +17,6 @@ import {
   TAGS_BY_INDUSTRY,
   COMMON_TAGS,
   LINK_TYPES,
-  MEDIA_ROLES,
   STAGE_DISPLAY_NAMES,
   DEAL_TYPE_DISPLAY_NAMES,
   FUNDING_REQUIRED_STAGES,
@@ -828,7 +827,7 @@ export function ProjectFormPage() {
 
         {/* Pitch Deck - Always visible */}
         <div className="card-surface rounded-3xl p-6">
-          <h2 className="text-lg font-semibold text-white">B? pitch deck</h2>
+          <h2 className="text-lg font-semibold text-white">Pitch deck</h2>
           <div className="mt-4">
             <label className="space-y-2">
               <span className="text-xs uppercase tracking-[0.2em] text-white/50">Link pitch deck</span>
@@ -851,7 +850,7 @@ export function ProjectFormPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-white">Liên kết</h2>
-              <p className="text-sm text-white/50">Website, demo, kho m? ngu?n...</p>
+              <p className="text-sm text-white/50">Website, demo, fanpage...</p>
             </div>
             <button
               type="button"

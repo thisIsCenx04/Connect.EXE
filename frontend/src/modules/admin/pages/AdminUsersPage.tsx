@@ -59,7 +59,7 @@ export function AdminUsersPage() {
         setUsers(data)
       } catch {
         if (!isMounted) return
-        setError('Kh?ng th? t?i danh s?ch ng??i d?ng.')
+        setError('Không thể tải danh sách người dùng.')
       }
     }
     loadUsers()
@@ -78,9 +78,9 @@ export function AdminUsersPage() {
     try {
       const updated = await updateAdminUserStatus(user.id, !user.active)
       setUsers((prev) => prev.map((item) => (item.id === user.id ? updated : item)))
-      setMessage(`Ng??i d?ng ?? ${updated.active ? 'k?ch ho?t l?i' : 'b? kh?a'}.`)
+      setMessage(`Người dùng đã ${updated.active ? 'kích hoạt lại' : 'bị khóa'}.`)
     } catch {
-      setError('Kh?ng th? c?p nh?t tr?ng th?i ng??i d?ng.')
+      setError('Không thể cập nhật trạng thái người dùng.')
     }
   }
 
@@ -99,10 +99,10 @@ export function AdminUsersPage() {
             : item
         )
       )
-      setMessage('C?p nh?t h? s? ng??i d?ng th?nh c?ng.')
+      setMessage('Cập nhật hồ sơ người dùng thành công.')
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? c?p nh?t h? s? ng??i d?ng.')
+      setError('Không thể cập nhật hồ sơ người dùng.')
     }
   }
 
@@ -115,14 +115,14 @@ export function AdminUsersPage() {
         password: createUserForm.password,
         fullName: createUserForm.fullName.trim(),
       })
-      setMessage('T?o ng??i d?ng th?nh c?ng.')
+      setMessage('Tạo người dùng thành công.')
       setCreateUserForm(createUserDefaults)
       const active = userActiveFilter === 'all' ? undefined : userActiveFilter === 'active'
       const data = await listAdminUsers({ query: userQuery || undefined, active })
       setUsers(data)
       setActiveModal(null)
     } catch {
-      setError('Kh?ng th? t?o ng??i d?ng.')
+      setError('Không thể tạo người dùng.')
     }
   }
 
@@ -141,14 +141,14 @@ export function AdminUsersPage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Ng??i d?ng</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">Qu?n l? t?i kho?n</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Người dùng</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Quản lý tài khoản</h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <input
             value={userQueryInput}
             onChange={(event) => setUserQueryInput(event.target.value)}
-            placeholder="T?m theo email ho?c t?n"
+            placeholder="Tìm theo email hoặc tên"
             className="w-52 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           />
           <select
@@ -156,9 +156,9 @@ export function AdminUsersPage() {
             onChange={(event) => setUserActiveFilter(event.target.value as 'all' | 'active' | 'inactive')}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
           >
-            <option value="all">T?t c?</option>
-            <option value="active">Ho?t ??ng</option>
-            <option value="inactive">B? kh?a</option>
+            <option value="all">Tất cả</option>
+            <option value="active">Hoạt động</option>
+            <option value="inactive">Bị khóa</option>
           </select>
           <button
             type="button"
@@ -168,7 +168,7 @@ export function AdminUsersPage() {
             Apply
           </button>
           <AdminIconButton
-            label="T?o ng??i d?ng"
+            label="Tạo người dùng"
             tone="primary"
             onClick={() => setActiveModal('create')}
           >
@@ -190,11 +190,11 @@ export function AdminUsersPage() {
 
       <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
         <div className="grid grid-cols-[1.2fr_1fr_0.6fr_0.6fr_0.8fr] gap-3 border-b border-slate-200 px-6 py-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-slate-400">
-          <span>Ng??i d?ng</span>
+          <span>Người dùng</span>
           <span>Email</span>
-          <span>Vai tr?</span>
-          <span>Tr?ng th?i</span>
-          <span>Thao t?c</span>
+          <span>Vai trò</span>
+          <span>Trạng thái</span>
+          <span>Thao tác</span>
         </div>
         <div className="divide-y divide-slate-200">
           {users.map((user) => (
@@ -203,7 +203,7 @@ export function AdminUsersPage() {
               className="grid grid-cols-[1.2fr_1fr_0.6fr_0.6fr_0.8fr] items-center gap-3 px-6 py-4 text-sm"
             >
               <div>
-                <div className="font-semibold text-slate-900">{user.fullName || 'Ch?a c? t?n'}</div>
+                <div className="font-semibold text-slate-900">{user.fullName || 'Chưa có tên'}</div>
                 <div className="text-xs text-slate-400">Tham gia {new Date(user.createdAt).toLocaleDateString()}</div>
               </div>
               <span className="truncate text-slate-600">{user.email}</span>
@@ -216,19 +216,19 @@ export function AdminUsersPage() {
                       : 'border-rose-200 bg-rose-50 text-rose-600'
                   }`}
                 >
-                  {user.active ? 'Ho?t ??ng' : 'B? kh?a'}
+                  {user.active ? 'Hoạt động' : 'Bị khóa'}
                 </span>
               </span>
               <div className="flex items-center gap-2">
-                <AdminIconButton label="Xem chi ti?t" onClick={() => openDetail(user)}>
+                <AdminIconButton label="Xem chi tiết" onClick={() => openDetail(user)}>
                   <EyeIcon />
                 </AdminIconButton>
-                <AdminIconButton label="S?a ng??i d?ng" onClick={() => openEdit(user)}>
+                <AdminIconButton label="Sửa người dùng" onClick={() => openEdit(user)}>
                   <EditIcon />
                 </AdminIconButton>
                 <button
                   type="button"
-                  aria-label="Kh?a ng??i d?ng"
+                  aria-label="Khóa người dùng"
                   onClick={() => handleToggleUser(user)}
                   className={`relative h-6 w-11 rounded-full ${
                     user.active ? 'bg-emerald-200' : 'bg-rose-200'
@@ -244,21 +244,21 @@ export function AdminUsersPage() {
             </div>
           ))}
           {users.length === 0 && (
-            <div className="px-6 py-6 text-sm text-slate-500">Kh?ng t?m th?y ng??i d?ng.</div>
+            <div className="px-6 py-6 text-sm text-slate-500">Không tìm thấy người dùng.</div>
           )}
         </div>
       </div>
 
       <AdminModal
         open={activeModal === 'detail'}
-        title="Chi ti?t ng??i d?ng"
+        title="Chi tiết người dùng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         {selectedUser ? (
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">T?n</span>
+              <span className="text-slate-400">Tên</span>
               <span>{selectedUser.fullName || '—'}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -266,16 +266,16 @@ export function AdminUsersPage() {
               <span>{selectedUser.email}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Vai tr?</span>
+              <span className="text-slate-400">Vai trò</span>
               <span>{selectedUser.role}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">?? x?c th?c</span>
+              <span className="text-slate-400">Xác thực</span>
               <span>{selectedUser.verifiedStatus}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-slate-400">Email ?? x?c th?c</span>
-              <span>{selectedUser.emailVerified ? 'C?' : 'Kh?ng'}</span>
+              <span className="text-slate-400">Email xác thực</span>
+              <span>{selectedUser.emailVerified ? 'Có' : 'Không'}</span>
             </div>
             <button
               type="button"
@@ -286,33 +286,33 @@ export function AdminUsersPage() {
                   : 'border-emerald-200 bg-emerald-50 text-emerald-700'
               }`}
             >
-              {selectedUser.active ? 'Kh?a ng??i d?ng' : 'Re-activate'}
+              {selectedUser.active ? 'Khóa người dùng' : 'Kích hoạt lại'}
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n ng??i d?ng ?? xem chi ti?t.</div>
+          <div className="text-sm text-slate-500">Chọn người dùng để xem chi tiết.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'edit'}
-        title="S?a ng??i d?ng"
+        title="Sửa người dùng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         {selectedUser ? (
           <div className="space-y-4">
             <label className="text-xs text-slate-500">
-              H? v? t?n
+              Họ và tên
               <input
                 value={editUserName}
                 onChange={(event) => setEditUserName(event.target.value)}
-                placeholder="T?n ng??i d?ng"
+                placeholder="Tên người dùng"
                 className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
               />
             </label>
             <label className="text-xs text-slate-500">
-              Role
+              Vai trò
               <input
                 value={selectedUser.role}
                 disabled
@@ -324,27 +324,27 @@ export function AdminUsersPage() {
               onClick={handleUpdateUser}
               className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
             >
-              L?u thay ??i
+              Lưu thay đổi
             </button>
           </div>
         ) : (
-          <div className="text-sm text-slate-500">Ch?n ng??i d?ng ?? s?a.</div>
+          <div className="text-sm text-slate-500">Chọn người dùng để sửa.</div>
         )}
       </AdminModal>
 
       <AdminModal
         open={activeModal === 'create'}
-        title="T?o ng??i d?ng"
+        title="Tạo người dùng"
         onClose={() => setActiveModal(null)}
         size="sm"
       >
         <div className="space-y-4">
           <label className="text-xs text-slate-500">
-            H? v? t?n
+            Họ và tên
             <input
               value={createUserForm.fullName}
               onChange={(event) => setCreateUserForm((prev) => ({ ...prev, fullName: event.target.value }))}
-              placeholder="H? v? t?n"
+              placeholder="Họ và tên"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -358,12 +358,12 @@ export function AdminUsersPage() {
             />
           </label>
           <label className="text-xs text-slate-500">
-            M?t kh?u t?m th?i
+            Mật khẩu tạm thời
             <input
               type="password"
               value={createUserForm.password}
               onChange={(event) => setCreateUserForm((prev) => ({ ...prev, password: event.target.value }))}
-              placeholder="??t m?t kh?u"
+              placeholder="Đặt mật khẩu"
               className="mt-2 w-full rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700"
             />
           </label>
@@ -372,7 +372,7 @@ export function AdminUsersPage() {
             onClick={handleCreateUser}
             className="w-full rounded-full bg-slate-900 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white"
           >
-            T?o ng??i d?ng
+            Tạo người dùng
           </button>
         </div>
       </AdminModal>

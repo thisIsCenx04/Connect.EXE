@@ -43,7 +43,7 @@ export function AdminRevenuePage() {
     <section className="space-y-6">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Doanh thu</p>
-        <h2 className="display-font text-2xl font-semibold text-slate-900">T?ng quan thu? bao</h2>
+        <h2 className="display-font text-2xl font-semibold text-slate-900">Tổng quan thuế bao</h2>
       </div>
 
       {error && (
@@ -54,23 +54,23 @@ export function AdminRevenuePage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.1fr_1fr]">
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">T?ng ho?t ??ng</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Tổng hoạt động</div>
           <div className="mt-2 text-2xl font-semibold text-slate-900">
             {revenue ? numberFormatter.format(revenue.activeSubscriptions) : '--'}
           </div>
-          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">Doanh thu ??c t?nh h?ng th?ng</div>
+          <div className="mt-4 text-xs uppercase tracking-[0.3em] text-slate-400">Doanh thu được tính hàng tháng</div>
           <div className="mt-2 text-xl font-semibold text-slate-900">
             {revenue ? currencyFormatter.format(revenue.estimatedMonthlyRevenue) : '--'}
           </div>
         </div>
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Ph?n b? theo g?i</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Phân bố theo gói</div>
           <div className="mt-4 space-y-4">
             {revenue?.planBreakdown.map((plan) => (
               <div key={plan.planCode} className="space-y-2">
                 <div className="flex items-center justify-between text-sm text-slate-700">
                   <span>{plan.planCode}</span>
-                  <span>{numberFormatter.format(plan.activeSubscriptions)} thu? bao</span>
+                  <span>{numberFormatter.format(plan.activeSubscriptions)} thuê bao</span>
                   <span className="text-slate-500">{currencyFormatter.format(plan.estimatedMonthlyRevenue)}</span>
                 </div>
                 <div className="h-2 rounded-full bg-slate-100">
@@ -84,7 +84,7 @@ export function AdminRevenuePage() {
               </div>
             ))}
             {!revenue?.planBreakdown.length && (
-              <div className="text-sm text-slate-500">Ch?a c? d? li?u doanh thu.</div>
+              <div className="text-sm text-slate-500">Chưa có dữ liệu doanh thu.</div>
             )}
           </div>
         </div>

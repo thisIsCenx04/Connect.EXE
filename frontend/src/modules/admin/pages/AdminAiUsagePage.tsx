@@ -59,17 +59,17 @@ export function AdminAiUsagePage() {
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">S? d?ng AI</p>
-          <h2 className="display-font text-2xl font-semibold text-slate-900">L??ng y?u c?u</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">Sử dụng AI</p>
+          <h2 className="display-font text-2xl font-semibold text-slate-900">Lượng yêu cầu</h2>
         </div>
         <select
           value={aiDays}
           onChange={(event) => setAiDays(Number(event.target.value))}
           className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs text-slate-600"
         >
-          <option value={7}>7 ng?y g?n ??y</option>
-          <option value={14}>14 ng?y g?n ??y</option>
-          <option value={30}>30 ng?y g?n ??y</option>
+          <option value={7}>7 ngày gần đây</option>
+          <option value={14}>14 ngày gần đây</option>
+          <option value={30}>30 ngày gần đây</option>
         </select>
       </div>
 
@@ -81,7 +81,7 @@ export function AdminAiUsagePage() {
 
       <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Y?u c?u theo ng?y</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Yêu cầu theo ngày</div>
           <div className="mt-4 flex h-36 items-end gap-2">
             {dailyAi.map((item) => (
               <div key={item.day} className="flex h-full flex-1 flex-col items-center justify-end">
@@ -95,12 +95,12 @@ export function AdminAiUsagePage() {
               </div>
             ))}
             {dailyAi.length === 0 && (
-              <div className="text-sm text-slate-500">Ch?a c? d? li?u s? d?ng AI.</div>
+              <div className="text-sm text-slate-500">Chưa có dữ liệu sử dụng AI.</div>
             )}
           </div>
         </div>
         <div className="rounded-[26px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)]">
-          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Ng??i d?ng h?ng ??u</div>
+          <div className="text-xs uppercase tracking-[0.3em] text-slate-400">Người dùng hàng đầu</div>
           <div className="mt-4 space-y-3">
             {aiTopUsers.map((user) => (
               <div key={user.name} className="flex items-center justify-between text-sm text-slate-700">
@@ -109,7 +109,7 @@ export function AdminAiUsagePage() {
               </div>
             ))}
             {aiTopUsers.length === 0 && (
-              <div className="text-sm text-slate-500">Ch?a c? d? li?u.</div>
+              <div className="text-sm text-slate-500">Chưa có dữ liệu.</div>
             )}
           </div>
         </div>
